@@ -53,6 +53,44 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_study_buddy_chats: {
+        Row: {
+          context_type: string | null
+          created_at: string
+          id: string
+          message: string
+          response: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          context_type?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          response: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          context_type?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          response?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_study_buddy_chats_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "work_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_progress: {
         Row: {
           articles: Json | null
@@ -401,6 +439,136 @@ export type Database = {
           },
         ]
       }
+      room_mini_quizzes: {
+        Row: {
+          created_at: string
+          creator_id: string
+          id: string
+          is_active: boolean
+          questions: Json
+          room_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          id?: string
+          is_active?: boolean
+          questions?: Json
+          room_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          id?: string
+          is_active?: boolean
+          questions?: Json
+          room_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_mini_quizzes_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "work_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_quiz_attempts: {
+        Row: {
+          answers: Json
+          completed_at: string
+          id: string
+          quiz_id: string
+          room_id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          completed_at?: string
+          id?: string
+          quiz_id: string
+          room_id: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          completed_at?: string
+          id?: string
+          quiz_id?: string
+          room_id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "room_mini_quizzes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_quiz_attempts_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "work_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_resources: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          is_pinned: boolean
+          resource_type: string
+          room_id: string
+          title: string
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          resource_type: string
+          room_id: string
+          title: string
+          updated_at?: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          resource_type?: string
+          room_id?: string
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_resources_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "work_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_shared_notes: {
         Row: {
           id: string
@@ -447,6 +615,41 @@ export type Database = {
           },
         ]
       }
+      room_xp_activity: {
+        Row: {
+          activity_type: string
+          created_at: string
+          id: string
+          room_id: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          id?: string
+          room_id: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          id?: string
+          room_id?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_xp_activity_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "work_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       study_sessions: {
         Row: {
           completed_at: string | null
@@ -476,6 +679,69 @@ export type Database = {
           score?: number
           session_type?: string
           total_items?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_feedback: {
+        Row: {
+          created_at: string
+          description: string
+          feedback_type: string
+          id: string
+          rating: number | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          feedback_type: string
+          id?: string
+          rating?: number | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          feedback_type?: string
+          id?: string
+          rating?: number | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_gamification: {
+        Row: {
+          badges: Json
+          created_at: string
+          id: string
+          level: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          badges?: Json
+          created_at?: string
+          id?: string
+          level?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          badges?: Json
+          created_at?: string
+          id?: string
+          level?: number
+          total_xp?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -514,7 +780,10 @@ export type Database = {
           creator_id: string
           description: string | null
           id: string
+          is_public: boolean
+          member_count: number
           name: string
+          subject_tags: string[] | null
           updated_at: string
         }
         Insert: {
@@ -523,7 +792,10 @@ export type Database = {
           creator_id: string
           description?: string | null
           id?: string
+          is_public?: boolean
+          member_count?: number
           name: string
+          subject_tags?: string[] | null
           updated_at?: string
         }
         Update: {
@@ -532,7 +804,10 @@ export type Database = {
           creator_id?: string
           description?: string | null
           id?: string
+          is_public?: boolean
+          member_count?: number
           name?: string
+          subject_tags?: string[] | null
           updated_at?: string
         }
         Relationships: [
@@ -550,6 +825,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_badge: {
+        Args: {
+          p_badge_description: string
+          p_badge_id: string
+          p_badge_name: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      award_xp: {
+        Args: { p_user_id: string; p_xp: number }
+        Returns: undefined
+      }
       get_quiz_questions_for_attempt: {
         Args: { p_quiz_id: string }
         Returns: {
@@ -580,10 +868,7 @@ export type Database = {
           user_answer: string
         }[]
       }
-      is_member_of_room: {
-        Args: { p_room_id: string }
-        Returns: boolean
-      }
+      is_member_of_room: { Args: { p_room_id: string }; Returns: boolean }
       share_note_to_room: {
         Args: { p_note_id: string; p_room_id: string }
         Returns: number
