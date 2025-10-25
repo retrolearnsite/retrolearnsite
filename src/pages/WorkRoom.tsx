@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useWorkRooms } from '@/hooks/useWorkRooms';
@@ -14,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles } from 'lucide-react';
+import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, Zap, ThumbsUp, Lightbulb, Repeat } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from '@/hooks/use-toast';
 import GamificationBadge from '@/components/GamificationBadge';
@@ -23,6 +24,8 @@ import AIStudyBuddy from '@/components/AIStudyBuddy';
 import RoomMiniQuiz from '@/components/RoomMiniQuiz';
 import RoomResources from '@/components/RoomResources';
 import SharedNoteWall from '@/components/SharedNoteWall';
+import { RoomLoadingScreen } from '@/components/RoomLoadingScreen';
+import { MessageBubble } from '@/components/MessageBubble';
 
 type WorkRoom = Database['public']['Tables']['work_rooms']['Row'];
 
@@ -41,15 +44,20 @@ export default function WorkRoom() {
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const [messageInput, setMessageInput] = useState('');
   const [selectedNoteId, setSelectedNoteId] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const currentRoom = rooms.find(r => r.id === roomId);
 
   useEffect(() => {
     if (currentRoom) {
+      setIsLoading(true);
       setRoom(currentRoom);
       loadRoomData();
       refetchMessages();
+      
+      // Simulate loading delay for smooth animation
+      setTimeout(() => setIsLoading(false), 1500);
     }
   }, [currentRoom, roomId]);
 
@@ -162,266 +170,321 @@ export default function WorkRoom() {
     }
   };
 
-  if (!room) {
-    return (
-      <div className="min-h-screen bg-gradient-terminal p-8 scanlines flex items-center justify-center">
-        <p className="font-retro text-xl glow-text">Loading room...</p>
-      </div>
-    );
+  if (isLoading || !room) {
+    return <RoomLoadingScreen />;
   }
 
   return (
-    <div className="bg-gradient-terminal scanlines">
-      <div className="relative z-10 max-w-[1600px] mx-auto p-4 md:p-8 space-y-8 animate-fade-in pb-20">
-        {/* Header */}
-        <div className="space-y-6">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/workrooms')}
-            className="font-retro glow-border"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Rooms
-          </Button>
+    <div className="h-full bg-gradient-terminal">
+      <div className="relative z-10 h-full flex flex-col">
+        {/* Top Bar */}
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="flex-shrink-0 border-b-2 border-primary/30 bg-card/95 backdrop-blur-xl"
+        >
+          <div className="max-w-[1800px] mx-auto px-4 md:px-6 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/workrooms')}
+                  className="font-retro hover:glow-border"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+                
+                <div className="flex items-center gap-3">
+                  <h1 className="text-xl md:text-2xl font-retro font-bold glow-text">
+                    {room.name}
+                  </h1>
+                  {room.is_public && (
+                    <Badge className="font-retro animate-pulse">
+                      <Sparkles className="w-3 h-3 mr-1" />
+                      PUBLIC
+                    </Badge>
+                  )}
+                  {room.subject_tags && room.subject_tags.length > 0 && (
+                    <div className="hidden md:flex gap-1">
+                      {room.subject_tags.slice(0, 2).map(tag => (
+                        <Badge key={tag} variant="outline" className="font-retro text-xs">
+                          #{tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
 
-          <div className="flex flex-wrap items-start justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-3xl md:text-4xl font-retro font-bold glow-text">
-                  {room.name}
-                </h1>
-                {room.is_public && (
-                  <Badge className="font-retro">
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    PUBLIC
-                  </Badge>
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary" className="font-retro">
+                  <Users className="w-4 h-4 mr-1" />
+                  <span className="hidden sm:inline">{members.length} members • </span>
+                  <span className="text-green-500">{onlineUsers.size} online</span>
+                </Badge>
+                {!room.is_public && room.code && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyRoomCode}
+                    className="font-retro hidden md:flex"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    {room.code}
+                  </Button>
                 )}
               </div>
-              {room.description && (
-                <p className="font-retro text-muted-foreground">{room.description}</p>
-              )}
-              {room.subject_tags && room.subject_tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {room.subject_tags.map(tag => (
-                    <Badge key={tag} variant="outline" className="font-retro text-xs">
-                      #{tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 flex-wrap">
-              <Badge variant="secondary" className="font-retro">
-                <Users className="w-4 h-4 mr-1" />
-                {members.length} members • {onlineUsers.size} online
-              </Badge>
-              {!room.is_public && room.code && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={copyRoomCode}
-                  className="font-retro"
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Code: {room.code}
-                </Button>
-              )}
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Main Content Grid */}
-        <div className="grid gap-8 lg:grid-cols-12">
-          {/* Left Column - Chat & Features */}
-          <div className="lg:col-span-8 space-y-8">
-            <Tabs defaultValue="chat" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 h-auto p-1.5 gap-1">
-                <TabsTrigger value="chat" className="font-retro py-3 text-xs sm:text-sm">
-                  <MessageCircle className="w-4 h-4 mr-1" />
-                  Chat
-                </TabsTrigger>
-                <TabsTrigger value="notes" className="font-retro py-3 text-xs sm:text-sm">
-                  <FileText className="w-4 h-4 mr-1" />
-                  Notes
-                </TabsTrigger>
-                <TabsTrigger value="quizzes" className="font-retro py-3 text-xs sm:text-sm">
-                  <Brain className="w-4 h-4 mr-1" />
-                  Quizzes
-                </TabsTrigger>
-                <TabsTrigger value="resources" className="font-retro py-3 text-xs sm:text-sm">
-                  <Pin className="w-4 h-4 mr-1" />
-                  Resources
-                </TabsTrigger>
-              </TabsList>
+        {/* Main Content - 3 Column Layout */}
+        <div className="flex-1 overflow-hidden">
+          <div className="max-w-[1800px] mx-auto h-full px-2 md:px-4 py-4">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full">
+              {/* Main Panel - Chat & Features */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="lg:col-span-8 xl:col-span-9 flex flex-col h-full"
+              >
+                <Tabs defaultValue="chat" className="flex flex-col h-full">
+                  <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card/90 backdrop-blur-sm border-2 border-primary/30 shadow-neon">
+                    <TabsTrigger value="chat" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                      <MessageCircle className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">Chat</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="notes" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                      <FileText className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">Notes</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="quizzes" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                      <Brain className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">Quizzes</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="resources" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                      <Pin className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">Pinned</span>
+                    </TabsTrigger>
+                  </TabsList>
 
-              {/* Chat Tab */}
-              <TabsContent value="chat" className="mt-8">
-                <Card className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm shadow-neon">
-                  <CardHeader>
-                    <CardTitle className="font-retro text-xl glow-text flex items-center gap-2">
-                      <MessageCircle className="w-5 h-5" />
-                      LIVE CHAT
-                      <Badge variant={connectionStatus === 'connected' ? 'default' : 'secondary'} className="font-retro text-xs">
-                        {connectionStatus === 'connected' ? 'Connected' : 'Connecting...'}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                   <CardContent className="space-y-6">
-                     <ScrollArea className="h-[450px] pr-4">
-                      <div className="space-y-3">
-                        {messages.length === 0 ? (
-                          <p className="font-retro text-sm text-muted-foreground text-center py-8">
-                            No messages yet. Start the conversation!
-                          </p>
-                        ) : (
-                          messages.map((msg: any) => (
-                            <div key={msg.id} className="p-3 rounded-lg bg-muted/30 border border-border/50 space-y-1">
-                              <div className="flex items-center gap-2">
-                                <Avatar className="w-6 h-6">
-                                  <AvatarFallback className="font-retro text-xs bg-primary/20">
-                                    {msg.user_name?.[0]?.toUpperCase() || '?'}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="font-retro text-sm font-bold">
-                                  {msg.user_name || 'Unknown'}
-                                </span>
-                                {onlineUsers.has(msg.user_id) && (
-                                  <div className="w-2 h-2 bg-green-500 rounded-full" />
-                                )}
-                                <span className="font-retro text-xs text-muted-foreground ml-auto">
-                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                              </div>
-                              <p className="font-retro text-sm ml-8">{msg.message}</p>
-                            </div>
-                          ))
-                        )}
-                        <div ref={bottomRef} />
-                      </div>
-                    </ScrollArea>
-
-                    <form onSubmit={handleSendMessage} className="flex gap-2">
-                      <Input
-                        value={messageInput}
-                        onChange={e => setMessageInput(e.target.value)}
-                        placeholder="Type a message... (+2 XP)"
-                        className="font-retro flex-1"
-                      />
-                      <Button type="submit" disabled={!messageInput.trim()} className="font-retro">
-                        <Send className="w-4 h-4" />
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Notes Tab */}
-              <TabsContent value="notes" className="mt-8 space-y-6">
-                <SharedNoteWall roomId={roomId!} userId={user?.id!} />
-                
-                <Card className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="font-retro text-xl glow-text">Share Your Note</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Select value={selectedNoteId} onValueChange={setSelectedNoteId}>
-                      <SelectTrigger className="font-retro">
-                        <SelectValue placeholder="Select a note to share" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {notes.map(note => (
-                          <SelectItem key={note.id} value={note.id} className="font-retro">
-                            {note.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      onClick={handleShareNote}
-                      disabled={!selectedNoteId}
-                      className="w-full font-retro"
-                    >
-                      <Share className="w-4 h-4 mr-2" />
-                      Share to Room (+10 XP)
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Quizzes Tab */}
-              <TabsContent value="quizzes" className="mt-8">
-                <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
-              </TabsContent>
-
-              {/* Resources Tab */}
-              <TabsContent value="resources" className="mt-8">
-                <RoomResources roomId={roomId!} userId={user?.id!} />
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Right Column - Sidebar */}
-          <div className="lg:col-span-4 space-y-8">
-            {/* User Gamification */}
-            {gamification && (
-              <GamificationBadge
-                level={gamification.level}
-                totalXp={gamification.total_xp}
-                badges={gamification.badges}
-              />
-            )}
-
-            {/* Leaderboard */}
-            <RoomLeaderboard roomId={roomId!} />
-
-            {/* AI Study Buddy */}
-            <AIStudyBuddy
-              roomId={roomId!}
-              userId={user?.id!}
-              roomMessages={messages}
-            />
-
-            {/* Members List */}
-            <Card className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="font-retro text-xl glow-text">
-                  <Users className="w-5 h-5 inline mr-2" />
-                  MEMBERS ({members.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[200px]">
-                  <div className="space-y-2 pr-4">
-                    {members.map((member: any) => (
-                      <div key={member.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/20">
-                        <Avatar className="w-8 h-8">
-                          <AvatarFallback className="font-retro text-xs bg-primary/20">
-                            {member.profiles?.full_name?.[0]?.toUpperCase() ||
-                             member.profiles?.email?.[0]?.toUpperCase() ||
-                             '?'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-retro text-sm font-bold truncate">
-                            {member.profiles?.full_name ||
-                             member.profiles?.email?.split('@')[0] ||
-                             'Unknown'}
-                          </p>
-                          <p className="font-retro text-xs text-muted-foreground">
-                            {member.role === 'admin' ? 'Admin' : 'Member'}
-                          </p>
+                  {/* Chat Tab */}
+                  <TabsContent value="chat" className="flex-1 mt-4 data-[state=active]:flex flex-col">
+                    <Card className="flex-1 flex flex-col border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon overflow-hidden">
+                      <CardHeader className="flex-shrink-0 border-b border-border/50">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="font-retro text-lg glow-text flex items-center gap-2">
+                            <MessageCircle className="w-5 h-5" />
+                            LIVE CHAT
+                          </CardTitle>
+                          <Badge variant={connectionStatus === 'connected' ? 'default' : 'secondary'} className="font-retro text-xs animate-pulse">
+                            {connectionStatus === 'connected' ? '● Connected' : 'Connecting...'}
+                          </Badge>
                         </div>
-                        {onlineUsers.has(member.user_id) && (
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                        )}
-                      </div>
-                    ))}
+                      </CardHeader>
+                      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+                        <ScrollArea className="flex-1 px-4">
+                          <div className="space-y-4 py-4">
+                            <AnimatePresence initial={false}>
+                              {messages.length === 0 ? (
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  className="text-center py-12"
+                                >
+                                  <MessageCircle className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                                  <p className="font-retro text-sm text-muted-foreground">
+                                    No messages yet. Start the conversation!
+                                  </p>
+                                </motion.div>
+                              ) : (
+                                messages.map((msg: any) => (
+                                  <MessageBubble
+                                    key={msg.id}
+                                    message={msg}
+                                    isOnline={onlineUsers.has(msg.user_id)}
+                                    isOwn={msg.user_id === user?.id}
+                                  />
+                                ))
+                              )}
+                            </AnimatePresence>
+                            <div ref={bottomRef} />
+                          </div>
+                        </ScrollArea>
+
+                        <div className="flex-shrink-0 p-4 border-t border-border/50 bg-muted/20">
+                          <form onSubmit={handleSendMessage} className="flex gap-2">
+                            <Input
+                              value={messageInput}
+                              onChange={e => setMessageInput(e.target.value)}
+                              placeholder="Type a message... (+2 XP)"
+                              className="font-retro flex-1 bg-background/50 border-2 border-primary/30 focus:border-primary/60 h-12"
+                            />
+                            <Button
+                              type="submit"
+                              disabled={!messageInput.trim()}
+                              className="font-retro px-6 h-12"
+                              size="lg"
+                            >
+                              <Send className="w-5 h-5" />
+                            </Button>
+                          </form>
+                          <div className="flex gap-2 mt-2">
+                            <Button variant="ghost" size="sm" className="font-retro text-xs">
+                              <ThumbsUp className="w-3 h-3 mr-1" />
+                              React
+                            </Button>
+                            <Button variant="ghost" size="sm" className="font-retro text-xs">
+                              <Lightbulb className="w-3 h-3 mr-1" />
+                              Idea
+                            </Button>
+                            <Button variant="ghost" size="sm" className="font-retro text-xs">
+                              <Repeat className="w-3 h-3 mr-1" />
+                              Share
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Notes Tab */}
+                  <TabsContent value="notes" className="flex-1 mt-4 data-[state=active]:flex flex-col space-y-4">
+                    <div className="flex-1 overflow-y-auto">
+                      <SharedNoteWall roomId={roomId!} userId={user?.id!} />
+                    </div>
+                    
+                    <Card className="flex-shrink-0 border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
+                      <CardHeader>
+                        <CardTitle className="font-retro text-lg glow-text">Share Your Note</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <Select value={selectedNoteId} onValueChange={setSelectedNoteId}>
+                          <SelectTrigger className="font-retro border-2 border-primary/30">
+                            <SelectValue placeholder="Select a note to share" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {notes.map(note => (
+                              <SelectItem key={note.id} value={note.id} className="font-retro">
+                                {note.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          onClick={handleShareNote}
+                          disabled={!selectedNoteId}
+                          className="w-full font-retro"
+                        >
+                          <Share className="w-4 h-4 mr-2" />
+                          Share to Room (+10 XP)
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* Quizzes Tab */}
+                  <TabsContent value="quizzes" className="flex-1 mt-4 overflow-y-auto">
+                    <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
+                  </TabsContent>
+
+                  {/* Resources Tab */}
+                  <TabsContent value="resources" className="flex-1 mt-4 overflow-y-auto">
+                    <RoomResources roomId={roomId!} userId={user?.id!} />
+                  </TabsContent>
+                </Tabs>
+              </motion.div>
+
+              {/* Right Sidebar - AI & Gamification */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="lg:col-span-4 xl:col-span-3 hidden lg:block"
+              >
+                <ScrollArea className="h-full">
+                  <div className="space-y-4 pr-2">
+                    {/* User Gamification */}
+                    {gamification && (
+                      <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                        <GamificationBadge
+                          level={gamification.level}
+                          totalXp={gamification.total_xp}
+                          badges={gamification.badges}
+                        />
+                      </motion.div>
+                    )}
+
+                    {/* Leaderboard */}
+                    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                      <RoomLeaderboard roomId={roomId!} />
+                    </motion.div>
+
+                    {/* AI Study Buddy */}
+                    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                      <AIStudyBuddy
+                        roomId={roomId!}
+                        userId={user?.id!}
+                        roomMessages={messages}
+                      />
+                    </motion.div>
+
+                    {/* Members List */}
+                    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                      <Card className="border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
+                        <CardHeader>
+                          <CardTitle className="font-retro text-lg glow-text">
+                            <Users className="w-5 h-5 inline mr-2" />
+                            MEMBERS ({members.length})
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ScrollArea className="h-[200px]">
+                            <div className="space-y-2 pr-2">
+                              {members.map((member: any) => (
+                                <motion.div
+                                  key={member.id}
+                                  whileHover={{ x: 4 }}
+                                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 border border-border/30"
+                                >
+                                  <Avatar className="w-8 h-8 border-2 border-primary/30">
+                                    <AvatarFallback className="font-retro text-xs bg-gradient-to-br from-primary/20 to-accent/20">
+                                      {member.profiles?.full_name?.[0]?.toUpperCase() ||
+                                       member.profiles?.email?.[0]?.toUpperCase() ||
+                                       '?'}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-retro text-sm font-bold truncate">
+                                      {member.profiles?.full_name ||
+                                       member.profiles?.email?.split('@')[0] ||
+                                       'Unknown'}
+                                    </p>
+                                    <p className="font-retro text-xs text-muted-foreground">
+                                      {member.role === 'admin' ? '👑 Admin' : 'Member'}
+                                    </p>
+                                  </div>
+                                  {onlineUsers.has(member.user_id) && (
+                                    <motion.div
+                                      animate={{ scale: [1, 1.2, 1] }}
+                                      transition={{ duration: 2, repeat: Infinity }}
+                                      className="w-2 h-2 bg-green-500 rounded-full shadow-green"
+                                    />
+                                  )}
+                                </motion.div>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   </div>
                 </ScrollArea>
-              </CardContent>
-            </Card>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

@@ -257,6 +257,12 @@ All colors MUST be HSL for consistent theming.
       0 0 30px hsl(var(--primary) / 0.1);
   }
 
+  .shadow-green {
+    box-shadow: 
+      0 0 10px hsl(var(--success) / 0.5),
+      0 0 20px hsl(var(--success) / 0.3);
+  }
+
   /* Pulse glow effect */
   .pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
