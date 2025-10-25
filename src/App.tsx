@@ -13,15 +13,11 @@ import WorkRoom from "./pages/WorkRoom";
 import Quizzes from "./pages/Quizzes";
 import Learn from "./pages/Learn";
 import UserGuide from "./pages/UserGuide";
-
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { Menu } from "lucide-react";
-
 const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -34,9 +30,7 @@ const App = () => (
                 <Menu className="w-5 h-5" />
               </SidebarTrigger>
               <div className="flex-1">
-                <h1 className="font-retro text-sm font-bold glow-text">
-                  RETRO NOTE WIZARD
-                </h1>
+                <h1 className="font-retro text-sm font-bold glow-text">RETRO LEARN</h1>
               </div>
             </header>
             <main className="flex-1 overflow-auto">
@@ -58,7 +52,5 @@ const App = () => (
         </div>
       </SidebarProvider>
     </TooltipProvider>
-  </QueryClientProvider>
-);
-
+  </QueryClientProvider>;
 export default App;
