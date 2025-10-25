@@ -144,7 +144,7 @@ export function NoteCard({ note, onViewNote, onDelete, deletingId, notesType = '
           topic: note.original_content
         },
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          // summarize-note is public, no auth header needed
         }
       });
 
