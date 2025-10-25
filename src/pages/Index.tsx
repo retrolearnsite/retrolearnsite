@@ -162,103 +162,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-terminal p-4 scanlines">
+    <div className="p-4 scanlines">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center py-8 relative">
-          {/* Auth Section */}
-          <div className="absolute top-0 right-0">
-            {user ? (
-              <div className="flex items-center gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" className="font-retro text-sm text-muted-foreground hover:text-primary p-0 h-auto">
-                      <User className="w-4 h-4 mr-1" />
-                      {getUserDisplayName()}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 p-0 border-2 border-primary bg-card" align="end">
-                    <Card className="border-0">
-                      <CardHeader className="pb-3">
-                        <CardTitle className="font-retro glow-text flex items-center gap-2">
-                          <User className="w-5 h-5" />
-                          User Profile
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-sm">
-                            <User className="w-4 h-4 text-primary" />
-                            <span className="font-retro">{getUserDisplayName()}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm">
-                            <Mail className="w-4 h-4 text-secondary" />
-                            <span className="font-retro text-muted-foreground">{user.email}</span>
-                          </div>
-                          {userStats && (
-                            <>
-                              <div className="flex items-center gap-2 text-sm">
-                                <Hash className="w-4 h-4 text-accent" />
-                                <span className="font-retro text-muted-foreground">
-                                  {userStats.totalNotes} notes created
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm">
-                                <FileText className="w-4 h-4 text-accent" />
-                                <span className="font-retro text-muted-foreground">
-                                  {userStats.totalSessions} study sessions
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm">
-                                <Calendar className="w-4 h-4 text-primary" />
-                                <span className="font-retro text-muted-foreground">
-                                  Joined {new Date(userStats.joinedDate).toLocaleDateString()}
-                                </span>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <Badge variant="secondary" className="font-retro text-xs">
-                            {userStats?.totalNotes > 10 ? 'Power User' : 'Getting Started'}
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </PopoverContent>
-                 </Popover>
-                <Button
-                  onClick={() => navigate('/workrooms')}
-                  variant="outline"
-                  size="sm"
-                  className="font-retro"
-                >
-                  <Users className="w-4 h-4 mr-1" />
-                  WORK ROOMS
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={signOut}
-                  className="font-retro"
-                >
-                  <LogOut className="w-4 h-4 mr-1" />
-                  LOGOUT
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="neon"
-                size="sm"
-                onClick={() => setShowAuthModal(true)}
-                className="font-retro"
-                disabled={loading}
-              >
-                <User className="w-4 h-4 mr-1" />
-                LOGIN
-              </Button>
-            )}
-          </div>
           <div className="flex items-center justify-center gap-6 mb-6">
             <div className="relative">
               <img 
