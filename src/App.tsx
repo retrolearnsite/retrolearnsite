@@ -16,41 +16,84 @@ import UserGuide from "./pages/UserGuide";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { Menu } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+
 const queryClient = new QueryClient();
-const App = () => <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <SidebarProvider defaultOpen={true}>
-        <div className="flex min-h-screen w-full bg-gradient-terminal">
-          <AppSidebar />
-          <div className="flex-1 flex flex-col w-full">
-            <header className="h-14 border-b-2 border-primary/50 bg-card/95 backdrop-blur-sm flex items-center px-4 gap-4">
-              <SidebarTrigger className="font-retro">
-                <Menu className="w-5 h-5" />
-              </SidebarTrigger>
-              <div className="flex-1">
-                <h1 className="font-retro text-sm font-bold glow-text">RETRO LEARN</h1>
-              </div>
-            </header>
+
+const App = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <div className="flex min-h-screen w-full bg-gradient-terminal items-center justify-center">
+            <div className="font-retro text-primary glow-text">LOADING...</div>
+          </div>
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
+
+  // If user is not authenticated, show pages without sidebar
+  if (!user) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <div className="min-h-screen w-full bg-gradient-terminal">
             <main className="flex-1 overflow-auto">
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/note-wizard" element={<NoteWizard />} />
-                <Route path="/notes" element={<Notes />} />
-                <Route path="/workrooms" element={<WorkRooms />} />
-                <Route path="/workroom/:roomId" element={<WorkRoom />} />
-                <Route path="/quizzes" element={<Quizzes />} />
-                <Route path="/learn" element={<Learn />} />
-                <Route path="/user-guide" element={<UserGuide />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
+                <Route path="*" element={<Home />} />
               </Routes>
             </main>
           </div>
-        </div>
-      </SidebarProvider>
-    </TooltipProvider>
-  </QueryClientProvider>;
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
+
+  // Authenticated users see the full app with sidebar
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <SidebarProvider defaultOpen={true}>
+          <div className="flex min-h-screen w-full bg-gradient-terminal">
+            <AppSidebar />
+            <div className="flex-1 flex flex-col w-full">
+              <header className="h-14 border-b-2 border-primary/50 bg-card/95 backdrop-blur-sm flex items-center px-4 gap-4">
+                <SidebarTrigger className="font-retro">
+                  <Menu className="w-5 h-5" />
+                </SidebarTrigger>
+                <div className="flex-1">
+                  <h1 className="font-retro text-sm font-bold glow-text">RETRO LEARN</h1>
+                </div>
+              </header>
+              <main className="flex-1 overflow-auto">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/note-wizard" element={<NoteWizard />} />
+                  <Route path="/notes" element={<Notes />} />
+                  <Route path="/workrooms" element={<WorkRooms />} />
+                  <Route path="/workroom/:roomId" element={<WorkRoom />} />
+                  <Route path="/quizzes" element={<Quizzes />} />
+                  <Route path="/learn" element={<Learn />} />
+                  <Route path="/user-guide" element={<UserGuide />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+            </div>
+          </div>
+        </SidebarProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
 export default App;
