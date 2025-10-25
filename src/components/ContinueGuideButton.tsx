@@ -19,14 +19,16 @@ export const ContinueGuideButton = () => {
       if (!isLoading) {
         const ns = Math.min(currentStep + 1, 7);
         setNextStep(ns);
-        setShowButton(currentStep > 0);
+        // Hide button if guide is completed (currentStep >= 7) or not started
+        setShowButton(currentStep > 0 && currentStep < 7);
       }
     } else {
       const storedStep = localStorage.getItem(GUIDE_STORAGE_KEY);
       if (storedStep !== null) {
         const step = parseInt(storedStep, 10);
         setNextStep(step + 1);
-        setShowButton(true);
+        // Hide button if guide is completed
+        setShowButton(step < 7);
       }
     }
   }, [user, isLoading, currentStep]);
