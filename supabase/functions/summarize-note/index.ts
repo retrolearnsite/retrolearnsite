@@ -63,9 +63,12 @@ serve(async (req) => {
       .from('notes')
       .select('original_content, title')
       .eq('id', noteId)
-      .single();
+      .maybeSingle();
 
     if (noteError) throw noteError;
+    if (!note) {
+      throw new Error('Note not found');
+    }
 
     console.log('Note content length:', note.original_content.length);
 
