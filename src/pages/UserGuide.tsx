@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserGuideProgress } from "@/hooks/useUserGuideProgress";
 import { useToast } from "@/hooks/use-toast";
 import mascotImage from "@/assets/retro-wizard-mascot.jpg";
-import { setGuideStep, clearGuideStep } from "@/components/ContinueGuideButton";
+import { setGuideStep, clearGuideStep, markGuideCompleted } from "@/components/ContinueGuideButton";
 interface GuideStep {
   id: string;
   title: string;
@@ -125,6 +125,7 @@ const UserGuide = () => {
   const handleFinishGuide = async () => {
     await forceSave(); // Save final progress
     clearGuideStep(); // Clear guide tracking
+    markGuideCompleted(); // Persist completion for guests and UI gating
     // Mark the final step as complete if not already
     if (!completedSteps.has(currentStep)) {
       markStepComplete();

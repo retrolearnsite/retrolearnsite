@@ -107,7 +107,7 @@ export const useUserGuideProgress = () => {
 
   const nextStep = useCallback(() => {
     setCurrentStep(prev => {
-      const newStep = Math.min(prev + 1, 7); // Max 8 steps (0-7)
+      const newStep = Math.min(prev + 1, 6); // Max 7 steps (0-6)
       return newStep;
     });
   }, []);
