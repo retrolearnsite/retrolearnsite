@@ -49,66 +49,72 @@ export function NoteCard({ note, onViewNote, onDelete, deletingId, notesType = '
   const handleSummarize = async () => {
     setSummarizing(true);
     try {
-      // First, let's try to get the note content and create a simple summary
-      const { data: noteData, error: noteError } = await supabase
-        .from('notes')
-        .select('original_content, title')
-        .eq('id', note.id)
-        .single();
+      console.log('Calling summarize-note edge function for note:', note.id);
+      
+      // Always try AI summarization first
+      const { data, error } = await supabase.functions.invoke('summarize-note', {
+        body: { noteId: note.id }
+      });
 
-      if (noteError) {
-        throw new Error('Could not fetch note content');
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
       }
 
-      // Create a simple client-side summary as fallback
-      const content = noteData.original_content || '';
-      const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 10);
-      const summary = sentences.slice(0, 3).map(s => s.trim()).join('. ') + '.';
+      console.log('Edge function response:', data);
 
-      if (summary.length < 20) {
-        // If content is too short, try the Edge Function
-        const { data, error } = await supabase.functions.invoke('summarize-note', {
-          body: { noteId: note.id }
-        });
-
-        if (error) {
-          console.error('Supabase function error:', error);
-          // Use fallback summary
-          setSummary(summary || 'Content too short to summarize meaningfully.');
-          toast({
-            title: 'Basic Summary Generated',
-            description: 'Created a simple summary (AI service unavailable)',
-          });
-          return;
-        }
-
-        if (data && data.success) {
-          setSummary(data.summary);
-          toast({
-            title: 'AI Summary Generated!',
-            description: 'AI has created a 3-line summary of your note',
-          });
-        } else {
-          setSummary(summary);
-          toast({
-            title: 'Basic Summary Generated',
-            description: 'Created a simple summary (AI service unavailable)',
-          });
-        }
-      } else {
-        setSummary(summary);
+      if (data && data.success && data.summary) {
+        setSummary(data.summary);
         toast({
-          title: 'Summary Generated!',
-          description: 'Created a summary of your note',
+          title: 'AI Summary Generated!',
+          description: 'Gemini AI created a 3-line summary',
+        });
+      } else {
+        // If AI didn't return a summary, use fallback
+        const { data: noteData } = await supabase
+          .from('notes')
+          .select('original_content')
+          .eq('id', note.id)
+          .single();
+
+        const content = noteData?.original_content || '';
+        const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 10);
+        const fallbackSummary = sentences.slice(0, 3).map(s => s.trim()).join('. ') + '.';
+        
+        setSummary(fallbackSummary || 'Unable to generate summary.');
+        toast({
+          title: 'Basic Summary',
+          description: 'AI unavailable, showing text preview',
         });
       }
     } catch (error: any) {
       console.error('Error summarizing note:', error);
-      toast({
-        title: 'Summarization Failed',
-        description: 'Could not generate summary. Please try again later.',
-        variant: 'destructive',
-      });
+      
+      // On error, create fallback summary
+      try {
+        const { data: noteData } = await supabase
+          .from('notes')
+          .select('original_content')
+          .eq('id', note.id)
+          .single();
+
+        const content = noteData?.original_content || '';
+        const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 10);
+        const fallbackSummary = sentences.slice(0, 3).map(s => s.trim()).join('. ') + '.';
+        
+        setSummary(fallbackSummary || 'Unable to generate summary.');
+        toast({
+          title: 'Using Basic Summary',
+          description: 'AI service unavailable',
+          variant: 'destructive',
+        });
+      } catch {
+        toast({
+          title: 'Summarization Failed',
+          description: 'Could not generate summary',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setSummarizing(false);
     }
