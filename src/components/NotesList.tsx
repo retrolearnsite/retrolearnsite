@@ -1,5 +1,4 @@
 import { useNotes } from "@/hooks/useNotes";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, Sparkles } from "lucide-react";
@@ -25,82 +24,78 @@ export function NotesList({ onViewNote, notesType = 'regular' }: NotesListProps)
 
   if (loading) {
     return (
-      <Card className="border-2 border-primary scanlines">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            <CardTitle className="font-retro glow-text">MY NOTES</CardTitle>
+      <div className="w-full">
+        <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-6 scanlines">
+          <div className="flex items-center gap-3 mb-4">
+            <FileText className="w-6 h-6 text-primary" />
+            <h2 className="font-retro text-xl glow-text">MY NOTES</h2>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <div className="font-retro text-muted-foreground animate-pulse">Loading notes...</div>
+          <div className="text-center py-12">
+            <div className="font-retro text-muted-foreground animate-pulse">LOADING NOTES...</div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   if (displayNotes.length === 0) {
     const title = notesType === 'shared' ? 'SHARED NOTES' : 'MY NOTES';
     const description = notesType === 'shared' 
-      ? 'Notes shared with you from work rooms will appear here'
-      : 'Your transformed notes will appear here';
+      ? 'Notes shared with you from work rooms'
+      : 'Your transformed notes and study materials';
     const emptyMessage = notesType === 'shared'
-      ? 'No shared notes yet'
-      : 'No notes yet';
+      ? 'NO SHARED NOTES YET'
+      : 'NO NOTES YET';
     const emptySubtext = notesType === 'shared'
       ? 'When someone shares notes in your work rooms, they\'ll appear here'
       : 'Go to Note Wizard or the home page to create your first note';
 
     return (
-      <Card className="border-2 border-primary scanlines">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            <CardTitle className="font-retro glow-text">{title}</CardTitle>
+      <div className="w-full">
+        <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-6 scanlines">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <FileText className="w-6 h-6 text-primary" />
+              <h2 className="font-retro text-xl glow-text">{title}</h2>
+            </div>
           </div>
-          <CardDescription className="font-retro">
-            {description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Sparkles className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <div className="font-retro text-muted-foreground mb-2">{emptyMessage}</div>
-            <div className="text-sm font-retro text-muted-foreground">
+          <p className="text-sm font-retro text-muted-foreground mb-6">{description}</p>
+          
+          <div className="text-center py-12">
+            <Sparkles className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <div className="font-retro text-muted-foreground mb-2 text-lg">{emptyMessage}</div>
+            <div className="text-sm font-retro text-muted-foreground/70">
               {emptySubtext}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   const title = notesType === 'shared' ? 'SHARED NOTES' : 'MY NOTES';
+  const description = notesType === 'shared' 
+    ? 'Notes shared with you from work rooms' 
+    : 'Your transformed notes and study materials';
 
   return (
-    <Card className="border-2 border-primary scanlines">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            <CardTitle className="font-retro glow-text">{title}</CardTitle>
+    <div className="w-full">
+      <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 rounded-lg scanlines overflow-hidden">
+        <div className="p-6 border-b border-primary/30">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <FileText className="w-6 h-6 text-primary" />
+              <h2 className="font-retro text-xl glow-text">{title}</h2>
+            </div>
+            <Badge variant="secondary" className="font-retro text-sm px-3 py-1">
+              {displayNotes.length} notes
+            </Badge>
           </div>
-          <Badge variant="secondary" className="font-retro">
-            {displayNotes.length} notes
-          </Badge>
+          <p className="text-sm font-retro text-muted-foreground">{description}</p>
         </div>
-        <CardDescription className="font-retro">
-          {notesType === 'shared' 
-            ? 'Notes shared with you from work rooms' 
-            : 'Your transformed notes and study materials'
-          }
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[400px] pr-4">
-          <div className="space-y-4">
+        
+        <ScrollArea className="h-[500px]">
+          <div className="p-4 space-y-3">
             {displayNotes.map((note) => (
               <NoteCard
                 key={note.id}
@@ -113,7 +108,7 @@ export function NotesList({ onViewNote, notesType = 'regular' }: NotesListProps)
             ))}
           </div>
         </ScrollArea>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
