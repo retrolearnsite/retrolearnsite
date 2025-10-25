@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Retro Note Wizard Design System - Synthwave/Cyberpunk Aesthetic
+All colors MUST be HSL for consistent theming.
+*/
+
+@layer base {
+  :root {
+    /* Core Retro Color Palette */
+    --background: 260 50% 6%;
+    --foreground: 180 100% 85%;
+
+    --card: 260 40% 8%;
+    --card-foreground: 180 100% 90%;
+
+    --popover: 260 50% 6%;
+    --popover-foreground: 180 100% 85%;
+
+    /* Neon Primary (Electric Purple) */
+    --primary: 285 100% 70%;
+    --primary-foreground: 260 50% 6%;
+
+    /* Cyberpunk Secondary (Electric Blue) */
+    --secondary: 200 100% 60%;
+    --secondary-foreground: 260 50% 6%;
+
+    /* Muted Terminal Colors */
+    --muted: 260 30% 12%;
+    --muted-foreground: 180 50% 65%;
+
+    /* Hot Pink Accent */
+    --accent: 320 100% 70%;
+    --accent-foreground: 260 50% 6%;
+
+    /* Neon Green Success */
+    --success: 120 100% 60%;
+    --success-foreground: 260 50% 6%;
+
+    /* Neon Yellow Warning */
+    --warning: 60 100% 60%;
+    --warning-foreground: 260 50% 6%;
+
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 260 50% 6%;
+
+    /* Terminal Borders & Input */
+    --border: 285 100% 50%;
+    --input: 260 30% 12%;
+    --ring: 285 100% 70%;
+
+    /* Retro Styling */
+    --radius: 0.25rem;
+    
+    /* Custom Gradients */
+    --gradient-retro: linear-gradient(135deg, hsl(285 100% 70%), hsl(320 100% 70%), hsl(200 100% 60%));
+    --gradient-terminal: linear-gradient(180deg, hsl(260 50% 6%), hsl(260 40% 8%));
+    --gradient-glow: linear-gradient(45deg, hsl(285 100% 70% / 0.2), hsl(320 100% 70% / 0.2));
+    
+    /* Neon Shadows */
+    --shadow-neon: 0 0 20px hsl(285 100% 70% / 0.5);
+    --shadow-pink: 0 0 20px hsl(320 100% 70% / 0.4);
+    --shadow-blue: 0 0 20px hsl(200 100% 60% / 0.4);
+    --shadow-green: 0 0 20px hsl(120 100% 60% / 0.4);
+    
+    /* Animation Variables */
+    --transition-glow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+/* Retro Effects & Components */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-mono;
+    background-image: 
+      radial-gradient(circle at 25% 25%, hsl(285 100% 70% / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, hsl(320 100% 70% / 0.1) 0%, transparent 50%);
+  }
+
+  /* Retro Terminal Font */
+  .font-retro {
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-weight: 500;
+  }
+
+  /* CRT Scanline Effect */
+  .scanlines {
+    position: relative;
+  }
+  
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      transparent 50%,
+      hsl(285 100% 70% / 0.03) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Neon Glow Text */
+  .glow-text {
+    color: hsl(var(--primary));
+    text-shadow: 
+      0 0 5px hsl(var(--primary)),
+      0 0 10px hsl(var(--primary)),
+      0 0 15px hsl(var(--primary));
+  }
+
+  .glow-pink {
+    color: hsl(var(--accent));
+    text-shadow: 
+      0 0 5px hsl(var(--accent)),
+      0 0 10px hsl(var(--accent)),
+      0 0 15px hsl(var(--accent));
+  }
+
+  .glow-blue {
+    color: hsl(var(--secondary));
+    text-shadow: 
+      0 0 5px hsl(var(--secondary)),
+      0 0 10px hsl(var(--secondary)),
+      0 0 15px hsl(var(--secondary));
+  }
+
+  /* Terminal Cursor Blink */
+  .cursor-blink::after {
+    content: '█';
+    color: hsl(var(--primary));
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Retro Button Glow */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-glow);
+  }
+
+  .btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-neon);
+  }
+
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  .btn-glow:hover::before {
+    left: 100%;
+  }
+  /* Glowing borders */
+  .glow-border {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--secondary))) 1;
+    animation: glow-border 3s ease-in-out infinite;
+  }
+
+  @keyframes glow-border {
+    0%, 100% { 
+      border-color: hsl(var(--primary));
+      box-shadow: 0 0 10px hsl(var(--primary) / 0.5);
+    }
+    50% { 
+      border-color: hsl(var(--accent));
+      box-shadow: 0 0 20px hsl(var(--accent) / 0.7);
+    }
+  }
+
+  .shadow-neon {
+    box-shadow: 
+      0 0 10px hsl(var(--primary) / 0.3),
+      0 0 20px hsl(var(--primary) / 0.2),
+      0 0 30px hsl(var(--primary) / 0.1);
+  }
+
+  /* Pulse glow effect */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--accent) / 0.4);
+    }
+  }
+}

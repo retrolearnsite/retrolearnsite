@@ -1,0 +1,10 @@
+project_id = "khwpljqvkuzftvxdervq"
+
+[functions.process-notes]
+verify_jwt = false
+
+[functions.notificationapi-webhook]
+verify_jwt = false
+
+[functions.transcribe-audio]
+verify_jwt = false
