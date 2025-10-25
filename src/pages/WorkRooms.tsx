@@ -4,7 +4,6 @@ import { WorkRoomCard } from '@/components/WorkRoomCard';
 import { CreateRoomDialog } from '@/components/CreateRoomDialog';
 import { JoinRoomDialog } from '@/components/JoinRoomDialog';
 import DiscoverRooms from '@/components/DiscoverRooms';
-import FeedbackForm from '@/components/FeedbackForm';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -125,9 +124,6 @@ export default function WorkRooms() {
             <DiscoverRooms />
           </TabsContent>
         </Tabs>
-
-        {/* Feedback Form */}
-        <FeedbackForm />
         
         {/* Guide Continue Button */}
         <ContinueGuideButton />

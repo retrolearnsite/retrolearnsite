@@ -18,8 +18,10 @@ import {
   ArrowLeft,
   Clock,
   Target,
-  Award
+  Award,
+  MessageSquare
 } from 'lucide-react';
+import FeedbackForm from '@/components/FeedbackForm';
 
 interface DashboardStats {
   totalNotes: number;
@@ -328,6 +330,28 @@ export default function Dashboard() {
                   <span>View Notes</span>
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Feedback Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <Card className="border-2 border-accent">
+            <CardHeader>
+              <CardTitle className="font-retro glow-pink flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                Share Your Feedback
+              </CardTitle>
+              <CardDescription className="font-retro">
+                Help us improve RetroLearn
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FeedbackForm />
             </CardContent>
           </Card>
         </motion.div>

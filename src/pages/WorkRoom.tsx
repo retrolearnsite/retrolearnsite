@@ -171,10 +171,10 @@ export default function WorkRoom() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
-      <div className="max-w-[1600px] mx-auto space-y-6 animate-fade-in">
+    <div className="min-h-screen bg-gradient-terminal scanlines overflow-y-auto">
+      <div className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-8 animate-fade-in pb-16">
         {/* Header */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           <Button
             variant="outline"
             size="sm"
@@ -185,7 +185,7 @@ export default function WorkRoom() {
             Back to Rooms
           </Button>
 
-          <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-3xl md:text-4xl font-retro font-bold glow-text">
@@ -233,31 +233,31 @@ export default function WorkRoom() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid gap-6 lg:grid-cols-12">
+        <div className="grid gap-8 lg:grid-cols-12">
           {/* Left Column - Chat & Features */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-8">
             <Tabs defaultValue="chat" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 h-auto p-1">
-                <TabsTrigger value="chat" className="font-retro py-2 text-xs sm:text-sm">
+              <TabsList className="grid w-full grid-cols-4 h-auto p-1.5 gap-1">
+                <TabsTrigger value="chat" className="font-retro py-3 text-xs sm:text-sm">
                   <MessageCircle className="w-4 h-4 mr-1" />
                   Chat
                 </TabsTrigger>
-                <TabsTrigger value="notes" className="font-retro py-2 text-xs sm:text-sm">
+                <TabsTrigger value="notes" className="font-retro py-3 text-xs sm:text-sm">
                   <FileText className="w-4 h-4 mr-1" />
                   Notes
                 </TabsTrigger>
-                <TabsTrigger value="quizzes" className="font-retro py-2 text-xs sm:text-sm">
+                <TabsTrigger value="quizzes" className="font-retro py-3 text-xs sm:text-sm">
                   <Brain className="w-4 h-4 mr-1" />
                   Quizzes
                 </TabsTrigger>
-                <TabsTrigger value="resources" className="font-retro py-2 text-xs sm:text-sm">
+                <TabsTrigger value="resources" className="font-retro py-3 text-xs sm:text-sm">
                   <Pin className="w-4 h-4 mr-1" />
                   Resources
                 </TabsTrigger>
               </TabsList>
 
               {/* Chat Tab */}
-              <TabsContent value="chat" className="mt-6">
+              <TabsContent value="chat" className="mt-8">
                 <Card className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm shadow-neon">
                   <CardHeader>
                     <CardTitle className="font-retro text-xl glow-text flex items-center gap-2">
@@ -268,8 +268,8 @@ export default function WorkRoom() {
                       </Badge>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <ScrollArea className="h-[400px] pr-4">
+                   <CardContent className="space-y-6">
+                     <ScrollArea className="h-[450px] pr-4">
                       <div className="space-y-3">
                         {messages.length === 0 ? (
                           <p className="font-retro text-sm text-muted-foreground text-center py-8">
@@ -318,10 +318,10 @@ export default function WorkRoom() {
               </TabsContent>
 
               {/* Notes Tab */}
-              <TabsContent value="notes" className="mt-6">
+              <TabsContent value="notes" className="mt-8 space-y-6">
                 <SharedNoteWall roomId={roomId!} userId={user?.id!} />
                 
-                <Card className="mt-6 border-2 border-primary/30 bg-card/90 backdrop-blur-sm">
+                <Card className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle className="font-retro text-xl glow-text">Share Your Note</CardTitle>
                   </CardHeader>
@@ -351,19 +351,19 @@ export default function WorkRoom() {
               </TabsContent>
 
               {/* Quizzes Tab */}
-              <TabsContent value="quizzes" className="mt-6">
+              <TabsContent value="quizzes" className="mt-8">
                 <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
               </TabsContent>
 
               {/* Resources Tab */}
-              <TabsContent value="resources" className="mt-6">
+              <TabsContent value="resources" className="mt-8">
                 <RoomResources roomId={roomId!} userId={user?.id!} />
               </TabsContent>
             </Tabs>
           </div>
 
           {/* Right Column - Sidebar */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-8">
             {/* User Gamification */}
             {gamification && (
               <GamificationBadge
