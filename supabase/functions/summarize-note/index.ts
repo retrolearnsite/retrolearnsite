@@ -7,6 +7,32 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper to log API usage
+async function logApiUsage(
+  supabase: any,
+  functionName: string,
+  apiProvider: string,
+  apiModel: string,
+  isFallback: boolean,
+  status: string,
+  errorMessage: string | null,
+  responseTimeMs: number | null
+) {
+  try {
+    await supabase.from('ai_api_usage').insert({
+      function_name: functionName,
+      api_provider: apiProvider,
+      api_model: apiModel,
+      is_fallback: isFallback,
+      status,
+      error_message: errorMessage,
+      response_time_ms: responseTimeMs
+    });
+  } catch (error) {
+    console.error('Failed to log API usage:', error);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -19,10 +45,12 @@ serve(async (req) => {
       throw new Error('Note ID is required');
     }
 
+    console.log('Summarizing note:', noteId);
+
     // Create Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       {
         auth: {
           persistSession: false,
@@ -39,54 +67,106 @@ serve(async (req) => {
 
     if (noteError) throw noteError;
 
-    // Call Gemini API for summary
+    console.log('Note content length:', note.original_content.length);
+
+    // Get API keys
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    const geminiApiKeySecondary = Deno.env.get('GEMINI_API_KEY_SECONDARY');
+
     if (!geminiApiKey) {
       throw new Error('GEMINI_API_KEY not configured');
     }
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Summarize the following note in exactly 3 concise lines. Be direct and informative:\n\n${note.original_content}`
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 150,
-          }
-        })
-      }
-    );
+    const prompt = `Summarize the following note in exactly 3 concise lines. Be direct and informative:\n\n${note.original_content}`;
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Gemini API error:', response.status, errorText);
-      throw new Error(`Gemini API returned ${response.status}: ${errorText}`);
+    // Helper function to call Gemini
+    const callGemini = async (apiKey: string, model: string) => {
+      const startTime = Date.now();
+      console.log(`Calling Gemini ${model}...`);
+      
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: prompt }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 150,
+            }
+          })
+        }
+      );
+      
+      const data = await res.json();
+      const responseTime = Date.now() - startTime;
+      
+      console.log(`Gemini ${model} response status:`, res.status);
+      
+      return { res, data, responseTime };
+    };
+
+    // Try Gemini 2.5 Flash as primary model
+    let { res: aiRes, data: aiData, responseTime } = await callGemini(geminiApiKey, 'gemini-2.5-flash');
+    let usedModel = 'gemini-2.5-flash';
+    
+    if (!aiRes.ok) {
+      const errorMsg = aiData?.error?.message || 'Unknown error';
+      console.error(`Gemini 2.5 Flash error:`, errorMsg);
+      
+      await logApiUsage(supabaseClient, 'summarize-note', 'gemini', usedModel, false, 'error', errorMsg, responseTime);
+      
+      const status = aiRes.status;
+      const quotaLike = status === 429 || /quota|exceed|rate|insufficient/i.test(errorMsg);
+
+      // If quota-like or 5xx, try secondary key
+      if ((quotaLike || status >= 500) && geminiApiKeySecondary) {
+        console.log('Trying secondary key on gemini-2.5-flash');
+        const retry = await callGemini(geminiApiKeySecondary, 'gemini-2.5-flash');
+        aiRes = retry.res;
+        aiData = retry.data;
+        responseTime = retry.responseTime;
+      }
+
+      // If still not OK, try flash-lite as fallback
+      if (!aiRes.ok) {
+        const keyForFlash = geminiApiKeySecondary ?? geminiApiKey;
+        console.log('Falling back to gemini-1.5-flash');
+        usedModel = 'gemini-1.5-flash';
+        const fb = await callGemini(keyForFlash, usedModel);
+        
+        if (!fb.res.ok) {
+          await logApiUsage(supabaseClient, 'summarize-note', 'gemini', usedModel, true, 'error', fb.data?.error?.message || 'Unknown error', fb.responseTime);
+          throw new Error(`All Gemini models failed: ${fb.data?.error?.message || 'Unknown error'}`);
+        }
+        
+        aiRes = fb.res;
+        aiData = fb.data;
+        responseTime = fb.responseTime;
+      }
     }
 
-    const data = await response.json();
-    console.log('Gemini API response:', JSON.stringify(data, null, 2));
-    
-    if (!data.candidates || data.candidates.length === 0) {
-      console.error('No candidates in Gemini response:', data);
+    if (!aiData.candidates || aiData.candidates.length === 0) {
+      console.error('No candidates in Gemini response:', aiData);
+      await logApiUsage(supabaseClient, 'summarize-note', 'gemini', usedModel, false, 'error', 'No candidates returned', responseTime);
       throw new Error('No summary generated by Gemini API');
     }
 
-    const summary = data.candidates[0]?.content?.parts?.[0]?.text || 'Unable to generate summary';
+    const summary = aiData.candidates[0]?.content?.parts?.[0]?.text;
+    
+    if (!summary) {
+      console.error('No summary text in response:', aiData);
+      await logApiUsage(supabaseClient, 'summarize-note', 'gemini', usedModel, false, 'error', 'No summary text', responseTime);
+      throw new Error('No summary text generated');
+    }
 
-    // Log API usage
-    await supabaseClient.from('ai_api_usage').insert({
-      function_name: 'summarize-note',
-      api_provider: 'gemini',
-      api_model: 'gemini-1.5-flash',
-      status: 'success'
-    });
+    console.log('Successfully generated summary, length:', summary.length);
+
+    // Log successful API usage
+    await logApiUsage(supabaseClient, 'summarize-note', 'gemini', usedModel, false, 'success', null, responseTime);
 
     return new Response(
       JSON.stringify({ success: true, summary }),
@@ -95,8 +175,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in summarize-note:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: errorMessage }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
