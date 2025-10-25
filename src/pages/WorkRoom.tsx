@@ -175,8 +175,8 @@ export default function WorkRoom() {
   }
 
   return (
-    <div className="h-full bg-gradient-terminal">
-      <div className="relative z-10 h-full flex flex-col">
+    <div className="min-h-full bg-gradient-terminal">
+      <div className="relative z-10 h-full min-h-0 flex flex-col">
         {/* Top Bar */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
@@ -241,15 +241,15 @@ export default function WorkRoom() {
         </motion.div>
 
         {/* Main Content - 3 Column Layout */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden">
           <div className="max-w-[1800px] mx-auto h-full px-2 md:px-4 py-4">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full min-h-0">
               {/* Main Panel - Chat & Features */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="lg:col-span-8 xl:col-span-9 flex flex-col h-full"
+                className="lg:col-span-8 xl:col-span-9 flex flex-col h-full min-h-0"
               >
                 <Tabs defaultValue="chat" className="flex flex-col h-full">
                   <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card/90 backdrop-blur-sm border-2 border-primary/30 shadow-neon">
@@ -272,7 +272,7 @@ export default function WorkRoom() {
                   </TabsList>
 
                   {/* Chat Tab */}
-                  <TabsContent value="chat" className="flex-1 mt-4 data-[state=active]:flex flex-col">
+                  <TabsContent value="chat" className="flex-1 mt-4 data-[state=active]:flex flex-col min-h-0">
                     <Card className="flex-1 flex flex-col border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon overflow-hidden">
                       <CardHeader className="flex-shrink-0 border-b border-border/50">
                         <div className="flex items-center justify-between">
@@ -285,7 +285,7 @@ export default function WorkRoom() {
                           </Badge>
                         </div>
                       </CardHeader>
-                      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+                      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden min-h-0">
                         <ScrollArea className="flex-1 px-4">
                           <div className="space-y-4 py-4">
                             <AnimatePresence initial={false}>
@@ -352,7 +352,7 @@ export default function WorkRoom() {
                   </TabsContent>
 
                   {/* Notes Tab */}
-                  <TabsContent value="notes" className="flex-1 mt-4 data-[state=active]:flex flex-col space-y-4">
+                  <TabsContent value="notes" className="flex-1 mt-4 data-[state=active]:flex flex-col space-y-4 min-h-0">
                     <div className="flex-1 overflow-y-auto">
                       <SharedNoteWall roomId={roomId!} userId={user?.id!} />
                     </div>
@@ -387,12 +387,12 @@ export default function WorkRoom() {
                   </TabsContent>
 
                   {/* Quizzes Tab */}
-                  <TabsContent value="quizzes" className="flex-1 mt-4 overflow-y-auto">
+                  <TabsContent value="quizzes" className="flex-1 mt-4 overflow-y-auto min-h-0">
                     <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
                   </TabsContent>
 
                   {/* Resources Tab */}
-                  <TabsContent value="resources" className="flex-1 mt-4 overflow-y-auto">
+                  <TabsContent value="resources" className="flex-1 mt-4 overflow-y-auto min-h-0">
                     <RoomResources roomId={roomId!} userId={user?.id!} />
                   </TabsContent>
                 </Tabs>
@@ -403,7 +403,7 @@ export default function WorkRoom() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="lg:col-span-4 xl:col-span-3 hidden lg:block"
+                className="lg:col-span-4 xl:col-span-3 hidden lg:block min-h-0"
               >
                 <ScrollArea className="h-full">
                   <div className="space-y-4 pr-2">
