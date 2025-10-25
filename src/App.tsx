@@ -13,7 +13,7 @@ import WorkRoom from "./pages/WorkRoom";
 import Quizzes from "./pages/Quizzes";
 import Learn from "./pages/Learn";
 import UserGuide from "./pages/UserGuide";
-import ApiUsage from "./pages/ApiUsage";
+
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { Menu } from "lucide-react";
@@ -49,8 +49,7 @@ const App = () => (
                 <Route path="/quizzes" element={<Quizzes />} />
                 <Route path="/learn" element={<Learn />} />
                 <Route path="/user-guide" element={<UserGuide />} />
-                <Route path="/api-usage" element={<ApiUsage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

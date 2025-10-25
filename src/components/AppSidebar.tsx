@@ -25,7 +25,6 @@ const navigationItems = [
   { title: "Quizzes", url: "/quizzes", icon: Trophy },
   { title: "Learn", url: "/learn", icon: GraduationCap },
   { title: "User Guide", url: "/user-guide", icon: BookOpen },
-  { title: "API Usage", url: "/api-usage", icon: BarChart },
   { title: "Dashboard", url: "/dashboard", icon: BarChart },
 ];
 
