@@ -44,7 +44,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <div className="min-h-screen w-full bg-gradient-terminal">
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-y-auto min-h-0">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="*" element={<Home />} />
@@ -74,7 +74,7 @@ const App = () => {
                   <h1 className="font-retro text-sm font-bold glow-text">RETRO LEARN</h1>
                 </div>
               </header>
-              <main className="flex-1 overflow-auto">
+              <main className="flex-1 overflow-y-auto min-h-0">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/note-wizard" element={<NoteWizard />} />

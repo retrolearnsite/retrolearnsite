@@ -171,7 +171,7 @@ export default function WorkRoom() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-terminal scanlines">
+    <div className="bg-gradient-terminal scanlines">
       <div className="max-w-[1600px] mx-auto p-4 md:p-8 space-y-8 animate-fade-in pb-20">
         {/* Header */}
         <div className="space-y-6">
