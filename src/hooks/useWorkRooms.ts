@@ -68,7 +68,12 @@ export function useWorkRooms() {
   }
 
   // Create a new work room
-  const createRoom = async (name: string, description?: string): Promise<WorkRoom | null> => {
+  const createRoom = async (
+    name: string, 
+    description?: string,
+    isPublic: boolean = false,
+    subjectTags: string[] = []
+  ): Promise<WorkRoom | null> => {
     if (!user) return null
 
     try {
@@ -81,6 +86,9 @@ export function useWorkRooms() {
           description,
           code,
           creator_id: user.id,
+          is_public: isPublic,
+          subject_tags: subjectTags,
+          member_count: 1
         })
         .select()
         .single()
@@ -102,7 +110,7 @@ export function useWorkRooms() {
       
       toast({
         title: "Room created!",
-        description: `Work room "${name}" created with code: ${code}`,
+        description: `Work room "${name}" created${!isPublic ? ` with code: ${code}` : ''}`,
       })
 
       return room

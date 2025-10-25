@@ -1,433 +1,430 @@
-import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { supabase } from '@/integrations/supabase/client'
-import { useAuth } from '@/hooks/useAuth'
-import { useWorkRooms } from '@/hooks/useWorkRooms'
-import { useRoomChat } from '@/hooks/useRoomChat'
-import { useNotes } from '@/hooks/useNotes'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, Send, Users, FileText, Copy, Share, Wifi, WifiOff } from 'lucide-react'
-import { Database } from '@/integrations/supabase/types'
-import { useToast } from '@/hooks/use-toast'
-import SharedNoteDialog from '@/components/SharedNoteDialog'
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useWorkRooms } from '@/hooks/useWorkRooms';
+import { useRoomChat } from '@/hooks/useRoomChat';
+import { useNotes } from '@/hooks/useNotes';
+import { useGamification } from '@/hooks/useGamification';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles } from 'lucide-react';
+import { Database } from '@/integrations/supabase/types';
+import { useToast } from '@/hooks/use-toast';
+import GamificationBadge from '@/components/GamificationBadge';
+import RoomLeaderboard from '@/components/RoomLeaderboard';
+import AIStudyBuddy from '@/components/AIStudyBuddy';
+import RoomMiniQuiz from '@/components/RoomMiniQuiz';
+import RoomResources from '@/components/RoomResources';
+import SharedNoteWall from '@/components/SharedNoteWall';
 
-type WorkRoom = Database['public']['Tables']['work_rooms']['Row']
+type WorkRoom = Database['public']['Tables']['work_rooms']['Row'];
 
 export default function WorkRoom() {
-  const { roomId } = useParams()
-  const { user } = useAuth()
-  const { rooms, getRoomMembers, shareNoteToRoom, getRoomSharedNotes } = useWorkRooms()
-  const { messages, sendMessage, refetch: refetchMessages, connectionStatus } = useRoomChat(roomId || '')
-  const { notes } = useNotes()
-  const { toast } = useToast()
-  const navigate = useNavigate()
+  const { roomId } = useParams();
+  const { user } = useAuth();
+  const { rooms, getRoomMembers, shareNoteToRoom } = useWorkRooms();
+  const { messages, sendMessage, refetch: refetchMessages, connectionStatus } = useRoomChat(roomId || '');
+  const { notes } = useNotes();
+  const { gamification } = useGamification(user?.id);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const [room, setRoom] = useState<WorkRoom | null>(null)
-  const [members, setMembers] = useState<any[]>([])
-  const [sharedNotes, setSharedNotes] = useState<any[]>([])
-  const [messageInput, setMessageInput] = useState('')
-  const [selectedNoteId, setSelectedNoteId] = useState<string>('')
-  const [selectedShared, setSelectedShared] = useState<any | null>(null)
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const [room, setRoom] = useState<WorkRoom | null>(null);
+  const [members, setMembers] = useState<any[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [messageInput, setMessageInput] = useState('');
+  const [selectedNoteId, setSelectedNoteId] = useState<string>('');
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  const currentRoom = rooms.find(r => r.id === roomId)
+  const currentRoom = rooms.find(r => r.id === roomId);
 
   useEffect(() => {
     if (currentRoom) {
-      setRoom(currentRoom)
-      loadRoomData()
-      // Ensure messages are fetched when entering a room
-      refetchMessages()
+      setRoom(currentRoom);
+      loadRoomData();
+      refetchMessages();
     }
-  }, [currentRoom, roomId, refetchMessages])
+  }, [currentRoom, roomId]);
 
   const loadRoomData = async () => {
-    if (!roomId) return
+    if (!roomId) return;
+    const membersData = await getRoomMembers(roomId);
+    setMembers(membersData);
+  };
 
-    const [membersData, notesData] = await Promise.all([
-      getRoomMembers(roomId),
-      getRoomSharedNotes(roomId)
-    ])
-
-    setMembers(membersData)
-    setSharedNotes(notesData)
-  }
-
-  // Set up real-time subscriptions for members and notes
+  // Real-time presence tracking
   useEffect(() => {
-    if (!roomId) return
+    if (!roomId || !user) return;
+
+    const channel = supabase.channel(`room_presence_${roomId}`)
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        setOnlineUsers(new Set(Object.keys(state)));
+      })
+      .on('presence', { event: 'join' }, ({ key }) => {
+        setOnlineUsers(prev => new Set([...prev, key]));
+      })
+      .on('presence', { event: 'leave' }, ({ key }) => {
+        setOnlineUsers(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(key);
+          return newSet;
+        });
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            user_id: user.id,
+            online_at: new Date().toISOString()
+          });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [roomId, user]);
+
+  // Subscribe to room updates
+  useEffect(() => {
+    if (!roomId) return;
 
     const memberChannel = supabase
       .channel(`room-members-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to INSERT, UPDATE, DELETE
-          schema: 'public',
-          table: 'room_members',
-          filter: `room_id=eq.${roomId}`
-        },
-        (payload) => {
-          console.log('Room member change detected:', payload)
-          // Reload member data when changes occur
-          getRoomMembers(roomId).then(setMembers)
-          
-          // If a new member joined, refresh messages to ensure they see all messages
-          if (payload.eventType === 'INSERT') {
-            console.log('New member joined, refreshing messages...')
-            // Trigger a message refresh to ensure all users see all messages
-            setTimeout(() => {
-              refetchMessages()
-            }, 500)
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log(`Member subscription status for room ${roomId}:`, status)
-        if (status === 'SUBSCRIBED') {
-          console.log('Successfully subscribed to member changes for room:', roomId)
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('Member subscription error for room:', roomId)
-        }
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'room_members',
+        filter: `room_id=eq.${roomId}`
+      }, () => {
+        getRoomMembers(roomId).then(setMembers);
       })
-
-    const notesChannel = supabase
-      .channel(`room-shared-notes-${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen to INSERT, UPDATE, DELETE
-          schema: 'public',
-          table: 'room_shared_notes',
-          filter: `room_id=eq.${roomId}`
-        },
-        (payload) => {
-          // Reload shared notes when changes occur
-          getRoomSharedNotes(roomId).then(setSharedNotes)
-          
-          // Show notification for new shared notes
-          if (payload.eventType === 'INSERT' && payload.new.shared_by_user_id !== user?.id) {
-            toast({
-              title: "New note shared!",
-              description: "A new note has been shared in this room",
-            })
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log(`Notes subscription status for room ${roomId}:`, status)
-        if (status === 'CHANNEL_ERROR') {
-          console.error('Notes subscription error for room:', roomId)
-        }
-      })
+      .subscribe();
 
     return () => {
-      supabase.removeChannel(memberChannel)
-      supabase.removeChannel(notesChannel)
-    }
-  }, [roomId, getRoomMembers, getRoomSharedNotes])
+      supabase.removeChannel(memberChannel);
+    };
+  }, [roomId]);
 
-  // Auto-scroll chat to newest message
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages.length])
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!messageInput.trim()) return
+    e.preventDefault();
+    if (!messageInput.trim() || !user) return;
 
-    const success = await sendMessage(messageInput)
-    if (success) {
-      setMessageInput('')
+    await sendMessage(messageInput.trim());
+    setMessageInput('');
+
+    // Award XP for sending message
+    if (roomId) {
+      await supabase.rpc('award_xp', { p_user_id: user.id, p_xp: 2 });
+      await supabase.from('room_xp_activity').insert({
+        room_id: roomId,
+        user_id: user.id,
+        activity_type: 'message',
+        xp_earned: 2
+      });
     }
-  }
+  };
 
   const handleShareNote = async () => {
-    if (!selectedNoteId || !roomId) return
+    if (!selectedNoteId || !roomId || !user) return;
 
-    const success = await shareNoteToRoom(roomId, selectedNoteId)
+    const success = await shareNoteToRoom(roomId, selectedNoteId);
     if (success) {
-      setSelectedNoteId('')
-      loadRoomData()
+      setSelectedNoteId('');
+      
+      // Award XP
+      await supabase.rpc('award_xp', { p_user_id: user.id, p_xp: 10 });
+      await supabase.from('room_xp_activity').insert({
+        room_id: roomId,
+        user_id: user.id,
+        activity_type: 'note_shared',
+        xp_earned: 10
+      });
     }
-  }
+  };
 
-  const handleCopyCode = () => {
-    if (room) {
-      navigator.clipboard.writeText(room.code)
-      toast({
-        title: "Code copied!",
-        description: "Room code has been copied to clipboard",
-      })
+  const copyRoomCode = () => {
+    if (room?.code) {
+      navigator.clipboard.writeText(room.code);
+      toast({ title: "Code copied!", description: "Room code copied to clipboard" });
     }
-  }
+  };
 
   if (!room) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-lg font-semibold mb-2">Room not found</h2>
-          <Button onClick={() => navigate('/workrooms')}>
-            Back to Work Rooms
-          </Button>
-        </div>
+      <div className="min-h-screen bg-gradient-terminal p-8 scanlines flex items-center justify-center">
+        <p className="font-retro text-xl glow-text">Loading room...</p>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
+      <div className="max-w-[1600px] mx-auto space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/workrooms')}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">{room.name}</h1>
+        <div className="space-y-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/workrooms')}
+            className="font-retro glow-border"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Rooms
+          </Button>
+
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-3xl md:text-4xl font-retro font-bold glow-text">
+                  {room.name}
+                </h1>
+                {room.is_public && (
+                  <Badge className="font-retro">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    PUBLIC
+                  </Badge>
+                )}
+              </div>
               {room.description && (
-                <p className="text-sm text-muted-foreground">{room.description}</p>
+                <p className="font-retro text-muted-foreground">{room.description}</p>
+              )}
+              {room.subject_tags && room.subject_tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {room.subject_tags.map(tag => (
+                    <Badge key={tag} variant="outline" className="font-retro text-xs">
+                      #{tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 flex-wrap">
+              <Badge variant="secondary" className="font-retro">
+                <Users className="w-4 h-4 mr-1" />
+                {members.length} members • {onlineUsers.size} online
+              </Badge>
+              {!room.is_public && room.code && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyRoomCode}
+                  className="font-retro"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Code: {room.code}
+                </Button>
               )}
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="font-mono">
-              {room.code}
-            </Badge>
-            <Button variant="ghost" size="sm" onClick={handleCopyCode}>
-              <Copy className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Chat Area */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Room Chat
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {connectionStatus === 'connected' && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <Wifi className="h-4 w-4" />
-                        <span className="text-xs">Connected</span>
-                      </div>
-                    )}
-                    {connectionStatus === 'connecting' && (
-                      <div className="flex items-center gap-1 text-yellow-600">
-                        <Wifi className="h-4 w-4 animate-pulse" />
-                        <span className="text-xs">Connecting...</span>
-                      </div>
-                    )}
-                    {connectionStatus === 'disconnected' && (
-                      <div className="flex items-center gap-1 text-red-600">
-                        <WifiOff className="h-4 w-4" />
-                        <span className="text-xs">Disconnected</span>
-                      </div>
-                    )}
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <ScrollArea className="h-96 border rounded-md p-4">
-                    <div className="space-y-4">
-                      {messages.map((message) => (
-                        <div key={message.id} className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs font-medium">
-                              {(message.profiles?.full_name || message.profiles?.email || 'User')
-                                .split(' ')
-                                .map(n => n[0])
-                                .join('')
-                                .substring(0, 2)
-                                .toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-medium">
-                                {message.profiles?.full_name || message.profiles?.email || 'User'}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(message.created_at).toLocaleTimeString()}
-                              </span>
-                            </div>
-                            <p className="text-sm text-foreground break-words">
-                              {message.message}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                      <div ref={bottomRef} />
-                    </div>
-                  </ScrollArea>
-
-                  <form onSubmit={handleSendMessage} className="flex gap-2">
-                    <Input
-                      placeholder="Type a message..."
-                      value={messageInput}
-                      onChange={(e) => setMessageInput(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button type="submit" size="sm">
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <Tabs defaultValue="members" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="members">Members</TabsTrigger>
-                <TabsTrigger value="notes">Notes</TabsTrigger>
-                <TabsTrigger value="share">Share</TabsTrigger>
+        {/* Main Content Grid */}
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Left Column - Chat & Features */}
+          <div className="lg:col-span-8 space-y-6">
+            <Tabs defaultValue="chat" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 h-auto p-1">
+                <TabsTrigger value="chat" className="font-retro py-2 text-xs sm:text-sm">
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  Chat
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="font-retro py-2 text-xs sm:text-sm">
+                  <FileText className="w-4 h-4 mr-1" />
+                  Notes
+                </TabsTrigger>
+                <TabsTrigger value="quizzes" className="font-retro py-2 text-xs sm:text-sm">
+                  <Brain className="w-4 h-4 mr-1" />
+                  Quizzes
+                </TabsTrigger>
+                <TabsTrigger value="resources" className="font-retro py-2 text-xs sm:text-sm">
+                  <Pin className="w-4 h-4 mr-1" />
+                  Resources
+                </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="members" className="space-y-4">
-                <Card>
+              {/* Chat Tab */}
+              <TabsContent value="chat" className="mt-6">
+                <Card className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm shadow-neon">
                   <CardHeader>
-                    <CardTitle className="text-lg">Members ({members.length})</CardTitle>
+                    <CardTitle className="font-retro text-xl glow-text flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5" />
+                      LIVE CHAT
+                      <Badge variant={connectionStatus === 'connected' ? 'default' : 'secondary'} className="font-retro text-xs">
+                        {connectionStatus === 'connected' ? 'Connected' : 'Connecting...'}
+                      </Badge>
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-64">
-                      <div className="space-y-2">
-                        {members.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between p-2 rounded-md border">
-                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                <span className="text-xs font-medium">
-                                  {(member.profiles?.full_name || member.profiles?.email || 'U')[0]}
+                  <CardContent className="space-y-4">
+                    <ScrollArea className="h-[400px] pr-4">
+                      <div className="space-y-3">
+                        {messages.length === 0 ? (
+                          <p className="font-retro text-sm text-muted-foreground text-center py-8">
+                            No messages yet. Start the conversation!
+                          </p>
+                        ) : (
+                          messages.map((msg: any) => (
+                            <div key={msg.id} className="p-3 rounded-lg bg-muted/30 border border-border/50 space-y-1">
+                              <div className="flex items-center gap-2">
+                                <Avatar className="w-6 h-6">
+                                  <AvatarFallback className="font-retro text-xs bg-primary/20">
+                                    {msg.user_name?.[0]?.toUpperCase() || '?'}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="font-retro text-sm font-bold">
+                                  {msg.user_name || 'Unknown'}
+                                </span>
+                                {onlineUsers.has(msg.user_id) && (
+                                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                                )}
+                                <span className="font-retro text-xs text-muted-foreground ml-auto">
+                                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>
-                              <span className="text-sm font-medium">
-                                {member.profiles?.full_name || member.profiles?.email || 'Unknown'}
-                              </span>
+                              <p className="font-retro text-sm ml-8">{msg.message}</p>
                             </div>
-                            {member.role === 'admin' && (
-                              <Badge variant="secondary" className="text-xs">
-                                Admin
-                              </Badge>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="notes" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Shared Notes</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-64">
-                      <div className="space-y-2">
-                        {sharedNotes.map((sharedNote) => (
-                          <div key={sharedNote.id} onClick={() => setSelectedShared(sharedNote)} className="p-3 rounded-md border space-y-2 cursor-pointer hover:bg-accent/50 transition-colors">
-                            <div className="flex items-center gap-2">
-                              <FileText className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm font-medium line-clamp-1">
-                                {sharedNote.note?.title}
-                              </span>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              Shared by {sharedNote.profiles?.full_name || sharedNote.profiles?.email}
-                            </p>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => navigate('/notes')}
-                              className="mt-2 text-xs h-6"
-                            >
-                              View in Library
-                            </Button>
-                          </div>
-                        ))}
-                        
-                        {sharedNotes.length === 0 && (
-                          <p className="text-sm text-muted-foreground text-center py-4">
-                            No notes shared yet
-                          </p>
+                          ))
                         )}
+                        <div ref={bottomRef} />
                       </div>
                     </ScrollArea>
+
+                    <form onSubmit={handleSendMessage} className="flex gap-2">
+                      <Input
+                        value={messageInput}
+                        onChange={e => setMessageInput(e.target.value)}
+                        placeholder="Type a message... (+2 XP)"
+                        className="font-retro flex-1"
+                      />
+                      <Button type="submit" disabled={!messageInput.trim()} className="font-retro">
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </form>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="share" className="space-y-4">
-                <Card>
+              {/* Notes Tab */}
+              <TabsContent value="notes" className="mt-6">
+                <SharedNoteWall roomId={roomId!} userId={user?.id!} />
+                
+                <Card className="mt-6 border-2 border-primary/30 bg-card/90 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="text-lg">Share a Note</CardTitle>
-                    <CardDescription>
-                      Share one of your notes with this room
-                    </CardDescription>
+                    <CardTitle className="font-retro text-xl glow-text">Share Your Note</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <Select value={selectedNoteId} onValueChange={setSelectedNoteId}>
-                      <SelectTrigger>
+                      <SelectTrigger className="font-retro">
                         <SelectValue placeholder="Select a note to share" />
                       </SelectTrigger>
                       <SelectContent>
-                        {notes
-                          .filter(note => note.processing_status === 'completed')
-                          .map((note) => (
-                          <SelectItem key={note.id} value={note.id}>
+                        {notes.map(note => (
+                          <SelectItem key={note.id} value={note.id} className="font-retro">
                             {note.title}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    
-                    <Button 
-                      onClick={handleShareNote} 
+                    <Button
+                      onClick={handleShareNote}
                       disabled={!selectedNoteId}
-                      className="w-full"
+                      className="w-full font-retro"
                     >
-                      <Share className="h-4 w-4 mr-2" />
-                      Share Note
+                      <Share className="w-4 h-4 mr-2" />
+                      Share to Room (+10 XP)
                     </Button>
                   </CardContent>
                 </Card>
               </TabsContent>
 
+              {/* Quizzes Tab */}
+              <TabsContent value="quizzes" className="mt-6">
+                <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
+              </TabsContent>
+
+              {/* Resources Tab */}
+              <TabsContent value="resources" className="mt-6">
+                <RoomResources roomId={roomId!} userId={user?.id!} />
+              </TabsContent>
             </Tabs>
           </div>
-        </div>
 
-        <SharedNoteDialog
-          open={!!selectedShared}
-          note={selectedShared?.note}
-          onOpenChange={(open) => { if (!open) setSelectedShared(null) }}
-        />
+          {/* Right Column - Sidebar */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* User Gamification */}
+            {gamification && (
+              <GamificationBadge
+                level={gamification.level}
+                totalXp={gamification.total_xp}
+                badges={gamification.badges}
+              />
+            )}
+
+            {/* Leaderboard */}
+            <RoomLeaderboard roomId={roomId!} />
+
+            {/* AI Study Buddy */}
+            <AIStudyBuddy
+              roomId={roomId!}
+              userId={user?.id!}
+              roomMessages={messages}
+            />
+
+            {/* Members List */}
+            <Card className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="font-retro text-xl glow-text">
+                  <Users className="w-5 h-5 inline mr-2" />
+                  MEMBERS ({members.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[200px]">
+                  <div className="space-y-2 pr-4">
+                    {members.map((member: any) => (
+                      <div key={member.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/20">
+                        <Avatar className="w-8 h-8">
+                          <AvatarFallback className="font-retro text-xs bg-primary/20">
+                            {member.profiles?.full_name?.[0]?.toUpperCase() ||
+                             member.profiles?.email?.[0]?.toUpperCase() ||
+                             '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-retro text-sm font-bold truncate">
+                            {member.profiles?.full_name ||
+                             member.profiles?.email?.split('@')[0] ||
+                             'Unknown'}
+                          </p>
+                          <p className="font-retro text-xs text-muted-foreground">
+                            {member.role === 'admin' ? 'Admin' : 'Member'}
+                          </p>
+                        </div>
+                        {onlineUsers.has(member.user_id) && (
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
-  )
+  );
 }

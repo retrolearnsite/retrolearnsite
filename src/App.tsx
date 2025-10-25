@@ -10,6 +10,7 @@ import NoteWizard from "./pages/NoteWizard";
 import Notes from "./pages/Notes";
 import WorkRooms from "./pages/WorkRooms";
 import WorkRoom from "./pages/WorkRoom";
+import Discover from "./pages/Discover";
 import Quizzes from "./pages/Quizzes";
 import Learn from "./pages/Learn";
 import UserGuide from "./pages/UserGuide";
@@ -80,6 +81,7 @@ const App = () => {
                   <Route path="/notes" element={<Notes />} />
                   <Route path="/workrooms" element={<WorkRooms />} />
                   <Route path="/workroom/:roomId" element={<WorkRoom />} />
+                  <Route path="/discover" element={<Discover />} />
                   <Route path="/quizzes" element={<Quizzes />} />
                   <Route path="/learn" element={<Learn />} />
                   <Route path="/user-guide" element={<UserGuide />} />

@@ -81,12 +81,12 @@ export default function RoomMiniQuiz({ roomId, userId }: RoomMiniQuizProps) {
     }
 
     setCreating(true);
-    const { error } = await supabase.from('room_mini_quizzes').insert({
+    const { error } = await supabase.from('room_mini_quizzes').insert([{
       room_id: roomId,
       creator_id: userId,
       title: newTitle.trim(),
-      questions: validQuestions
-    });
+      questions: validQuestions as any
+    }]);
 
     if (error) {
       toast({ title: "Error creating quiz", description: error.message, variant: "destructive" });
