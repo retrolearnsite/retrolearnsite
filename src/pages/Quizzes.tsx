@@ -39,6 +39,7 @@ interface Quiz {
   description: string;
   creator_id: string;
   created_at: string;
+  is_public: boolean;
   profiles?: {
     full_name: string;
     email: string;
@@ -76,8 +77,7 @@ export default function Quizzes() {
   const { user } = useAuth();
   const { toast } = useToast();
   
-  const [publicQuizzes, setPublicQuizzes] = useState<Quiz[]>([]);
-  const [privateQuizzes, setPrivateQuizzes] = useState<Quiz[]>([]);
+  const [allQuizzes, setAllQuizzes] = useState<Quiz[]>([]);
   const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -93,8 +93,7 @@ export default function Quizzes() {
   const [newlyCreatedQuiz, setNewlyCreatedQuiz] = useState<Quiz | null>(null);
   const [showQuizCreated, setShowQuizCreated] = useState(false);
 
-  const [publicSearchTerm, setPublicSearchTerm] = useState('');
-  const [privateSearchTerm, setPrivateSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchQuizzes();
@@ -103,55 +102,42 @@ export default function Quizzes() {
   const fetchQuizzes = async () => {
     if (!user) return;
 
-    const { data: publicData, error: publicError } = await supabase
+    // Fetch all quizzes (public quizzes + user's private quizzes)
+    const { data: allData, error } = await supabase
       .from('quizzes')
       .select('*')
-      .eq('is_public', true)
+      .or(`is_public.eq.true,creator_id.eq.${user.id}`)
       .order('created_at', { ascending: false });
 
-    if (publicError) {
+    if (error) {
       toast({
-        title: "Error fetching public quizzes",
-        description: publicError.message,
+        title: "Error fetching quizzes",
+        description: error.message,
         variant: "destructive"
       });
-    } else {
-      const publicQuizzesWithProfiles = await Promise.all(
-        (publicData || []).map(async quiz => {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name, email')
-            .eq('id', quiz.creator_id)
-            .single();
-          return { ...quiz, profiles: profile };
-        })
-      );
-      setPublicQuizzes(publicQuizzesWithProfiles);
+      return;
     }
 
-    const { data: privateData, error: privateError } = await supabase
-      .from('quizzes')
-      .select('*')
-      .eq('creator_id', user.id)
-      .eq('is_public', false)
-      .order('created_at', { ascending: false });
-
-    if (privateError) {
-      toast({
-        title: "Error fetching private quizzes",
-        description: privateError.message,
-        variant: "destructive"
-      });
-    } else {
-      const privateQuizzesWithProfiles = (privateData || []).map(quiz => ({
-        ...quiz,
-        profiles: {
-          full_name: user.email?.split('@')[0] || 'You',
-          email: user.email || ''
+    const quizzesWithProfiles = await Promise.all(
+      (allData || []).map(async quiz => {
+        if (quiz.creator_id === user.id) {
+          return {
+            ...quiz,
+            profiles: {
+              full_name: user.email?.split('@')[0] || 'You',
+              email: user.email || ''
+            }
+          };
         }
-      }));
-      setPrivateQuizzes(privateQuizzesWithProfiles);
-    }
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', quiz.creator_id)
+          .single();
+        return { ...quiz, profiles: profile };
+      })
+    );
+    setAllQuizzes(quizzesWithProfiles);
   };
 
   const createQuizWithAI = async () => {
@@ -393,16 +379,10 @@ export default function Quizzes() {
     setShowQuizCreated(false);
   };
 
-  const filteredPublicQuizzes = publicQuizzes.filter(
+  const filteredQuizzes = allQuizzes.filter(
     quiz => 
-      quiz.title.toLowerCase().includes(publicSearchTerm.toLowerCase()) ||
-      quiz.description?.toLowerCase().includes(publicSearchTerm.toLowerCase())
-  );
-
-  const filteredPrivateQuizzes = privateQuizzes.filter(
-    quiz => 
-      quiz.title.toLowerCase().includes(privateSearchTerm.toLowerCase()) ||
-      quiz.description?.toLowerCase().includes(privateSearchTerm.toLowerCase())
+      quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      quiz.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Quiz Taking View
@@ -738,10 +718,10 @@ export default function Quizzes() {
 
   // Main Dashboard View
   return (
-    <div className="min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
-      <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <div className="min-h-screen bg-gradient-terminal p-3 sm:p-6 lg:p-8 scanlines">
+      <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <Link to="/">
             <Button 
               variant="outline" 
@@ -749,16 +729,16 @@ export default function Quizzes() {
               className="font-retro glow-border"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              Back
             </Button>
           </Link>
 
-          <div className="text-center space-y-4">
-            <h1 className="text-5xl md:text-7xl font-retro font-bold glow-text">
+          <div className="text-center space-y-3">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-retro font-bold glow-text">
               RETRO QUIZZES
             </h1>
-            <p className="text-lg md:text-xl font-retro text-muted-foreground max-w-2xl mx-auto">
-              Challenge yourself with AI-generated quizzes and test your knowledge
+            <p className="text-sm sm:text-base md:text-lg font-retro text-muted-foreground max-w-xl mx-auto px-4">
+              Challenge yourself with AI-generated quizzes
             </p>
           </div>
         </div>
@@ -766,301 +746,193 @@ export default function Quizzes() {
         {/* Main Content */}
         <Tabs defaultValue="do-quizzes" className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-auto p-1">
-            <TabsTrigger value="do-quizzes" className="font-retro py-3">
-              <Play className="w-4 h-4 mr-2" />
+            <TabsTrigger value="do-quizzes" className="font-retro py-2.5 text-sm sm:text-base">
+              <Play className="w-4 h-4 mr-1 sm:mr-2" />
               DO QUIZZES
             </TabsTrigger>
-            <TabsTrigger value="create-quiz" className="font-retro py-3">
-              <Plus className="w-4 h-4 mr-2" />
+            <TabsTrigger value="create-quiz" className="font-retro py-2.5 text-sm sm:text-base">
+              <Plus className="w-4 h-4 mr-1 sm:mr-2" />
               CREATE QUIZ
             </TabsTrigger>
           </TabsList>
 
           {/* Do Quizzes Tab */}
           <TabsContent value="do-quizzes" className="mt-8 space-y-6">
-            <Tabs defaultValue="public" className="w-full">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-auto p-1">
-                <TabsTrigger value="public" className="font-retro py-2">
-                  <Globe className="w-4 h-4 mr-2" />
-                  Public
-                </TabsTrigger>
-                <TabsTrigger value="private" className="font-retro py-2">
-                  <Lock className="w-4 h-4 mr-2" />
-                  Private
-                </TabsTrigger>
-              </TabsList>
+            {/* Search Bar */}
+            <div className="max-w-xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <Input
+                  placeholder="Search all quizzes..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="pl-12 font-retro h-14 text-lg bg-card/50 backdrop-blur-sm border-2 border-primary/30 focus:border-primary/60"
+                />
+              </div>
+            </div>
 
-              {/* Public Quizzes */}
-              <TabsContent value="public" className="mt-6 space-y-6">
-                <div className="max-w-2xl mx-auto">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                    <Input
-                      placeholder="Search public quizzes..."
-                      value={publicSearchTerm}
-                      onChange={e => setPublicSearchTerm(e.target.value)}
-                      className="pl-12 font-retro h-12 text-base"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredPublicQuizzes.map(quiz => (
-                    <Card
-                      key={quiz.id}
-                      className="group hover:shadow-neon transition-all duration-300 border-2 border-primary/30 hover:border-primary/60 bg-card/80 backdrop-blur-sm"
-                    >
-                      <CardHeader className="space-y-3">
-                        <Badge variant="outline" className="font-retro w-fit">
-                          <Globe className="w-3 h-3 mr-1" />
-                          PUBLIC
-                        </Badge>
-                        <CardTitle className="font-retro text-xl glow-text line-clamp-2 min-h-[3.5rem]">
-                          {quiz.title}
-                        </CardTitle>
-                        <CardDescription className="font-retro text-sm line-clamp-3 min-h-[4rem]">
-                          {quiz.description || 'No description available'}
-                        </CardDescription>
-                      </CardHeader>
-
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between text-xs font-retro text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4" />
-                            <span className="truncate max-w-[120px]">
-                              {quiz.profiles?.full_name || quiz.profiles?.email?.split('@')[0] || 'Anonymous'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            {new Date(quiz.created_at).toLocaleDateString()}
-                          </div>
-                        </div>
-
-                        <Button
-                          onClick={() => startQuiz(quiz)}
-                          disabled={loading}
-                          className="w-full font-retro group-hover:shadow-lg transition-all"
-                          variant="outline"
+            {/* Quizzes Grid */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredQuizzes.map(quiz => {
+                const isPublic = quiz.is_public;
+                const isMine = quiz.creator_id === user?.id;
+                
+                return (
+                  <Card
+                    key={quiz.id}
+                    className="group hover:scale-105 transition-all duration-300 border-2 border-primary/20 hover:border-primary/50 bg-card/90 backdrop-blur-sm hover:shadow-neon"
+                  >
+                    <CardHeader className="space-y-2 pb-3">
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant={isPublic ? "default" : "secondary"} 
+                          className="font-retro text-xs"
                         >
-                          <Play className="w-4 h-4 mr-2" />
-                          START QUIZ
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {filteredPublicQuizzes.length === 0 && publicSearchTerm && (
-                  <div className="text-center py-20">
-                    <Search className="w-20 h-20 mx-auto text-muted-foreground/50 mb-6" />
-                    <h3 className="font-retro text-2xl glow-text mb-3">No Results Found</h3>
-                    <p className="font-retro text-muted-foreground">
-                      Try adjusting your search terms
-                    </p>
-                  </div>
-                )}
-
-                {publicQuizzes.length === 0 && !publicSearchTerm && (
-                  <div className="text-center py-20">
-                    <Brain className="w-20 h-20 mx-auto text-muted-foreground/50 mb-6" />
-                    <h3 className="font-retro text-2xl glow-text mb-3">No Public Quizzes Yet</h3>
-                    <p className="font-retro text-muted-foreground mb-6">
-                      Be the first to create a public quiz!
-                    </p>
-                    <Button
-                      onClick={() => document.querySelector('[value="create-quiz"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
-                      className="font-retro"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Quiz
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
-
-              {/* Private Quizzes */}
-              <TabsContent value="private" className="mt-6 space-y-6">
-                <div className="max-w-2xl mx-auto">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                    <Input
-                      placeholder="Search your private quizzes..."
-                      value={privateSearchTerm}
-                      onChange={e => setPrivateSearchTerm(e.target.value)}
-                      className="pl-12 font-retro h-12 text-base"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {filteredPrivateQuizzes.map(quiz => (
-                    <Card
-                      key={quiz.id}
-                      className="group hover:shadow-neon transition-all duration-300 border-2 border-accent/30 hover:border-accent/60 bg-card/80 backdrop-blur-sm"
-                    >
-                      <CardHeader className="space-y-3">
-                        <Badge variant="secondary" className="font-retro w-fit">
-                          <Lock className="w-3 h-3 mr-1" />
-                          PRIVATE
+                          {isPublic ? <Globe className="w-3 h-3 mr-1" /> : <Lock className="w-3 h-3 mr-1" />}
+                          {isPublic ? 'PUBLIC' : 'PRIVATE'}
                         </Badge>
-                        <CardTitle className="font-retro text-xl glow-text line-clamp-2 min-h-[3.5rem]">
-                          {quiz.title}
-                        </CardTitle>
-                        <CardDescription className="font-retro text-sm line-clamp-3 min-h-[4rem]">
-                          {quiz.description || 'No description available'}
-                        </CardDescription>
-                      </CardHeader>
+                        {isMine && (
+                          <Badge variant="outline" className="font-retro text-xs">
+                            YOURS
+                          </Badge>
+                        )}
+                      </div>
+                      <CardTitle className="font-retro text-lg glow-text line-clamp-2 leading-tight">
+                        {quiz.title}
+                      </CardTitle>
+                    </CardHeader>
 
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center text-xs font-retro text-muted-foreground">
-                          <Clock className="w-4 h-4 mr-2" />
-                          {new Date(quiz.created_at).toLocaleDateString()}
+                    <CardContent className="space-y-3 pt-0">
+                      <CardDescription className="font-retro text-xs line-clamp-2 min-h-[2.5rem]">
+                        {quiz.description || 'No description'}
+                      </CardDescription>
+
+                      <div className="flex items-center justify-between text-xs font-retro text-muted-foreground pt-2 border-t border-border/50">
+                        <div className="flex items-center gap-1 truncate flex-1">
+                          <Users className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">
+                            {quiz.profiles?.full_name || quiz.profiles?.email?.split('@')[0] || 'Anonymous'}
+                          </span>
                         </div>
+                      </div>
 
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => startQuiz(quiz)}
-                            disabled={loading}
-                            className="flex-1 font-retro group-hover:shadow-lg transition-all"
-                            variant="outline"
-                          >
-                            <Play className="w-4 h-4 mr-2" />
-                            START
-                          </Button>
-                          <Button
-                            onClick={() => makeQuizPublic(quiz.id)}
-                            size="icon"
-                            variant="ghost"
-                            className="font-retro"
-                            title="Make public"
-                          >
-                            <Globe className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                      <Button
+                        onClick={() => startQuiz(quiz)}
+                        disabled={loading}
+                        className="w-full font-retro h-9"
+                        size="sm"
+                      >
+                        <Play className="w-3 h-3 mr-2" />
+                        START
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
 
-                {filteredPrivateQuizzes.length === 0 && privateSearchTerm && (
-                  <div className="text-center py-20">
-                    <Search className="w-20 h-20 mx-auto text-muted-foreground/50 mb-6" />
-                    <h3 className="font-retro text-2xl glow-text mb-3">No Results Found</h3>
-                    <p className="font-retro text-muted-foreground">
-                      Try adjusting your search terms
-                    </p>
-                  </div>
-                )}
+            {/* Empty States */}
+            {filteredQuizzes.length === 0 && searchTerm && (
+              <div className="text-center py-16">
+                <Search className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+                <h3 className="font-retro text-xl glow-text mb-2">No Results</h3>
+                <p className="font-retro text-muted-foreground text-sm">
+                  Try different search terms
+                </p>
+              </div>
+            )}
 
-                {privateQuizzes.length === 0 && !privateSearchTerm && (
-                  <div className="text-center py-20">
-                    <Lock className="w-20 h-20 mx-auto text-muted-foreground/50 mb-6" />
-                    <h3 className="font-retro text-2xl glow-text mb-3">No Private Quizzes</h3>
-                    <p className="font-retro text-muted-foreground mb-6">
-                      Create your first private quiz to get started!
-                    </p>
-                    <Button
-                      onClick={() => document.querySelector('[value="create-quiz"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
-                      className="font-retro"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Quiz
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+            {allQuizzes.length === 0 && !searchTerm && (
+              <div className="text-center py-16">
+                <Brain className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+                <h3 className="font-retro text-xl glow-text mb-2">No Quizzes Yet</h3>
+                <p className="font-retro text-muted-foreground text-sm mb-6">
+                  Create your first AI-powered quiz!
+                </p>
+                <Button
+                  onClick={() => document.querySelector('[value="create-quiz"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
+                  className="font-retro"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Quiz
+                </Button>
+              </div>
+            )}
           </TabsContent>
 
           {/* Create Quiz Tab */}
           <TabsContent value="create-quiz" className="mt-8">
-            <Card className="border-2 border-primary/50 bg-card/95 backdrop-blur-sm shadow-neon max-w-3xl mx-auto">
-              <CardHeader className="text-center space-y-4">
+            <Card className="max-w-2xl mx-auto border-2 border-accent/50 bg-card/95 backdrop-blur-sm shadow-neon">
+              <CardHeader className="text-center space-y-3">
                 <div className="flex justify-center">
-                  <div className="p-4 rounded-full bg-primary/20">
-                    <Sparkles className="w-12 h-12 text-primary" />
+                  <div className="p-4 rounded-full bg-accent/20">
+                    <Brain className="w-12 h-12 text-accent" />
                   </div>
                 </div>
-                
-                <div className="space-y-2">
-                  <CardTitle className="font-retro text-3xl md:text-4xl glow-text">
-                    CREATE AI QUIZ
-                  </CardTitle>
-                  <CardDescription className="font-retro text-base">
-                    Generate a 10-question multiple choice quiz powered by AI
-                  </CardDescription>
-                </div>
+                <CardTitle className="font-retro text-2xl sm:text-3xl glow-text">
+                  CREATE AI QUIZ
+                </CardTitle>
+                <CardDescription className="font-retro text-sm sm:text-base">
+                  AI will generate questions on your chosen topic
+                </CardDescription>
               </CardHeader>
 
-              <CardContent className="space-y-6">
-                <div className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="title" className="font-retro text-base">
-                      Quiz Title *
-                    </Label>
-                    <Input
-                      id="title"
-                      value={createTitle}
-                      onChange={e => setCreateTitle(e.target.value)}
-                      placeholder="e.g., History of Computing"
-                      className="font-retro h-12 text-base"
-                    />
-                  </div>
+              <CardContent className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="font-retro text-sm">Quiz Title</Label>
+                  <Input
+                    id="title"
+                    placeholder="e.g., World History Quiz"
+                    value={createTitle}
+                    onChange={e => setCreateTitle(e.target.value)}
+                    className="font-retro h-11 bg-background/50"
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="font-retro text-base">
-                      Description (Optional)
-                    </Label>
-                    <Textarea
-                      id="description"
-                      value={createDescription}
-                      onChange={e => setCreateDescription(e.target.value)}
-                      placeholder="Brief description of the quiz content..."
-                      className="font-retro resize-none"
-                      rows={3}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="font-retro text-sm">Description (Optional)</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Brief description..."
+                    value={createDescription}
+                    onChange={e => setCreateDescription(e.target.value)}
+                    className="font-retro min-h-[80px] bg-background/50 resize-none"
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="topic" className="font-retro text-base">
-                      Topic & Details *
-                    </Label>
-                    <Textarea
-                      id="topic"
-                      value={createTopic}
-                      onChange={e => setCreateTopic(e.target.value)}
-                      placeholder="Describe the topic you want the quiz to cover. Be specific about the subject matter, difficulty level, and any particular focus areas..."
-                      className="font-retro resize-none"
-                      rows={5}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="topic" className="font-retro text-sm">Topic / Subject</Label>
+                  <Textarea
+                    id="topic"
+                    placeholder="e.g., Ancient Rome, World War II"
+                    value={createTopic}
+                    onChange={e => setCreateTopic(e.target.value)}
+                    className="font-retro min-h-[100px] bg-background/50 resize-none"
+                  />
                 </div>
 
                 <Button
                   onClick={createQuizWithAI}
-                  disabled={creating || !user}
-                  className="w-full font-retro h-14 text-lg"
+                  disabled={creating || !createTitle.trim() || !createTopic.trim()}
+                  className="w-full font-retro h-12 text-base shadow-lg"
                   size="lg"
                 >
                   {creating ? (
                     <>
                       <Zap className="w-5 h-5 mr-2 animate-pulse" />
-                      GENERATING QUIZ...
+                      GENERATING...
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-5 h-5 mr-2" />
-                      GENERATE WITH AI
+                      GENERATE QUIZ
                     </>
                   )}
                 </Button>
 
-                {!user && (
-                  <p className="text-sm font-retro text-muted-foreground text-center pt-2">
-                    Please sign in to create quizzes
-                  </p>
-                )}
+                <p className="text-xs font-retro text-muted-foreground text-center pt-2">
+                  AI will create 10 multiple choice questions
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
