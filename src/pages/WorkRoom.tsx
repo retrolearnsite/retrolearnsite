@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, ThumbsUp, Lightbulb, Repeat } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import GamificationBadge from '@/components/GamificationBadge';
 import RoomLeaderboard from '@/components/RoomLeaderboard';
 import AIStudyBuddy from '@/components/AIStudyBuddy';
@@ -46,6 +47,7 @@ export default function WorkRoom() {
   const [selectedNoteId, setSelectedNoteId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('chat');
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
 
   const currentRoom = rooms.find(r => r.id === roomId);
 
@@ -348,7 +350,7 @@ export default function WorkRoom() {
               </TabsContent>
 
               {/* Notes Tab */}
-              <TabsContent value="notes">
+              <TabsContent value="notes" className="h-[calc(100vh-400px)] min-h-[500px] overflow-y-auto">
                 <div className="space-y-4">
                   <SharedNoteWall roomId={roomId!} userId={user?.id!} />
                   
@@ -383,12 +385,12 @@ export default function WorkRoom() {
               </TabsContent>
 
               {/* Quizzes Tab */}
-              <TabsContent value="quizzes">
+              <TabsContent value="quizzes" className="h-[calc(100vh-400px)] min-h-[500px] overflow-y-auto">
                 <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
               </TabsContent>
 
               {/* Resources Tab */}
-              <TabsContent value="resources">
+              <TabsContent value="resources" className="h-[calc(100vh-400px)] min-h-[500px] overflow-y-auto">
                 <RoomResources roomId={roomId!} userId={user?.id!} />
               </TabsContent>
             </Tabs>
@@ -418,13 +420,24 @@ export default function WorkRoom() {
                 <RoomLeaderboard roomId={roomId!} />
               </motion.div>
 
-              {/* AI Study Buddy */}
+              {/* AI Study Buddy - Click to open */}
               <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-                <AIStudyBuddy
-                  roomId={roomId!}
-                  userId={user?.id!}
-                  roomMessages={messages}
-                />
+                <Card 
+                  className="border-2 border-accent/50 bg-card/95 backdrop-blur-sm shadow-neon cursor-pointer hover:border-accent transition-all"
+                  onClick={() => setAiDialogOpen(true)}
+                >
+                  <CardHeader>
+                    <CardTitle className="font-retro text-xl glow-text flex items-center gap-2">
+                      <Brain className="w-5 h-5" />
+                      AI STUDY BUDDY
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="font-retro text-sm text-muted-foreground text-center">
+                      Click to open AI assistant
+                    </p>
+                  </CardContent>
+                </Card>
               </motion.div>
 
               {/* Members List */}
@@ -480,6 +493,23 @@ export default function WorkRoom() {
           </motion.div>
         </div>
       </div>
+
+      {/* AI Study Buddy Dialog */}
+      <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
+        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto font-retro">
+          <DialogHeader>
+            <DialogTitle className="font-retro text-2xl glow-text flex items-center gap-2">
+              <Brain className="w-6 h-6" />
+              AI STUDY BUDDY
+            </DialogTitle>
+          </DialogHeader>
+          <AIStudyBuddy
+            roomId={roomId!}
+            userId={user?.id!}
+            roomMessages={messages}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

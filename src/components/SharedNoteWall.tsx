@@ -145,7 +145,7 @@ export default function SharedNoteWall({ roomId, userId }: SharedNoteWallProps) 
               No notes shared yet. Share notes from your Notes page!
             </p>
           ) : (
-            <ScrollArea className="h-[400px]">
+            <ScrollArea className="h-[600px]">
               <div className="space-y-3 pr-4">
                 {notes.map(note => (
                   <div
