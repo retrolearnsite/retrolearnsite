@@ -41,11 +41,23 @@ export default function SharedNoteWall({ roomId, userId }: SharedNoteWallProps) 
   const fetchSharedNotes = async () => {
     setLoading(true);
     
-    const { data: sharedNoteRecords } = await supabase
+    // Fetch shared notes with proper joins
+    const { data: sharedNoteRecords, error: sharedError } = await supabase
       .from('room_shared_notes')
-      .select('note_id')
+      .select(`
+        note_id,
+        shared_by_user_id,
+        shared_at
+      `)
       .eq('room_id', roomId)
       .order('shared_at', { ascending: false });
+
+    if (sharedError) {
+      console.error('Error fetching shared note records:', sharedError);
+      setNotes([]);
+      setLoading(false);
+      return;
+    }
 
     if (!sharedNoteRecords || sharedNoteRecords.length === 0) {
       setNotes([]);
@@ -55,6 +67,7 @@ export default function SharedNoteWall({ roomId, userId }: SharedNoteWallProps) 
 
     const noteIds = sharedNoteRecords.map(r => r.note_id);
     
+    // Fetch the actual note content
     const { data: notesData, error } = await supabase
       .from('notes')
       .select(`
@@ -69,19 +82,29 @@ export default function SharedNoteWall({ roomId, userId }: SharedNoteWallProps) 
       .in('id', noteIds);
 
     if (error) {
-      console.error('Error fetching shared notes:', error);
-    } else {
-      // Get profiles for shared notes
-      const userIds = [...new Set(notesData?.map(n => n.shared_from_user_id).filter(Boolean))];
+      console.error('Error fetching notes:', error);
+      setNotes([]);
+    } else if (notesData) {
+      // Get profiles for the users who shared the notes
+      const userIds = [...new Set(sharedNoteRecords.map(r => r.shared_by_user_id))];
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name, email')
         .in('id', userIds);
 
-      const notesWithProfiles = notesData?.map(note => ({
-        ...note,
-        shared_from_profile: profiles?.find(p => p.id === note.shared_from_user_id)
-      })) || [];
+      // Combine note data with profile information
+      const notesWithProfiles = notesData.map(note => {
+        // Find the sharing record for this note
+        const sharingRecord = sharedNoteRecords.find(r => r.note_id === note.id);
+        // Find the profile of the user who shared it
+        const sharerProfile = profiles?.find(p => p.id === sharingRecord?.shared_by_user_id);
+        
+        return {
+          ...note,
+          shared_from_user_id: sharingRecord?.shared_by_user_id || note.shared_from_user_id,
+          shared_from_profile: sharerProfile
+        };
+      });
 
       setNotes(notesWithProfiles as SharedNote[]);
     }
@@ -100,12 +123,18 @@ export default function SharedNoteWall({ roomId, userId }: SharedNoteWallProps) 
           table: 'room_shared_notes',
           filter: `room_id=eq.${roomId}`
         },
-        () => {
+        (payload) => {
+          console.log('New shared note received:', payload);
           fetchSharedNotes();
-          toast({ title: "New note shared!" });
+          toast({ 
+            title: "New note shared!", 
+            description: "A note has been shared in this room"
+          });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Shared notes subscription status: ${status}`);
+      });
 
     return () => {
       supabase.removeChannel(channel);

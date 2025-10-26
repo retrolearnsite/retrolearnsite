@@ -10,6 +10,8 @@ import { useGamification } from '@/hooks/useGamification';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -48,6 +50,10 @@ export default function WorkRoom() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('chat');
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [ideaDialogOpen, setIdeaDialogOpen] = useState(false);
+  const [ideaInput, setIdeaInput] = useState('');
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const currentRoom = rooms.find(r => r.id === roomId);
 
@@ -123,6 +129,37 @@ export default function WorkRoom() {
     };
   }, [roomId]);
 
+  // Subscribe to notes added to user's library (for private rooms)
+  useEffect(() => {
+    if (!roomId || !user || !currentRoom) return;
+    
+    // Only notify for private rooms
+    if (currentRoom.is_public) return;
+
+    const notesChannel = supabase
+      .channel(`user_notes_${roomId}_${user.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notes',
+        filter: `user_id=eq.${user.id}+AND+shared_from_room_id=eq.${roomId}+AND+is_shared_note=eq.true`
+      }, (payload) => {
+        // Check if this is a shared note from this room
+        if (payload.new.shared_from_room_id === roomId && payload.new.is_shared_note) {
+          toast({
+            title: "New note added to your library!",
+            description: `"${payload.new.title}" has been added to your notes`,
+            duration: 5000,
+          });
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(notesChannel);
+    };
+  }, [roomId, user?.id, currentRoom, toast]);
+
   // Handle tab change
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -169,6 +206,116 @@ export default function WorkRoom() {
     if (room?.code) {
       navigator.clipboard.writeText(room.code);
       toast({ title: "Code copied!", description: "Room code copied to clipboard" });
+    }
+  };
+
+  const handleQuickReaction = async () => {
+    if (!user || !roomId) return;
+    
+    // Send a quick reaction emoji
+    const reactionEmoji = "👍";
+    await sendMessage(reactionEmoji);
+    toast({ title: "Reacted!", description: "Your reaction was sent" });
+  };
+
+  const handleSendIdea = async () => {
+    if (!ideaInput.trim() || !user || !roomId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('room_messages')
+        .insert({
+          room_id: roomId,
+          user_id: user.id,
+          message: ideaInput.trim(),
+          message_type: 'idea'
+        })
+        .select('*')
+        .maybeSingle();
+
+      if (error) throw error;
+
+      // Award XP for sharing idea
+      await supabase.rpc('award_xp', { p_user_id: user.id, p_xp: 5 });
+      await supabase.from('room_xp_activity').insert({
+        room_id: roomId,
+        user_id: user.id,
+        activity_type: 'idea',
+        xp_earned: 5
+      });
+
+      setIdeaInput('');
+      setIdeaDialogOpen(false);
+      toast({ title: "Idea shared!", description: "+5 XP earned" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to share idea", variant: "destructive" });
+    }
+  };
+
+  const handleFileShare = async () => {
+    if (!selectedFile || !user || !roomId) return;
+    
+    // Check file size (10MB limit)
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Please select a file under 10MB", variant: "destructive" });
+      return;
+    }
+
+    try {
+      // Upload file to Supabase Storage
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      
+      const { data: fileData, error: uploadError } = await supabase
+        .storage
+        .from('room-files')
+        .upload(fileName, selectedFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase
+        .storage
+        .from('room-files')
+        .getPublicUrl(fileName);
+
+      // Send message with file link
+      const { error: messageError } = await supabase
+        .from('room_messages')
+        .insert({
+          room_id: roomId,
+          user_id: user.id,
+          message: `📎 ${selectedFile.name}`,
+          message_type: 'file'
+        });
+
+      if (messageError) throw messageError;
+
+      // Store file metadata separately (optional, for better organization)
+      await supabase
+        .from('room_resources')
+        .insert({
+          room_id: roomId,
+          user_id: user.id,
+          resource_type: 'file',
+          title: selectedFile.name,
+          url: publicUrl,
+          content: JSON.stringify({ fileName, fileSize: selectedFile.size })
+        });
+
+      // Award XP
+      await supabase.rpc('award_xp', { p_user_id: user.id, p_xp: 10 });
+      await supabase.from('room_xp_activity').insert({
+        room_id: roomId,
+        user_id: user.id,
+        activity_type: 'file_shared',
+        xp_earned: 10
+      });
+
+      setSelectedFile(null);
+      setShareDialogOpen(false);
+      toast({ title: "File shared!", description: "+10 XP earned" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to share file", variant: "destructive" });
     }
   };
 
@@ -331,15 +478,30 @@ export default function WorkRoom() {
                         </Button>
                       </form>
                       <div className="flex gap-2 mt-2">
-                        <Button variant="ghost" size="sm" className="font-retro text-xs">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="font-retro text-xs"
+                          onClick={handleQuickReaction}
+                        >
                           <ThumbsUp className="w-3 h-3 mr-1" />
                           React
                         </Button>
-                        <Button variant="ghost" size="sm" className="font-retro text-xs">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="font-retro text-xs"
+                          onClick={() => setIdeaDialogOpen(true)}
+                        >
                           <Lightbulb className="w-3 h-3 mr-1" />
                           Idea
                         </Button>
-                        <Button variant="ghost" size="sm" className="font-retro text-xs">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="font-retro text-xs"
+                          onClick={() => setShareDialogOpen(true)}
+                        >
                           <Repeat className="w-3 h-3 mr-1" />
                           Share
                         </Button>
@@ -508,6 +670,96 @@ export default function WorkRoom() {
             userId={user?.id!}
             roomMessages={messages}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Idea Dialog */}
+      <Dialog open={ideaDialogOpen} onOpenChange={setIdeaDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] font-retro">
+          <DialogHeader>
+            <DialogTitle className="font-retro text-2xl glow-text flex items-center gap-2">
+              <Lightbulb className="w-6 h-6" />
+              Share Your Idea
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label className="font-retro mb-2 block">What's your idea?</Label>
+              <Textarea
+                value={ideaInput}
+                onChange={e => setIdeaInput(e.target.value)}
+                placeholder="Share your idea or suggestion..."
+                className="font-retro min-h-[150px]"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleSendIdea}
+                disabled={!ideaInput.trim()}
+                className="flex-1 font-retro"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Share Idea (+5 XP)
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setIdeaDialogOpen(false);
+                  setIdeaInput('');
+                }}
+                className="font-retro"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share File Dialog */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] font-retro">
+          <DialogHeader>
+            <DialogTitle className="font-retro text-2xl glow-text flex items-center gap-2">
+              <Repeat className="w-6 h-6" />
+              Share File (Max 10MB)
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label className="font-retro mb-2 block">Select file to share</Label>
+              <Input
+                type="file"
+                onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                className="font-retro cursor-pointer"
+              />
+              {selectedFile && (
+                <p className="font-retro text-sm text-muted-foreground mt-2">
+                  Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleFileShare}
+                disabled={!selectedFile}
+                className="flex-1 font-retro"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Share File (+10 XP)
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShareDialogOpen(false);
+                  setSelectedFile(null);
+                }}
+                className="font-retro"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

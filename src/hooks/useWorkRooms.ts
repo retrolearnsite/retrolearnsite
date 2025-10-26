@@ -296,33 +296,99 @@ export function useWorkRooms() {
     }
   }
 
-  // Share a note to room - copies to all room members' libraries
+  // Share a note to room
   const shareNoteToRoom = async (roomId: string, noteId: string): Promise<boolean> => {
     if (!user) return false
 
     try {
-      // Use the secure RPC function to share the note
-      const { data: memberCount, error } = await supabase
-        .rpc('share_note_to_room', {
-          p_room_id: roomId,
-          p_note_id: noteId
-        })
+      // Check if note is already shared in this room
+      const { data: existing, error: checkError } = await supabase
+        .from('room_shared_notes')
+        .select('id')
+        .eq('room_id', roomId)
+        .eq('note_id', noteId)
+        .maybeSingle()
 
-      if (error) throw error
+      if (checkError) {
+        console.error('Error checking existing shared note:', checkError)
+      }
 
-      if (memberCount === 0) {
+      if (existing) {
         toast({
-          title: "No recipients",
-          description: "No other members in this room to share with",
+          title: "Already shared",
+          description: "This note has already been shared in this room",
           variant: "destructive",
         })
         return false
       }
 
-      toast({
-        title: "Note shared!",
-        description: `Your note has been added to ${memberCount} member${memberCount > 1 ? 's' : ''} libraries`,
-      })
+      // Get room details to check if it's public or private
+      const { data: room, error: roomError } = await supabase
+        .from('work_rooms')
+        .select('is_public')
+        .eq('id', roomId)
+        .single()
+
+      if (roomError) throw roomError
+
+      // Record the sharing in room_shared_notes for viewing in the wall
+      const { error: insertError } = await supabase
+        .from('room_shared_notes')
+        .insert({
+          room_id: roomId,
+          note_id: noteId,
+          shared_by_user_id: user.id
+        })
+
+      if (insertError) {
+        // If insert fails with unique constraint, note was already shared
+        if (insertError.code === '23505') {
+          toast({
+            title: "Already shared",
+            description: "This note has already been shared in this room",
+            variant: "destructive",
+          })
+          return false
+        }
+        throw insertError
+      }
+
+      // If private room, also copy the note to all room members' libraries
+      let memberCount = 0
+      if (!room.is_public) {
+        // Use the secure RPC function to copy note to members' libraries
+        const { data: count, error: copyError } = await supabase
+          .rpc('share_note_to_room', {
+            p_room_id: roomId,
+            p_note_id: noteId
+          })
+
+        if (copyError) {
+          console.error('Error copying note to libraries:', copyError)
+          // Still show success for sharing to wall even if library copy fails
+        } else {
+          memberCount = count || 0
+        }
+
+        // Notify all members that a note was added to their library (only for private rooms)
+        if (memberCount > 0) {
+          toast({
+            title: "Note shared and added to libraries!",
+            description: `Note added to ${memberCount} member${memberCount > 1 ? 's' : ''} libraries`,
+          })
+        } else {
+          toast({
+            title: "Note shared!",
+            description: "Note is now visible in the room's shared notes",
+          })
+        }
+      } else {
+        // Public room - just show in wall, don't copy to libraries
+        toast({
+          title: "Note shared!",
+          description: "Note is now visible in the room's shared notes",
+        })
+      }
 
       return true
     } catch (error: any) {

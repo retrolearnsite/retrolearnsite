@@ -1,5 +1,10 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Check, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MessageBubbleProps {
   message: any;
@@ -26,14 +31,20 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
     >
       <Avatar className="w-9 h-9 border-2 border-primary/30 shadow-neon">
         <AvatarFallback className="font-retro text-xs bg-gradient-to-br from-primary/20 to-accent/20">
-          {message.user_name?.[0]?.toUpperCase() || '?'}
+          {message.user_name?.[0]?.toUpperCase() || 
+           message.profiles?.full_name?.[0]?.toUpperCase() || 
+           message.profiles?.email?.[0]?.toUpperCase() || 
+           '?'}
         </AvatarFallback>
       </Avatar>
 
       <div className={`flex-1 space-y-1 ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
         <div className="flex items-center gap-2">
           <span className="font-retro text-sm font-bold glow-text">
-            {message.user_name || 'Unknown'}
+            {message.user_name || 
+             message.profiles?.full_name || 
+             message.profiles?.email?.split('@')[0] || 
+             'Unknown'}
           </span>
           {isOnline && (
             <motion.div

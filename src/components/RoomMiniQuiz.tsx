@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -40,6 +41,7 @@ export default function RoomMiniQuiz({ roomId, userId }: RoomMiniQuizProps) {
 
   // Create quiz state
   const [creating, setCreating] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newQuestions, setNewQuestions] = useState<Question[]>([
     { question: '', options: ['', '', '', ''], correct: 0 }
@@ -90,10 +92,12 @@ export default function RoomMiniQuiz({ roomId, userId }: RoomMiniQuizProps) {
 
     if (error) {
       toast({ title: "Error creating quiz", description: error.message, variant: "destructive" });
+      setCreating(false);
     } else {
       toast({ title: "Quiz created!" });
       setNewTitle('');
       setNewQuestions([{ question: '', options: ['', '', '', ''], correct: 0 }]);
+      setDialogOpen(false);
       fetchQuizzes();
       
       // Award XP
@@ -104,8 +108,8 @@ export default function RoomMiniQuiz({ roomId, userId }: RoomMiniQuizProps) {
         activity_type: 'quiz_created',
         xp_earned: 20
       });
+      setCreating(false);
     }
-    setCreating(false);
   };
 
   const startQuiz = (quiz: MiniQuiz) => {
@@ -289,14 +293,22 @@ export default function RoomMiniQuiz({ roomId, userId }: RoomMiniQuizProps) {
             <Brain className="w-5 h-5 inline mr-2" />
             MINI QUIZZES
           </CardTitle>
-          <Dialog>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="font-retro">
+              <Button 
+                size="sm" 
+                className="font-retro" 
+                onClick={() => {
+                  setNewTitle('');
+                  setNewQuestions([{ question: '', options: ['', '', '', ''], correct: 0 }]);
+                  setDialogOpen(true);
+                }}
+              >
                 <Plus className="w-4 h-4 mr-1" />
                 Create
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] font-retro">
+            <DialogContent className="sm:max-w-[700px] font-retro max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="font-retro text-2xl glow-text">Create Mini Quiz</DialogTitle>
               </DialogHeader>
@@ -310,16 +322,93 @@ export default function RoomMiniQuiz({ roomId, userId }: RoomMiniQuizProps) {
                     className="font-retro"
                   />
                 </div>
-                <Button
-                  onClick={createQuiz}
-                  disabled={creating}
-                  className="w-full font-retro"
-                >
-                  {creating ? 'Creating...' : 'Create Quiz (+20 XP)'}
-                </Button>
-                <p className="text-xs font-retro text-muted-foreground text-center">
-                  Note: For simplicity, use the main Quizzes page to create full quizzes with AI
-                </p>
+
+                {/* Questions */}
+                <div className="space-y-3">
+                  <Label className="font-retro">Questions</Label>
+                  {newQuestions.map((q, idx) => (
+                    <Card key={idx} className="p-4 border-2 border-primary/20 bg-muted/10">
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="font-retro text-xs">Question {idx + 1}</Label>
+                          <Textarea
+                            value={q.question}
+                            onChange={e => {
+                              const updated = [...newQuestions];
+                              updated[idx].question = e.target.value;
+                              setNewQuestions(updated);
+                            }}
+                            placeholder="Enter your question here..."
+                            className="font-retro min-h-[60px] mt-1"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="font-retro text-xs">Answer Options</Label>
+                          {q.options.map((opt, optIdx) => (
+                            <div key={optIdx} className="flex items-center gap-2">
+                              <RadioGroup
+                                value={q.correct === optIdx ? 'correct' : 'wrong'}
+                                onValueChange={(val) => {
+                                  const updated = [...newQuestions];
+                                  updated[idx].correct = val === 'correct' ? optIdx : q.correct;
+                                  setNewQuestions(updated);
+                                }}
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="correct" id={`q${idx}-opt${optIdx}`} />
+                                  <Label htmlFor={`q${idx}-opt${optIdx}`} className="font-retro text-xs cursor-pointer">✓ Correct</Label>
+                                </div>
+                              </RadioGroup>
+                              <Input
+                                value={opt}
+                                onChange={e => {
+                                  const updated = [...newQuestions];
+                                  updated[idx].options[optIdx] = e.target.value;
+                                  setNewQuestions(updated);
+                                }}
+                                placeholder={`Option ${optIdx + 1}`}
+                                className="font-retro flex-1"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setNewQuestions([...newQuestions, { question: '', options: ['', '', '', ''], correct: 0 }]);
+                    }}
+                    className="w-full font-retro"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add Question
+                  </Button>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={createQuiz}
+                    disabled={creating || !newTitle.trim() || newQuestions.some(q => !q.question.trim() || !q.options.every(o => o.trim()))}
+                    className="flex-1 font-retro"
+                  >
+                    {creating ? 'Creating...' : 'Create Quiz (+20 XP)'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setNewTitle('');
+                      setNewQuestions([{ question: '', options: ['', '', '', ''], correct: 0 }]);
+                    }}
+                    className="font-retro"
+                  >
+                    Reset
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
