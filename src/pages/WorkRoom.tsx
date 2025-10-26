@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, Zap, ThumbsUp, Lightbulb, Repeat } from 'lucide-react';
+import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, Zap, ThumbsUp, Lightbulb, Repeat, ArrowDown } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from '@/hooks/use-toast';
 import GamificationBadge from '@/components/GamificationBadge';
@@ -142,6 +142,11 @@ export default function WorkRoom() {
     
     // Enable auto-scroll if within 100px of bottom
     setShouldAutoScroll(distanceFromBottom < 100);
+  };
+
+  const scrollToLatest = () => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setShouldAutoScroll(true);
   };
 
   // Handle tab change
@@ -306,7 +311,7 @@ export default function WorkRoom() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-0 flex flex-col min-h-0">
+                  <CardContent className="p-0 flex flex-col min-h-0 relative">
                     <div 
                       ref={chatScrollRef}
                       onScroll={handleChatScroll}
@@ -338,9 +343,16 @@ export default function WorkRoom() {
                         </AnimatePresence>
                         <div ref={bottomRef} />
                       </div>
-                    </div>
-
-                    <div className="p-4 border-t border-border/50 bg-muted/20">
+                      </div>
+                      <div className="absolute bottom-24 right-4 z-10" aria-hidden={shouldAutoScroll}>
+                        {!shouldAutoScroll && (
+                          <Button size="sm" variant="secondary" className="font-retro shadow-neon" onClick={scrollToLatest}>
+                            <ArrowDown className="w-4 h-4 mr-2" />
+                            Scroll to latest
+                          </Button>
+                        )}
+                      </div>
+                      <div className="p-4 border-t border-border/50 bg-muted/20">
                       <form onSubmit={handleSendMessage} className="flex gap-2">
                         <Input
                           value={messageInput}
