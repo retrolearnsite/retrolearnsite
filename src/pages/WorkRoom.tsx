@@ -47,6 +47,8 @@ export default function WorkRoom() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('chat');
   const bottomRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   const currentRoom = rooms.find(r => r.id === roomId);
 
@@ -122,15 +124,25 @@ export default function WorkRoom() {
     };
   }, [roomId]);
 
-  // Simple auto-scroll to bottom on new messages (only for chat)
+  // Smart auto-scroll: only scroll to bottom if user is already near bottom
   useEffect(() => {
-    if (activeTab === 'chat' && messages.length > 0) {
-      // Simple auto-scroll without any interference
+    if (activeTab === 'chat' && messages.length > 0 && shouldAutoScroll) {
       setTimeout(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
-  }, [messages, activeTab]);
+  }, [messages, activeTab, shouldAutoScroll]);
+
+  // Detect if user is near bottom of chat
+  const handleChatScroll = () => {
+    if (!chatScrollRef.current) return;
+    
+    const { scrollTop, scrollHeight, clientHeight } = chatScrollRef.current;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    
+    // Enable auto-scroll if within 100px of bottom
+    setShouldAutoScroll(distanceFromBottom < 100);
+  };
 
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -294,8 +306,12 @@ export default function WorkRoom() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="h-[500px] px-4 overflow-y-auto scroll-smooth">
+                  <CardContent className="p-0 flex flex-col min-h-0">
+                    <div 
+                      ref={chatScrollRef}
+                      onScroll={handleChatScroll}
+                      className="flex-1 max-h-[70vh] px-4 overflow-y-auto scroll-smooth"
+                    >
                       <div className="space-y-4 py-4">
                         <AnimatePresence initial={false}>
                           {messages.length === 0 ? (
