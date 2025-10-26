@@ -45,6 +45,7 @@ export default function WorkRoom() {
   const [messageInput, setMessageInput] = useState('');
   const [selectedNoteId, setSelectedNoteId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('chat');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const currentRoom = rooms.find(r => r.id === roomId);
@@ -121,10 +122,20 @@ export default function WorkRoom() {
     };
   }, [roomId]);
 
-  // Auto-scroll to bottom on new messages
+  // Simple auto-scroll to bottom on new messages (only for chat)
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (activeTab === 'chat' && messages.length > 0) {
+      // Simple auto-scroll without any interference
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages, activeTab]);
+
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,317 +186,311 @@ export default function WorkRoom() {
   }
 
   return (
-    <div className="min-h-full bg-gradient-terminal">
-      <div className="relative z-10 h-full min-h-0 flex flex-col">
-        {/* Top Bar */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="flex-shrink-0 border-b-2 border-primary/30 bg-card/95 backdrop-blur-xl"
-        >
-          <div className="max-w-[1800px] mx-auto px-4 md:px-6 py-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/workrooms')}
-                  className="font-retro hover:glow-border"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Button>
-                
-                <div className="flex items-center gap-3">
-                  <h1 className="text-xl md:text-2xl font-retro font-bold glow-text">
-                    {room.name}
-                  </h1>
-                  {room.is_public && (
-                    <Badge className="font-retro animate-pulse">
-                      <Sparkles className="w-3 h-3 mr-1" />
-                      PUBLIC
-                    </Badge>
-                  )}
-                  {room.subject_tags && room.subject_tags.length > 0 && (
-                    <div className="hidden md:flex gap-1">
-                      {room.subject_tags.slice(0, 2).map(tag => (
-                        <Badge key={tag} variant="outline" className="font-retro text-xs">
-                          #{tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
+    <div className="min-h-screen bg-gradient-terminal">
+      {/* Top Bar */}
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-50 border-b-2 border-primary/30 bg-card/95 backdrop-blur-xl"
+      >
+        <div className="max-w-[1800px] mx-auto px-4 md:px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/workrooms')}
+                className="font-retro hover:glow-border"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              
               <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="font-retro">
-                  <Users className="w-4 h-4 mr-1" />
-                  <span className="hidden sm:inline">{members.length} members • </span>
-                  <span className="text-green-500">{onlineUsers.size} online</span>
-                </Badge>
-                {!room.is_public && room.code && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={copyRoomCode}
-                    className="font-retro hidden md:flex"
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    {room.code}
-                  </Button>
+                <h1 className="text-xl md:text-2xl font-retro font-bold glow-text">
+                  {room.name}
+                </h1>
+                {room.is_public && (
+                  <Badge className="font-retro animate-pulse">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    PUBLIC
+                  </Badge>
+                )}
+                {room.subject_tags && room.subject_tags.length > 0 && (
+                  <div className="hidden md:flex gap-1">
+                    {room.subject_tags.slice(0, 2).map(tag => (
+                      <Badge key={tag} variant="outline" className="font-retro text-xs">
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
-          </div>
-        </motion.div>
 
-        {/* Main Content - 3 Column Layout */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          <div className="max-w-[1800px] mx-auto h-full px-2 md:px-4 py-4">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full min-h-0">
-              {/* Main Panel - Chat & Features */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="lg:col-span-8 xl:col-span-9 flex flex-col h-full min-h-0"
-              >
-                <Tabs defaultValue="chat" className="flex flex-col h-full">
-                  <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card/90 backdrop-blur-sm border-2 border-primary/30 shadow-neon">
-                    <TabsTrigger value="chat" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                      <MessageCircle className="w-4 h-4 mr-1" />
-                      <span className="hidden sm:inline">Chat</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="notes" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                      <FileText className="w-4 h-4 mr-1" />
-                      <span className="hidden sm:inline">Notes</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="quizzes" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                      <Brain className="w-4 h-4 mr-1" />
-                      <span className="hidden sm:inline">Quizzes</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="resources" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                      <Pin className="w-4 h-4 mr-1" />
-                      <span className="hidden sm:inline">Pinned</span>
-                    </TabsTrigger>
-                  </TabsList>
-
-                  {/* Chat Tab */}
-                  <TabsContent value="chat" className="flex-1 mt-4 data-[state=active]:flex flex-col min-h-0">
-                    <Card className="flex-1 flex flex-col border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon overflow-hidden">
-                      <CardHeader className="flex-shrink-0 border-b border-border/50">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="font-retro text-lg glow-text flex items-center gap-2">
-                            <MessageCircle className="w-5 h-5" />
-                            LIVE CHAT
-                          </CardTitle>
-                          <Badge variant={connectionStatus === 'connected' ? 'default' : 'secondary'} className="font-retro text-xs animate-pulse">
-                            {connectionStatus === 'connected' ? '● Connected' : 'Connecting...'}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden min-h-0">
-                        <ScrollArea className="flex-1 px-4">
-                          <div className="space-y-4 py-4">
-                            <AnimatePresence initial={false}>
-                              {messages.length === 0 ? (
-                                <motion.div
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  className="text-center py-12"
-                                >
-                                  <MessageCircle className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-                                  <p className="font-retro text-sm text-muted-foreground">
-                                    No messages yet. Start the conversation!
-                                  </p>
-                                </motion.div>
-                              ) : (
-                                messages.map((msg: any) => (
-                                  <MessageBubble
-                                    key={msg.id}
-                                    message={msg}
-                                    isOnline={onlineUsers.has(msg.user_id)}
-                                    isOwn={msg.user_id === user?.id}
-                                  />
-                                ))
-                              )}
-                            </AnimatePresence>
-                            <div ref={bottomRef} />
-                          </div>
-                        </ScrollArea>
-
-                        <div className="flex-shrink-0 p-4 border-t border-border/50 bg-muted/20">
-                          <form onSubmit={handleSendMessage} className="flex gap-2">
-                            <Input
-                              value={messageInput}
-                              onChange={e => setMessageInput(e.target.value)}
-                              placeholder="Type a message... (+2 XP)"
-                              className="font-retro flex-1 bg-background/50 border-2 border-primary/30 focus:border-primary/60 h-12"
-                            />
-                            <Button
-                              type="submit"
-                              disabled={!messageInput.trim()}
-                              className="font-retro px-6 h-12"
-                              size="lg"
-                            >
-                              <Send className="w-5 h-5" />
-                            </Button>
-                          </form>
-                          <div className="flex gap-2 mt-2">
-                            <Button variant="ghost" size="sm" className="font-retro text-xs">
-                              <ThumbsUp className="w-3 h-3 mr-1" />
-                              React
-                            </Button>
-                            <Button variant="ghost" size="sm" className="font-retro text-xs">
-                              <Lightbulb className="w-3 h-3 mr-1" />
-                              Idea
-                            </Button>
-                            <Button variant="ghost" size="sm" className="font-retro text-xs">
-                              <Repeat className="w-3 h-3 mr-1" />
-                              Share
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-
-                  {/* Notes Tab */}
-                  <TabsContent value="notes" className="flex-1 mt-4 data-[state=active]:flex flex-col space-y-4 min-h-0">
-                    <div className="flex-1 overflow-y-auto">
-                      <SharedNoteWall roomId={roomId!} userId={user?.id!} />
-                    </div>
-                    
-                    <Card className="flex-shrink-0 border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
-                      <CardHeader>
-                        <CardTitle className="font-retro text-lg glow-text">Share Your Note</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <Select value={selectedNoteId} onValueChange={setSelectedNoteId}>
-                          <SelectTrigger className="font-retro border-2 border-primary/30">
-                            <SelectValue placeholder="Select a note to share" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {notes.map(note => (
-                              <SelectItem key={note.id} value={note.id} className="font-retro">
-                                {note.title}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          onClick={handleShareNote}
-                          disabled={!selectedNoteId}
-                          className="w-full font-retro"
-                        >
-                          <Share className="w-4 h-4 mr-2" />
-                          Share to Room (+10 XP)
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-
-                  {/* Quizzes Tab */}
-                  <TabsContent value="quizzes" className="flex-1 mt-4 overflow-y-auto min-h-0">
-                    <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
-                  </TabsContent>
-
-                  {/* Resources Tab */}
-                  <TabsContent value="resources" className="flex-1 mt-4 overflow-y-auto min-h-0">
-                    <RoomResources roomId={roomId!} userId={user?.id!} />
-                  </TabsContent>
-                </Tabs>
-              </motion.div>
-
-              {/* Right Sidebar - AI & Gamification */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="lg:col-span-4 xl:col-span-3 hidden lg:block min-h-0"
-              >
-                <ScrollArea className="h-full">
-                  <div className="space-y-4 pr-2">
-                    {/* User Gamification */}
-                    {gamification && (
-                      <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-                        <GamificationBadge
-                          level={gamification.level}
-                          totalXp={gamification.total_xp}
-                          badges={gamification.badges}
-                        />
-                      </motion.div>
-                    )}
-
-                    {/* Leaderboard */}
-                    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-                      <RoomLeaderboard roomId={roomId!} />
-                    </motion.div>
-
-                    {/* AI Study Buddy */}
-                    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-                      <AIStudyBuddy
-                        roomId={roomId!}
-                        userId={user?.id!}
-                        roomMessages={messages}
-                      />
-                    </motion.div>
-
-                    {/* Members List */}
-                    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-                      <Card className="border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
-                        <CardHeader>
-                          <CardTitle className="font-retro text-lg glow-text">
-                            <Users className="w-5 h-5 inline mr-2" />
-                            MEMBERS ({members.length})
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <ScrollArea className="h-[200px]">
-                            <div className="space-y-2 pr-2">
-                              {members.map((member: any) => (
-                                <motion.div
-                                  key={member.id}
-                                  whileHover={{ x: 4 }}
-                                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 border border-border/30"
-                                >
-                                  <Avatar className="w-8 h-8 border-2 border-primary/30">
-                                    <AvatarFallback className="font-retro text-xs bg-gradient-to-br from-primary/20 to-accent/20">
-                                      {member.profiles?.full_name?.[0]?.toUpperCase() ||
-                                       member.profiles?.email?.[0]?.toUpperCase() ||
-                                       '?'}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-retro text-sm font-bold truncate">
-                                      {member.profiles?.full_name ||
-                                       member.profiles?.email?.split('@')[0] ||
-                                       'Unknown'}
-                                    </p>
-                                    <p className="font-retro text-xs text-muted-foreground">
-                                      {member.role === 'admin' ? '👑 Admin' : 'Member'}
-                                    </p>
-                                  </div>
-                                  {onlineUsers.has(member.user_id) && (
-                                    <motion.div
-                                      animate={{ scale: [1, 1.2, 1] }}
-                                      transition={{ duration: 2, repeat: Infinity }}
-                                      className="w-2 h-2 bg-green-500 rounded-full shadow-green"
-                                    />
-                                  )}
-                                </motion.div>
-                              ))}
-                            </div>
-                          </ScrollArea>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  </div>
-                </ScrollArea>
-              </motion.div>
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="font-retro">
+                <Users className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">{members.length} members • </span>
+                <span className="text-green-500">{onlineUsers.size} online</span>
+              </Badge>
+              {!room.is_public && room.code && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyRoomCode}
+                  className="font-retro hidden md:flex"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  {room.code}
+                </Button>
+              )}
             </div>
           </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="max-w-[1800px] mx-auto px-2 md:px-4 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Main Panel - Chat & Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-8 xl:col-span-9"
+          >
+            <Tabs defaultValue="chat" value={activeTab} onValueChange={handleTabChange}>
+              <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card/90 backdrop-blur-sm border-2 border-primary/30 shadow-neon mb-4">
+                <TabsTrigger value="chat" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  <span className="hidden sm:inline">Chat</span>
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                  <FileText className="w-4 h-4 mr-1" />
+                  <span className="hidden sm:inline">Notes</span>
+                </TabsTrigger>
+                <TabsTrigger value="quizzes" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                  <Brain className="w-4 h-4 mr-1" />
+                  <span className="hidden sm:inline">Quizzes</span>
+                </TabsTrigger>
+                <TabsTrigger value="resources" className="font-retro py-3 data-[state=active]:bg-primary/20">
+                  <Pin className="w-4 h-4 mr-1" />
+                  <span className="hidden sm:inline">Pinned</span>
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Chat Tab */}
+              <TabsContent value="chat">
+                <Card className="border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
+                  <CardHeader className="border-b border-border/50">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="font-retro text-lg glow-text flex items-center gap-2">
+                        <MessageCircle className="w-5 h-5" />
+                        LIVE CHAT
+                      </CardTitle>
+                      <Badge variant={connectionStatus === 'connected' ? 'default' : 'secondary'} className="font-retro text-xs animate-pulse">
+                        {connectionStatus === 'connected' ? '● Connected' : 'Connecting...'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="h-[500px] px-4 overflow-y-auto scroll-smooth">
+                      <div className="space-y-4 py-4">
+                        <AnimatePresence initial={false}>
+                          {messages.length === 0 ? (
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="text-center py-12"
+                            >
+                              <MessageCircle className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+                              <p className="font-retro text-sm text-muted-foreground">
+                                No messages yet. Start the conversation!
+                              </p>
+                            </motion.div>
+                          ) : (
+                            messages.map((msg: any) => (
+                              <MessageBubble
+                                key={msg.id}
+                                message={msg}
+                                isOnline={onlineUsers.has(msg.user_id)}
+                                isOwn={msg.user_id === user?.id}
+                              />
+                            ))
+                          )}
+                        </AnimatePresence>
+                        <div ref={bottomRef} />
+                      </div>
+                    </div>
+
+                    <div className="p-4 border-t border-border/50 bg-muted/20">
+                      <form onSubmit={handleSendMessage} className="flex gap-2">
+                        <Input
+                          value={messageInput}
+                          onChange={e => setMessageInput(e.target.value)}
+                          placeholder="Type a message... (+2 XP)"
+                          className="font-retro flex-1 bg-background/50 border-2 border-primary/30 focus:border-primary/60 h-12"
+                        />
+                        <Button
+                          type="submit"
+                          disabled={!messageInput.trim()}
+                          className="font-retro px-6 h-12"
+                          size="lg"
+                        >
+                          <Send className="w-5 h-5" />
+                        </Button>
+                      </form>
+                      <div className="flex gap-2 mt-2">
+                        <Button variant="ghost" size="sm" className="font-retro text-xs">
+                          <ThumbsUp className="w-3 h-3 mr-1" />
+                          React
+                        </Button>
+                        <Button variant="ghost" size="sm" className="font-retro text-xs">
+                          <Lightbulb className="w-3 h-3 mr-1" />
+                          Idea
+                        </Button>
+                        <Button variant="ghost" size="sm" className="font-retro text-xs">
+                          <Repeat className="w-3 h-3 mr-1" />
+                          Share
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Notes Tab */}
+              <TabsContent value="notes">
+                <div className="space-y-4">
+                  <SharedNoteWall roomId={roomId!} userId={user?.id!} />
+                  
+                  <Card className="border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
+                    <CardHeader>
+                      <CardTitle className="font-retro text-lg glow-text">Share Your Note</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Select value={selectedNoteId} onValueChange={setSelectedNoteId}>
+                        <SelectTrigger className="font-retro border-2 border-primary/30">
+                          <SelectValue placeholder="Select a note to share" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {notes.map(note => (
+                            <SelectItem key={note.id} value={note.id} className="font-retro">
+                              {note.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        onClick={handleShareNote}
+                        disabled={!selectedNoteId}
+                        className="w-full font-retro"
+                      >
+                        <Share className="w-4 h-4 mr-2" />
+                        Share to Room (+10 XP)
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              {/* Quizzes Tab */}
+              <TabsContent value="quizzes">
+                <RoomMiniQuiz roomId={roomId!} userId={user?.id!} />
+              </TabsContent>
+
+              {/* Resources Tab */}
+              <TabsContent value="resources">
+                <RoomResources roomId={roomId!} userId={user?.id!} />
+              </TabsContent>
+            </Tabs>
+          </motion.div>
+
+          {/* Right Sidebar - AI & Gamification */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-4 xl:col-span-3 hidden lg:block"
+          >
+            <div className="space-y-4">
+              {/* User Gamification */}
+              {gamification && (
+                <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                  <GamificationBadge
+                    level={gamification.level}
+                    totalXp={gamification.total_xp}
+                    badges={gamification.badges}
+                  />
+                </motion.div>
+              )}
+
+              {/* Leaderboard */}
+              <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                <RoomLeaderboard roomId={roomId!} />
+              </motion.div>
+
+              {/* AI Study Buddy */}
+              <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                <AIStudyBuddy
+                  roomId={roomId!}
+                  userId={user?.id!}
+                  roomMessages={messages}
+                />
+              </motion.div>
+
+              {/* Members List */}
+              <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+                <Card className="border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
+                  <CardHeader>
+                    <CardTitle className="font-retro text-lg glow-text">
+                      <Users className="w-5 h-5 inline mr-2" />
+                      MEMBERS ({members.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="max-h-[300px] overflow-y-auto">
+                      <div className="space-y-2 pr-2">
+                        {members.map((member: any) => (
+                          <motion.div
+                            key={member.id}
+                            whileHover={{ x: 4 }}
+                            className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 border border-border/30"
+                          >
+                            <Avatar className="w-8 h-8 border-2 border-primary/30">
+                              <AvatarFallback className="font-retro text-xs bg-gradient-to-br from-primary/20 to-accent/20">
+                                {member.profiles?.full_name?.[0]?.toUpperCase() ||
+                                 member.profiles?.email?.[0]?.toUpperCase() ||
+                                 '?'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-retro text-sm font-bold truncate">
+                                {member.profiles?.full_name ||
+                                 member.profiles?.email?.split('@')[0] ||
+                                 'Unknown'}
+                              </p>
+                              <p className="font-retro text-xs text-muted-foreground">
+                                {member.role === 'admin' ? '👑 Admin' : 'Member'}
+                              </p>
+                            </div>
+                            {onlineUsers.has(member.user_id) && (
+                              <motion.div
+                                animate={{ scale: [1, 1.2, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="w-2 h-2 bg-green-500 rounded-full shadow-green"
+                              />
+                            )}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
