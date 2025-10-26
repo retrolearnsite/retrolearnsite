@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, Zap, ThumbsUp, Lightbulb, Repeat, ArrowDown } from 'lucide-react';
+import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, ThumbsUp, Lightbulb, Repeat } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from '@/hooks/use-toast';
 import GamificationBadge from '@/components/GamificationBadge';
@@ -46,9 +46,6 @@ export default function WorkRoom() {
   const [selectedNoteId, setSelectedNoteId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('chat');
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const chatScrollRef = useRef<HTMLDivElement>(null);
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   const currentRoom = rooms.find(r => r.id === roomId);
 
@@ -123,31 +120,6 @@ export default function WorkRoom() {
       supabase.removeChannel(memberChannel);
     };
   }, [roomId]);
-
-  // Smart auto-scroll: only scroll to bottom if user is already near bottom
-  useEffect(() => {
-    if (activeTab === 'chat' && messages.length > 0 && shouldAutoScroll) {
-      setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  }, [messages, activeTab, shouldAutoScroll]);
-
-  // Detect if user is near bottom of chat
-  const handleChatScroll = () => {
-    if (!chatScrollRef.current) return;
-    
-    const { scrollTop, scrollHeight, clientHeight } = chatScrollRef.current;
-    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-    
-    // Enable auto-scroll if within 100px of bottom
-    setShouldAutoScroll(distanceFromBottom < 100);
-  };
-
-  const scrollToLatest = () => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    setShouldAutoScroll(true);
-  };
 
   // Handle tab change
   const handleTabChange = (value: string) => {
@@ -275,7 +247,7 @@ export default function WorkRoom() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-8 xl:col-span-9"
+            className="lg:col-span-9"
           >
             <Tabs defaultValue="chat" value={activeTab} onValueChange={handleTabChange}>
               <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card/90 backdrop-blur-sm border-2 border-primary/30 shadow-neon mb-4">
@@ -311,12 +283,8 @@ export default function WorkRoom() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-0 flex flex-col min-h-0 relative">
-                    <div 
-                      ref={chatScrollRef}
-                      onScroll={handleChatScroll}
-                      className="flex-1 max-h-[70vh] px-4 overflow-y-auto scroll-smooth"
-                    >
+                  <CardContent className="p-0 flex flex-col min-h-0">
+                    <div className="flex-1 h-[calc(100vh-400px)] min-h-[500px] px-4 overflow-y-auto">
                       <div className="space-y-4 py-4">
                         <AnimatePresence initial={false}>
                           {messages.length === 0 ? (
@@ -341,18 +309,9 @@ export default function WorkRoom() {
                             ))
                           )}
                         </AnimatePresence>
-                        <div ref={bottomRef} />
                       </div>
-                      </div>
-                      <div className="absolute bottom-24 right-4 z-10" aria-hidden={shouldAutoScroll}>
-                        {!shouldAutoScroll && (
-                          <Button size="sm" variant="secondary" className="font-retro shadow-neon" onClick={scrollToLatest}>
-                            <ArrowDown className="w-4 h-4 mr-2" />
-                            Scroll to latest
-                          </Button>
-                        )}
-                      </div>
-                      <div className="p-4 border-t border-border/50 bg-muted/20">
+                    </div>
+                    <div className="p-4 border-t border-border/50 bg-muted/20">
                       <form onSubmit={handleSendMessage} className="flex gap-2">
                         <Input
                           value={messageInput}
@@ -440,7 +399,7 @@ export default function WorkRoom() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="lg:col-span-4 xl:col-span-3 hidden lg:block"
+            className="lg:col-span-3 hidden lg:block"
           >
             <div className="space-y-4">
               {/* User Gamification */}
