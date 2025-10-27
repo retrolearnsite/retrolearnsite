@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { FileText, User, Calendar, Eye, Pin, PinOff } from 'lucide-react';
+import { FileText, User, Calendar, Eye } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useNavigate } from 'react-router-dom';
 
 interface SharedNote {
   id: string;
@@ -25,17 +26,20 @@ interface SharedNote {
 interface SharedNoteWallProps {
   roomId: string;
   userId: string;
+  isPublicRoom: boolean;
 }
 
-export default function SharedNoteWall({ roomId, userId }: SharedNoteWallProps) {
+export default function SharedNoteWall({ roomId, userId, isPublicRoom }: SharedNoteWallProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [notes, setNotes] = useState<SharedNote[]>([]);
   const [selectedNote, setSelectedNote] = useState<SharedNote | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSharedNotes();
-    subscribeToNewNotes();
+    const cleanup = subscribeToNewNotes();
+    return cleanup;
   }, [roomId]);
 
   const fetchSharedNotes = async () => {
@@ -123,13 +127,38 @@ export default function SharedNoteWall({ roomId, userId }: SharedNoteWallProps) 
           table: 'room_shared_notes',
           filter: `room_id=eq.${roomId}`
         },
-        (payload) => {
+        async (payload) => {
           console.log('New shared note received:', payload);
+          const newRecord = payload.new as any;
+          
+          // Only show notification if it's not from the current user
+          if (newRecord.shared_by_user_id !== userId) {
+            if (isPublicRoom) {
+              // Public room - just notify about shared note
+              toast({ 
+                title: "New note shared!", 
+                description: "A note has been shared in this room"
+              });
+            } else {
+              // Private room - notify that it was added to their library
+              toast({ 
+                title: "Note added to your library!", 
+                description: "A note was shared and added to your personal notes",
+                action: (
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => navigate('/notes')}
+                  >
+                    View
+                  </Button>
+                )
+              });
+            }
+          }
+          
+          // Refresh the shared notes list for everyone
           fetchSharedNotes();
-          toast({ 
-            title: "New note shared!", 
-            description: "A note has been shared in this room"
-          });
         }
       )
       .subscribe((status) => {

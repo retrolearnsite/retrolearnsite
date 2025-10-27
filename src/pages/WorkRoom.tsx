@@ -514,7 +514,11 @@ export default function WorkRoom() {
               {/* Notes Tab */}
               <TabsContent value="notes" className="h-[calc(100vh-400px)] min-h-[500px] overflow-y-auto">
                 <div className="space-y-4">
-                  <SharedNoteWall roomId={roomId!} userId={user?.id!} />
+                  <SharedNoteWall 
+                    roomId={roomId!} 
+                    userId={user?.id!} 
+                    isPublicRoom={room?.is_public || false}
+                  />
                   
                   <Card className="border-2 border-primary/30 bg-card/40 backdrop-blur-xl shadow-neon">
                     <CardHeader>
