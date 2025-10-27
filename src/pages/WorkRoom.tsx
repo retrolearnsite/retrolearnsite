@@ -108,26 +108,44 @@ export default function WorkRoom() {
     };
   }, [roomId, user]);
 
-  // Subscribe to room updates
+  // Realtime notifications for shared notes (works across all tabs)
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || !user) return;
 
-    const memberChannel = supabase
-      .channel(`room-members-${roomId}`)
+    const channel = supabase
+      .channel(`room_shared_notes_${roomId}`)
       .on('postgres_changes', {
-        event: '*',
+        event: 'INSERT',
         schema: 'public',
-        table: 'room_members',
+        table: 'room_shared_notes',
         filter: `room_id=eq.${roomId}`
-      }, () => {
-        getRoomMembers(roomId).then(setMembers);
+      }, (payload) => {
+        const rec = payload.new as any;
+        if (rec.shared_by_user_id === user.id) return;
+
+        if (currentRoom?.is_public) {
+          toast({
+            title: 'New note shared!',
+            description: 'A note has been shared in this room',
+          });
+        } else {
+          toast({
+            title: 'Note added to your library!',
+            description: 'A note was added to your Shared Notes',
+            action: (
+              <Button size="sm" variant="outline" onClick={() => navigate('/notes')}>
+                View
+              </Button>
+            ),
+          });
+        }
       })
       .subscribe();
 
     return () => {
-      supabase.removeChannel(memberChannel);
+      supabase.removeChannel(channel);
     };
-  }, [roomId]);
+  }, [roomId, user?.id, currentRoom?.is_public]);
 
   // Subscribe to notes added to user's library (for private rooms)
   useEffect(() => {
