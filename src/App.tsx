@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { EmailConfirmationBanner } from "@/components/EmailConfirmationBanner";
 import Home from "./pages/Home";
 import NoteWizard from "./pages/NoteWizard";
 import Notes from "./pages/Notes";
@@ -38,11 +39,12 @@ const App = () => {
 
   // If user is not authenticated, show pages without sidebar
   if (!user) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <EmailConfirmationBanner />
+        <Toaster />
+        <Sonner />
           <div className="min-h-screen w-full bg-gradient-terminal">
             <main className="flex-1 overflow-y-auto min-h-0">
               <Routes>
@@ -60,6 +62,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <EmailConfirmationBanner />
         <Toaster />
         <Sonner />
         <SidebarProvider defaultOpen={true}>
