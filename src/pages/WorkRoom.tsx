@@ -284,17 +284,26 @@ export default function WorkRoom() {
       const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       
+      console.log('Uploading file:', fileName, 'Size:', selectedFile.size);
+      
       const { data: fileData, error: uploadError } = await supabase
         .storage
         .from('room-files')
         .upload(fileName, selectedFile);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('File uploaded successfully:', fileData);
 
       const { data: { publicUrl } } = supabase
         .storage
         .from('room-files')
         .getPublicUrl(fileName);
+
+      console.log('Public URL:', publicUrl);
 
       // Send message with file link
       const { error: messageError } = await supabase
@@ -306,10 +315,13 @@ export default function WorkRoom() {
           message_type: 'file'
         });
 
-      if (messageError) throw messageError;
+      if (messageError) {
+        console.error('Message error:', messageError);
+        throw messageError;
+      }
 
       // Store file metadata separately (optional, for better organization)
-      await supabase
+      const { error: resourceError } = await supabase
         .from('room_resources')
         .insert({
           room_id: roomId,
@@ -319,6 +331,11 @@ export default function WorkRoom() {
           url: publicUrl,
           content: JSON.stringify({ fileName, fileSize: selectedFile.size })
         });
+
+      if (resourceError) {
+        console.error('Resource error:', resourceError);
+        // Don't throw, this is optional
+      }
 
       // Award XP
       await supabase.rpc('award_xp', { p_user_id: user.id, p_xp: 10 });
@@ -332,8 +349,13 @@ export default function WorkRoom() {
       setSelectedFile(null);
       setShareDialogOpen(false);
       toast({ title: "File shared!", description: "+10 XP earned" });
-    } catch (error) {
-      toast({ title: "Error", description: "Failed to share file", variant: "destructive" });
+    } catch (error: any) {
+      console.error('File share error:', error);
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to share file", 
+        variant: "destructive" 
+      });
     }
   };
 
