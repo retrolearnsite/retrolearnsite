@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Check, X, Lightbulb } from 'lucide-react';
+import { Check, X, Lightbulb, Download, FileIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +27,7 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
   const [userReaction, setUserReaction] = useState<'approve' | 'reject' | null>(null);
   
   const isIdea = message.message_type === 'idea';
+  const isFile = message.message_type === 'file';
   
   const userColors = [
     'from-primary/20 to-primary/5',
@@ -168,6 +169,8 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
               px-4 py-3 rounded-2xl max-w-md
               ${isIdea 
                 ? 'bg-gradient-to-br from-yellow-500/20 via-orange-500/15 to-primary/10 border-2 border-yellow-500/50 shadow-lg shadow-yellow-500/20' 
+                : isFile
+                ? 'bg-gradient-to-br from-blue-500/20 via-cyan-500/15 to-primary/10 border-2 border-blue-500/50 shadow-lg shadow-blue-500/20'
                 : `bg-gradient-to-br ${userColors[colorIndex]} border border-border/50`
               }
               backdrop-blur-sm
@@ -183,9 +186,27 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
                 </Badge>
               </div>
             )}
-            <p className="font-retro text-sm leading-relaxed break-words">
-              {message.message}
-            </p>
+            {isFile ? (
+              <a 
+                href={message.message} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 group"
+              >
+                <FileIcon className="w-8 h-8 text-blue-500" />
+                <div className="flex-1">
+                  <p className="font-retro text-sm font-semibold group-hover:text-blue-400 transition-colors">
+                    {message.file_name || 'Download File'}
+                  </p>
+                  <p className="font-retro text-xs text-muted-foreground">Click to download</p>
+                </div>
+                <Download className="w-5 h-5 text-blue-500 group-hover:translate-y-0.5 transition-transform" />
+              </a>
+            ) : (
+              <p className="font-retro text-sm leading-relaxed break-words">
+                {message.message}
+              </p>
+            )}
           </motion.div>
 
           {/* Reaction buttons for ideas */}

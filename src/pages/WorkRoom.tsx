@@ -311,8 +311,10 @@ export default function WorkRoom() {
         .insert({
           room_id: roomId,
           user_id: user.id,
-          message: `📎 ${selectedFile.name}`,
-          message_type: 'file'
+          message: publicUrl,
+          message_type: 'file',
+          file_url: publicUrl,
+          file_name: selectedFile.name
         });
 
       if (messageError) {
