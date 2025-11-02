@@ -48,8 +48,13 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
         .eq('message_id', message.id);
       
       if (!error && data) {
-        setReactions(data);
-        const myReaction = data.find(r => r.user_id === user?.id);
+        const typedReactions = data.map(r => ({
+          id: r.id,
+          user_id: r.user_id,
+          reaction_type: r.reaction_type as 'approve' | 'reject'
+        }));
+        setReactions(typedReactions);
+        const myReaction = typedReactions.find(r => r.user_id === user?.id);
         setUserReaction(myReaction?.reaction_type || null);
       }
     };
