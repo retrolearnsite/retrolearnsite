@@ -29,6 +29,7 @@ import RoomResources from '@/components/RoomResources';
 import SharedNoteWall from '@/components/SharedNoteWall';
 import { RoomLoadingScreen } from '@/components/RoomLoadingScreen';
 import { MessageBubble } from '@/components/MessageBubble';
+import { ReactionPicker } from '@/components/ReactionPicker';
 
 type WorkRoom = Database['public']['Tables']['work_rooms']['Row'];
 
@@ -54,6 +55,7 @@ export default function WorkRoom() {
   const [ideaInput, setIdeaInput] = useState('');
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 
   const currentRoom = rooms.find(r => r.id === roomId);
 
@@ -227,13 +229,16 @@ export default function WorkRoom() {
     }
   };
 
-  const handleQuickReaction = async () => {
+  const handleQuickReaction = () => {
+    setReactionPickerOpen(true);
+  };
+
+  const handleSelectReaction = async (reactionType: string, emoji: string) => {
     if (!user || !roomId) return;
     
-    // Send a quick reaction emoji
-    const reactionEmoji = "👍";
-    await sendMessage(reactionEmoji);
-    toast({ title: "Reacted!", description: "Your reaction was sent" });
+    // Send the reaction emoji as a message
+    await sendMessage(emoji);
+    toast({ title: "Reacted!", description: `You reacted with ${emoji}` });
   };
 
   const handleSendIdea = async () => {
@@ -808,6 +813,13 @@ export default function WorkRoom() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Reaction Picker Dialog */}
+      <ReactionPicker
+        open={reactionPickerOpen}
+        onOpenChange={setReactionPickerOpen}
+        onSelectReaction={handleSelectReaction}
+      />
     </div>
   );
 }

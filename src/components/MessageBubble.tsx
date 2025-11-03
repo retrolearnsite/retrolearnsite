@@ -236,35 +236,26 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
             )}
           </motion.div>
 
-          {/* Reaction buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-1.5 flex-wrap"
-          >
-            {reactionButtons.map(({ type, icon: Icon, label, color, bgColor, borderColor }) => {
-              const count = getReactionCount(type);
-              const isActive = userReaction === type;
-              
-              return (
-                <Button
-                  key={type}
-                  size="sm"
-                  variant={isActive ? 'default' : 'outline'}
-                  onClick={() => handleReaction(type)}
-                  className={`font-retro text-xs h-7 px-2 ${
-                    isActive 
-                      ? `${bgColor} ${borderColor} ${color} hover:${bgColor}` 
-                      : `${borderColor}/50 ${color} hover:${bgColor}`
-                  }`}
-                  title={label}
-                >
-                  <Icon className="w-3 h-3" />
-                  {count > 0 && <span className="ml-1">{count}</span>}
-                </Button>
-              );
-            })}
-          </motion.div>
+          {/* Display reaction counts if any */}
+          {reactions.length > 0 && (
+            <div className="flex items-center gap-1.5 flex-wrap mt-1">
+              {[...REACTION_TYPES, ...IDEA_REACTIONS].map(({ type, icon: Icon, color }) => {
+                const count = getReactionCount(type);
+                if (count === 0) return null;
+                
+                return (
+                  <Badge
+                    key={type}
+                    variant="outline"
+                    className={`font-retro text-xs px-2 py-0.5 ${color} border-current`}
+                  >
+                    <Icon className="w-3 h-3 mr-1" />
+                    {count}
+                  </Badge>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
