@@ -38,6 +38,21 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
   
   const colorIndex = message.user_id ? message.user_id.charCodeAt(0) % userColors.length : 0;
 
+  // Build a URL that forces download via Supabase (?download=<filename>)
+  const buildDownloadUrl = (url?: string, filename?: string) => {
+    if (!url) return '';
+    try {
+      const u = new URL(url);
+      if (!u.searchParams.has('download')) {
+        u.searchParams.set('download', filename || '1');
+      }
+      return u.toString();
+    } catch {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}download=${encodeURIComponent(filename || '1')}`;
+    }
+  };
+
   // Load reactions for ideas
   useEffect(() => {
     if (!isIdea) return;
@@ -186,23 +201,23 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
                 </Badge>
               </div>
             )}
-            {isFile ? (
-              <a 
-                href={message.message} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 group"
-              >
-                <FileIcon className="w-8 h-8 text-blue-500" />
-                <div className="flex-1">
-                  <p className="font-retro text-sm font-semibold group-hover:text-blue-400 transition-colors">
-                    {message.file_name || 'Download File'}
-                  </p>
-                  <p className="font-retro text-xs text-muted-foreground">Click to download</p>
-                </div>
-                <Download className="w-5 h-5 text-blue-500 group-hover:translate-y-0.5 transition-transform" />
-              </a>
-            ) : (
+              {isFile ? (
+                <a 
+                  href={buildDownloadUrl(message.file_url || message.message, message.file_name)} 
+                  rel="noopener"
+                  download={message.file_name || true}
+                  className="flex items-center gap-3 group"
+                >
+                  <FileIcon className="w-8 h-8 text-blue-500" />
+                  <div className="flex-1">
+                    <p className="font-retro text-sm font-semibold group-hover:text-blue-400 transition-colors">
+                      {message.file_name || 'Download File'}
+                    </p>
+                    <p className="font-retro text-xs text-muted-foreground">Click to download</p>
+                  </div>
+                  <Download className="w-5 h-5 text-blue-500 group-hover:translate-y-0.5 transition-transform" />
+                </a>
+              ) : (
               <p className="font-retro text-sm leading-relaxed break-words">
                 {message.message}
               </p>

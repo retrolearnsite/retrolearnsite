@@ -301,7 +301,7 @@ export default function WorkRoom() {
       const { data: { publicUrl } } = supabase
         .storage
         .from('room-files')
-        .getPublicUrl(fileName);
+        .getPublicUrl(fileName, { download: selectedFile.name });
 
       console.log('Public URL:', publicUrl);
 
