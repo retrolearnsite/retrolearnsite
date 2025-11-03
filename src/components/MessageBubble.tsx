@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Check, X, Lightbulb, Download, FileIcon } from 'lucide-react';
+import { Check, X, Lightbulb, Download, FileIcon, ThumbsUp, Heart, Laugh, PartyPopper, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
@@ -17,14 +17,27 @@ interface MessageBubbleProps {
 interface Reaction {
   id: string;
   user_id: string;
-  reaction_type: 'approve' | 'reject';
+  reaction_type: string;
 }
+
+const REACTION_TYPES = [
+  { type: 'thumbs_up', icon: ThumbsUp, label: 'Like', color: 'text-blue-500', bgColor: 'bg-blue-500/20', borderColor: 'border-blue-500' },
+  { type: 'heart', icon: Heart, label: 'Love', color: 'text-red-500', bgColor: 'bg-red-500/20', borderColor: 'border-red-500' },
+  { type: 'laugh', icon: Laugh, label: 'Funny', color: 'text-yellow-500', bgColor: 'bg-yellow-500/20', borderColor: 'border-yellow-500' },
+  { type: 'celebrate', icon: PartyPopper, label: 'Celebrate', color: 'text-purple-500', bgColor: 'bg-purple-500/20', borderColor: 'border-purple-500' },
+  { type: 'eye', icon: Eye, label: 'Seen', color: 'text-cyan-500', bgColor: 'bg-cyan-500/20', borderColor: 'border-cyan-500' },
+] as const;
+
+const IDEA_REACTIONS = [
+  { type: 'approve', icon: Check, label: 'Approve', color: 'text-green-500', bgColor: 'bg-green-500/20', borderColor: 'border-green-500' },
+  { type: 'reject', icon: X, label: 'Reject', color: 'text-red-500', bgColor: 'bg-red-500/20', borderColor: 'border-red-500' },
+] as const;
 
 export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbleProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [reactions, setReactions] = useState<Reaction[]>([]);
-  const [userReaction, setUserReaction] = useState<'approve' | 'reject' | null>(null);
+  const [userReaction, setUserReaction] = useState<string | null>(null);
   
   const isIdea = message.message_type === 'idea';
   const isFile = message.message_type === 'file';
@@ -53,9 +66,8 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
     }
   };
 
-  // Load reactions for ideas
+  // Load reactions for all messages
   useEffect(() => {
-    if (!isIdea) return;
     
     const fetchReactions = async () => {
       const { data, error } = await supabase
@@ -67,7 +79,7 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
         const typedReactions = data.map(r => ({
           id: r.id,
           user_id: r.user_id,
-          reaction_type: r.reaction_type as 'approve' | 'reject'
+          reaction_type: r.reaction_type
         }));
         setReactions(typedReactions);
         const myReaction = typedReactions.find(r => r.user_id === user?.id);
@@ -93,9 +105,9 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isIdea, message.id, user?.id]);
+  }, [message.id, user?.id]);
 
-  const handleReaction = async (reactionType: 'approve' | 'reject') => {
+  const handleReaction = async (reactionType: string) => {
     if (!user) return;
 
     try {
@@ -138,8 +150,8 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
     }
   };
 
-  const approveCount = reactions.filter(r => r.reaction_type === 'approve').length;
-  const rejectCount = reactions.filter(r => r.reaction_type === 'reject').length;
+  const getReactionCount = (type: string) => reactions.filter(r => r.reaction_type === type).length;
+  const reactionButtons = isIdea ? IDEA_REACTIONS : REACTION_TYPES;
   
   return (
     <motion.div
@@ -224,41 +236,35 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
             )}
           </motion.div>
 
-          {/* Reaction buttons for ideas */}
-          {isIdea && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2"
-            >
-              <Button
-                size="sm"
-                variant={userReaction === 'approve' ? 'default' : 'outline'}
-                onClick={() => handleReaction('approve')}
-                className={`font-retro text-xs h-7 ${
-                  userReaction === 'approve' 
-                    ? 'bg-green-500/20 border-green-500 text-green-500 hover:bg-green-500/30' 
-                    : 'border-green-500/50 text-green-500 hover:bg-green-500/10'
-                }`}
-              >
-                <Check className="w-3 h-3 mr-1" />
-                {approveCount > 0 && approveCount}
-              </Button>
-              <Button
-                size="sm"
-                variant={userReaction === 'reject' ? 'default' : 'outline'}
-                onClick={() => handleReaction('reject')}
-                className={`font-retro text-xs h-7 ${
-                  userReaction === 'reject' 
-                    ? 'bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500/30' 
-                    : 'border-red-500/50 text-red-500 hover:bg-red-500/10'
-                }`}
-              >
-                <X className="w-3 h-3 mr-1" />
-                {rejectCount > 0 && rejectCount}
-              </Button>
-            </motion.div>
-          )}
+          {/* Reaction buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-1.5 flex-wrap"
+          >
+            {reactionButtons.map(({ type, icon: Icon, label, color, bgColor, borderColor }) => {
+              const count = getReactionCount(type);
+              const isActive = userReaction === type;
+              
+              return (
+                <Button
+                  key={type}
+                  size="sm"
+                  variant={isActive ? 'default' : 'outline'}
+                  onClick={() => handleReaction(type)}
+                  className={`font-retro text-xs h-7 px-2 ${
+                    isActive 
+                      ? `${bgColor} ${borderColor} ${color} hover:${bgColor}` 
+                      : `${borderColor}/50 ${color} hover:${bgColor}`
+                  }`}
+                  title={label}
+                >
+                  <Icon className="w-3 h-3" />
+                  {count > 0 && <span className="ml-1">{count}</span>}
+                </Button>
+              );
+            })}
+          </motion.div>
         </div>
       </div>
     </motion.div>
