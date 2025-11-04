@@ -238,7 +238,7 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
 
           {/* Idea reactions - approve/reject buttons */}
           {isIdea && (
-            <div className="flex items-center gap-2 mt-2">
+            <div className={`flex items-center gap-2 ${isOwn ? 'justify-end' : 'justify-start'}`}>
               {IDEA_REACTIONS.map(({ type, icon: Icon, label, color, bgColor, borderColor }) => {
                 const count = getReactionCount(type);
                 const isActive = userReaction === type;
