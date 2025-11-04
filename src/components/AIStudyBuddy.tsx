@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, Send, Sparkles, BookOpen, MessageCircle } from 'lucide-react';
+import { Bot, Send, Sparkles, BookOpen, MessageCircle, MousePointerClick } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface AIStudyBuddyProps {
@@ -12,15 +12,33 @@ interface AIStudyBuddyProps {
   userId: string;
   roomMessages?: any[];
   sharedNotes?: any[];
+  selectedMessage?: string;
+  onClearSelectedMessage?: () => void;
+  onSelectFromChat?: () => void;
 }
 
-export default function AIStudyBuddy({ roomId, userId, roomMessages = [], sharedNotes = [] }: AIStudyBuddyProps) {
+export default function AIStudyBuddy({ 
+  roomId, 
+  userId, 
+  roomMessages = [], 
+  sharedNotes = [],
+  selectedMessage = '',
+  onClearSelectedMessage,
+  onSelectFromChat
+}: AIStudyBuddyProps) {
   const { toast } = useToast();
   const [message, setMessage] = useState('');
   const [contextType, setContextType] = useState<'summary' | 'question' | 'explanation'>('question');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+
+  // Update message when selectedMessage prop changes
+  useEffect(() => {
+    if (selectedMessage) {
+      setMessage(selectedMessage);
+    }
+  }, [selectedMessage]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -158,15 +176,44 @@ export default function AIStudyBuddy({ roomId, userId, roomMessages = [], shared
           </Button>
         </div>
 
+        {/* Select from chat button */}
+        {onSelectFromChat && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSelectFromChat}
+            className="font-retro w-full"
+          >
+            <MousePointerClick className="w-4 h-4 mr-2" />
+            Select Message from Chat
+          </Button>
+        )}
+
         {/* Input */}
         <div className="space-y-2">
+          {selectedMessage && onClearSelectedMessage && (
+            <div className="flex items-center justify-between p-2 bg-primary/10 rounded-lg border border-primary/30">
+              <span className="font-retro text-xs text-muted-foreground">Message selected from chat</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  onClearSelectedMessage();
+                  setMessage('');
+                }}
+                className="h-6 px-2"
+              >
+                Clear
+              </Button>
+            </div>
+          )}
           <Textarea
             placeholder={
               contextType === 'summary' 
                 ? "Ask me to summarize the recent discussion..." 
                 : contextType === 'explanation'
                 ? "What topic would you like me to explain?"
-                : "Ask me anything... or drag a message here!"
+                : "Ask me anything... or select a message from chat!"
             }
             value={message}
             onChange={e => setMessage(e.target.value)}

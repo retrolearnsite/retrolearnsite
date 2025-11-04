@@ -12,6 +12,8 @@ interface MessageBubbleProps {
   message: any;
   isOnline: boolean;
   isOwn?: boolean;
+  isSelectionMode?: boolean;
+  onSelectMessage?: (text: string) => void;
 }
 
 interface Reaction {
@@ -33,7 +35,13 @@ const IDEA_REACTIONS = [
   { type: 'reject', icon: X, label: 'Reject', color: 'text-red-500', bgColor: 'bg-red-500/20', borderColor: 'border-red-500' },
 ] as const;
 
-export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbleProps) {
+export function MessageBubble({ 
+  message, 
+  isOnline, 
+  isOwn = false,
+  isSelectionMode = false,
+  onSelectMessage
+}: MessageBubbleProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [reactions, setReactions] = useState<Reaction[]>([]);
@@ -153,17 +161,26 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
   const getReactionCount = (type: string) => reactions.filter(r => r.reaction_type === type).length;
   const reactionButtons = isIdea ? IDEA_REACTIONS : REACTION_TYPES;
   
+  const handleMessageClick = () => {
+    if (isSelectionMode && !isIdea && !isFile && onSelectMessage) {
+      onSelectMessage(message.message);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'} ${!isIdea && !isFile ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'} ${
+        isSelectionMode && !isIdea && !isFile ? 'cursor-pointer' : !isIdea && !isFile ? 'cursor-grab active:cursor-grabbing' : ''
+      }`}
+      onClick={handleMessageClick}
     >
       <div
-        draggable={!isIdea && !isFile}
+        draggable={!isIdea && !isFile && !isSelectionMode}
         onDragStart={(e: React.DragEvent) => {
-          if (!isIdea && !isFile) {
+          if (!isIdea && !isFile && !isSelectionMode) {
             e.dataTransfer.setData('text/plain', message.message);
             e.dataTransfer.effectAllowed = 'copy';
           }
@@ -201,9 +218,13 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
         
         <div className="space-y-2">
           <motion.div
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: isSelectionMode && !isIdea && !isFile ? 1.05 : 1.02 }}
             className={`
               px-4 py-3 rounded-2xl max-w-md
+              ${isSelectionMode && !isIdea && !isFile 
+                ? 'ring-2 ring-primary animate-pulse' 
+                : ''
+              }
               ${isIdea 
                 ? 'bg-gradient-to-br from-yellow-500/20 via-orange-500/15 to-primary/10 border-2 border-yellow-500/50 shadow-lg shadow-yellow-500/20' 
                 : isFile

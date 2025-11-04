@@ -56,6 +56,8 @@ export default function WorkRoom() {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
+  const [selectMessageMode, setSelectMessageMode] = useState(false);
+  const [selectedMessageForAI, setSelectedMessageForAI] = useState('');
 
   const currentRoom = rooms.find(r => r.id === roomId);
 
@@ -501,6 +503,16 @@ export default function WorkRoom() {
                                 message={msg}
                                 isOnline={onlineUsers.has(msg.user_id)}
                                 isOwn={msg.user_id === user?.id}
+                                isSelectionMode={selectMessageMode}
+                                onSelectMessage={(text) => {
+                                  setSelectedMessageForAI(text);
+                                  setSelectMessageMode(false);
+                                  setAiDialogOpen(true);
+                                  toast({
+                                    title: "Message selected",
+                                    description: "AI Study Buddy opened with your message",
+                                  });
+                                }}
                               />
                             ))
                           )}
@@ -720,6 +732,16 @@ export default function WorkRoom() {
             roomId={roomId!}
             userId={user?.id!}
             roomMessages={messages}
+            selectedMessage={selectedMessageForAI}
+            onClearSelectedMessage={() => setSelectedMessageForAI('')}
+            onSelectFromChat={() => {
+              setAiDialogOpen(false);
+              setSelectMessageMode(true);
+              toast({
+                title: "Select a message",
+                description: "Click on any chat message to ask AI about it",
+              });
+            }}
           />
         </DialogContent>
       </Dialog>
