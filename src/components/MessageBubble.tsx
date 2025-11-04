@@ -236,6 +236,34 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
             )}
           </motion.div>
 
+          {/* Idea reactions - approve/reject buttons */}
+          {isIdea && (
+            <div className="flex items-center gap-2 mt-2">
+              {IDEA_REACTIONS.map(({ type, icon: Icon, label, color, bgColor, borderColor }) => {
+                const count = getReactionCount(type);
+                const isActive = userReaction === type;
+                
+                return (
+                  <Button
+                    key={type}
+                    size="sm"
+                    variant={isActive ? 'default' : 'outline'}
+                    onClick={() => handleReaction(type)}
+                    className={`font-retro text-xs h-8 px-3 ${
+                      isActive 
+                        ? `${bgColor} ${borderColor} ${color} border-2` 
+                        : `${borderColor}/50 ${color} hover:${bgColor}`
+                    }`}
+                    title={label}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {count > 0 && <span className="ml-1.5 font-bold">{count}</span>}
+                  </Button>
+                );
+              })}
+            </div>
+          )}
+
           {/* Display reaction counts if any */}
           {reactions.length > 0 && (
             <div className="flex items-center gap-1.5 flex-wrap mt-1">
