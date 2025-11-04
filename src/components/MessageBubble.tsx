@@ -158,8 +158,18 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}
+      className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'} ${!isIdea && !isFile ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
+      <div
+        draggable={!isIdea && !isFile}
+        onDragStart={(e: React.DragEvent) => {
+          if (!isIdea && !isFile) {
+            e.dataTransfer.setData('text/plain', message.message);
+            e.dataTransfer.effectAllowed = 'copy';
+          }
+        }}
+        className="contents"
+      >
       <Avatar className="w-9 h-9 border-2 border-primary/30 shadow-neon">
         <AvatarFallback className="font-retro text-xs bg-gradient-to-br from-primary/20 to-accent/20">
           {message.user_name?.[0]?.toUpperCase() || 
@@ -285,6 +295,7 @@ export function MessageBubble({ message, isOnline, isOwn = false }: MessageBubbl
             </div>
           )}
         </div>
+      </div>
       </div>
     </motion.div>
   );

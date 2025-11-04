@@ -20,6 +20,30 @@ export default function AIStudyBuddy({ roomId, userId, roomMessages = [], shared
   const [contextType, setContextType] = useState<'summary' | 'question' | 'explanation'>('question');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const messageText = e.dataTransfer.getData('text/plain');
+    if (messageText) {
+      setMessage(messageText);
+      toast({
+        title: "Message added",
+        description: "You can now ask the AI about this message",
+      });
+    }
+  };
 
   const askAI = async () => {
     if (!message.trim()) {
@@ -85,11 +109,21 @@ export default function AIStudyBuddy({ roomId, userId, roomMessages = [], shared
   };
 
   return (
-    <Card className="border-2 border-accent/50 bg-card/95 backdrop-blur-sm shadow-neon">
+    <Card 
+      className={`border-2 backdrop-blur-sm shadow-neon transition-all ${
+        isDragOver 
+          ? 'border-primary bg-primary/10 scale-[1.02]' 
+          : 'border-accent/50 bg-card/95'
+      }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <CardHeader>
         <CardTitle className="font-retro text-xl glow-text flex items-center gap-2">
           <Bot className="w-5 h-5" />
           AI STUDY BUDDY
+          {isDragOver && <Badge className="animate-pulse">Drop here!</Badge>}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -132,7 +166,7 @@ export default function AIStudyBuddy({ roomId, userId, roomMessages = [], shared
                 ? "Ask me to summarize the recent discussion..." 
                 : contextType === 'explanation'
                 ? "What topic would you like me to explain?"
-                : "Ask me anything about your studies..."
+                : "Ask me anything... or drag a message here!"
             }
             value={message}
             onChange={e => setMessage(e.target.value)}
