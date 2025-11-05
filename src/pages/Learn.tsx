@@ -113,18 +113,95 @@ const Learn = () => {
     if (!searchQuery) return;
 
     setIsLoading(true);
+    setResult(null); // Clear previous result for clean streaming display
+    
     try {
-      const { data, error } = await supabase.functions.invoke('explore-topic', {
-        body: { topic: searchQuery }
-      });
+      // Use streaming for real-time content display
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/explore-topic`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ topic: searchQuery, stream: true }),
+        }
+      );
 
-      if (error) throw error;
+      if (!response.ok || !response.body) {
+        throw new Error('Failed to start stream');
+      }
 
-      setResult(data);
-      setLearningSteps(data.learningSteps || []);
+      // Initialize empty result object to populate as data streams in
+      const streamingResult: LearnResult = {
+        overview: '',
+        videos: [],
+        tips: [],
+        learningSteps: [],
+        images: [],
+        communities: [],
+        wikipediaArticles: []
+      };
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.slice(6).trim();
+            if (dataStr === '[DONE]') {
+              setIsLoading(false);
+              continue;
+            }
+
+            try {
+              const data = JSON.parse(dataStr);
+              
+              // Update the result object based on the type of data received
+              if (data.type === 'overview') {
+                streamingResult.overview = data.content;
+              } else if (data.type === 'tips') {
+                streamingResult.tips = data.content;
+              } else if (data.type === 'learningSteps') {
+                streamingResult.learningSteps = data.content;
+              } else if (data.type === 'videos') {
+                streamingResult.videos = data.content;
+              } else if (data.type === 'images') {
+                streamingResult.images = data.content;
+              } else if (data.type === 'communities') {
+                streamingResult.communities = data.content;
+              } else if (data.type === 'wikipediaArticles') {
+                streamingResult.wikipediaArticles = data.content;
+              }
+
+              // Update the UI with the latest data
+              setResult({ ...streamingResult });
+              
+              // Set learning steps as they arrive
+              if (data.type === 'learningSteps') {
+                setLearningSteps(data.content);
+              }
+            } catch (e) {
+              console.error('Error parsing streaming data:', e);
+            }
+          }
+        }
+      }
+
       if (!searchTopic) {
         setTopic(searchQuery);
       }
+      
       toast({
         title: "Topic explored successfully!",
         description: `Found comprehensive information about "${searchQuery}"`,
@@ -136,7 +213,6 @@ const Learn = () => {
         description: "Failed to explore the topic. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -517,7 +593,15 @@ const Learn = () => {
             <div className="container mx-auto max-w-7xl">
               {/* Header with new search option */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <h2 className="text-3xl font-bold glow-text ml-0 sm:ml-2">Exploring: {topic}</h2> {/* Added margin for mobile spacing */}
+                <div className="flex items-center gap-3">
+                  <h2 className="text-3xl font-bold glow-text ml-0 sm:ml-2">Exploring: {topic}</h2>
+                  {isLoading && (
+                    <div className="flex items-center gap-2 text-primary animate-pulse">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-sm font-medium">Generating...</span>
+                    </div>
+                  )}
+                </div>
                 <Button onClick={resetSearch} variant="outline" className="gap-2">
                   <Search className="h-4 w-4" />
                   New Search
@@ -538,21 +622,40 @@ const Learn = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      <p className="text-foreground/90 leading-relaxed text-lg">
-                        {result.overview}
-                      </p>
+                      {isLoading && !result.overview ? (
+                        <div className="space-y-3 animate-pulse">
+                          <div className="h-4 bg-primary/10 rounded w-full"></div>
+                          <div className="h-4 bg-primary/10 rounded w-5/6"></div>
+                          <div className="h-4 bg-primary/10 rounded w-4/6"></div>
+                        </div>
+                      ) : (
+                        <p className="text-foreground/90 leading-relaxed text-lg animate-fade-in">
+                          {result.overview}
+                        </p>
+                      )}
                       
                       {/* Key Learning Points */}
                       <div>
                         <h3 className="text-xl font-semibold mb-4 text-foreground">Key Learning Points:</h3>
-                        <ul className="space-y-3">
-                          {result.tips.slice(0, 3).map((tip, index) => (
-                            <li key={index} className="flex items-start gap-3">
-                              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                              <span className="text-foreground/90 text-base leading-relaxed">{tip}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        {isLoading && result.tips.length === 0 ? (
+                          <div className="space-y-3">
+                            {[1, 2, 3].map((i) => (
+                              <div key={i} className="flex items-start gap-3 animate-pulse">
+                                <div className="w-2 h-2 bg-primary/20 rounded-full mt-2"></div>
+                                <div className="h-4 bg-primary/10 rounded flex-1"></div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <ul className="space-y-3">
+                            {result.tips.slice(0, 3).map((tip, index) => (
+                              <li key={index} className="flex items-start gap-3 animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                                <span className="text-foreground/90 text-base leading-relaxed">{tip}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -583,34 +686,49 @@ const Learn = () => {
                     <CardContent className="space-y-4">
                       {/* Learning Steps */}
                       <div className="space-y-3">
-                        {learningSteps.map((step, index) => (
-                          <div key={step.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/20 transition-colors">
-                            <button
-                              onClick={() => toggleStepComplete(step.id)}
-                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                                step.completed 
-                                  ? 'bg-primary border-primary text-primary-foreground' 
-                                  : 'border-muted-foreground hover:border-primary'
-                              }`}
-                            >
-                              {step.completed && <Check className="w-3 h-3" />}
-                            </button>
-                            <div className="flex-1 min-w-0">
-                              <h4 className={`font-medium text-sm mb-1 ${step.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
-                                {step.title}
-                              </h4>
-                              <p className={`text-xs leading-relaxed ${step.completed ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
-                                {step.description}
-                              </p>
+                        {isLoading && learningSteps.length === 0 ? (
+                          // Loading skeleton for steps
+                          <>
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <div key={i} className="flex items-start gap-3 p-3 rounded-lg animate-pulse">
+                                <div className="w-6 h-6 rounded-full border-2 border-primary/20 flex-shrink-0"></div>
+                                <div className="flex-1 space-y-2">
+                                  <div className="h-4 bg-primary/10 rounded w-3/4"></div>
+                                  <div className="h-3 bg-primary/5 rounded w-full"></div>
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        ) : (
+                          learningSteps.map((step, index) => (
+                            <div key={step.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/20 transition-colors animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                              <button
+                                onClick={() => toggleStepComplete(step.id)}
+                                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                                  step.completed 
+                                    ? 'bg-primary border-primary text-primary-foreground' 
+                                    : 'border-muted-foreground hover:border-primary'
+                                }`}
+                              >
+                                {step.completed && <Check className="w-3 h-3" />}
+                              </button>
+                              <div className="flex-1 min-w-0">
+                                <h4 className={`font-medium text-sm mb-1 ${step.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                                  {step.title}
+                                </h4>
+                                <p className={`text-xs leading-relaxed ${step.completed ? 'text-muted-foreground/70' : 'text-muted-foreground'}`}>
+                                  {step.description}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => removeStep(step.id)}
+                                className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
                             </div>
-                            <button
-                              onClick={() => removeStep(step.id)}
-                              className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ))}
+                          ))
+                        )}
                       </div>
 
                       {/* Add New Step */}

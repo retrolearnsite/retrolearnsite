@@ -42,7 +42,7 @@ serve(async (req) => {
   }
 
   try {
-    const { topic } = await req.json();
+    const { topic, stream } = await req.json();
     
     if (!topic) {
       throw new Error('Topic is required');
@@ -756,6 +756,59 @@ Requirements:
     };
 
     console.log('Successfully processed topic exploration with real API data');
+
+    // If streaming is requested, send data incrementally
+    if (stream) {
+      const encoder = new TextEncoder();
+      const body = new ReadableStream({
+        async start(controller) {
+          try {
+            // Send overview first
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'overview', content: learningContent.overview })}\n\n`));
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Send tips
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tips', content: learningContent.tips })}\n\n`));
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Send learning steps
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'learningSteps', content: learningContent.learningSteps || [] })}\n\n`));
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Send videos
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'videos', content: videos.slice(0, 4) })}\n\n`));
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Send images
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'images', content: images.slice(0, 3) })}\n\n`));
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Send communities
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'communities', content: communities.slice(0, 5) })}\n\n`));
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Send wikipedia articles
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'wikipediaArticles', content: wikipediaArticles.slice(0, 3) })}\n\n`));
+            
+            // Send done signal
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            controller.close();
+          } catch (error) {
+            console.error('Streaming error:', error);
+            controller.error(error);
+          }
+        },
+      });
+
+      return new Response(body, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
