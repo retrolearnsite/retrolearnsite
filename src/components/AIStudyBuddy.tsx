@@ -210,7 +210,7 @@ export default function AIStudyBuddy({
           <Textarea
             placeholder={
               contextType === 'summary' 
-                ? "Ask me to summarize the recent discussion..." 
+                ? "I have access to the chat history! Just provide your instructions (e.g., 'Summarize key points', 'Give me main topics discussed', etc.)" 
                 : contextType === 'explanation'
                 ? "What topic would you like me to explain?"
                 : "Ask me anything... or select a message from chat!"
