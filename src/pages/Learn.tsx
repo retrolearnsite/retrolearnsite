@@ -107,16 +107,42 @@ const Learn = () => {
     return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : null;
   };
 
+  const [loadingProgress, setLoadingProgress] = useState<{
+    overview: boolean;
+    tips: boolean;
+    learningSteps: boolean;
+    videos: boolean;
+    images: boolean;
+    communities: boolean;
+    wikipediaArticles: boolean;
+  }>({
+    overview: false,
+    tips: false,
+    learningSteps: false,
+    videos: false,
+    images: false,
+    communities: false,
+    wikipediaArticles: false,
+  });
+
   const handleSearch = async (e?: React.FormEvent, searchTopic?: string) => {
     if (e) e.preventDefault();
     const searchQuery = searchTopic || topic.trim();
     if (!searchQuery) return;
 
     setIsLoading(true);
-    setResult(null); // Clear previous result for clean streaming display
+    setResult(null);
+    setLoadingProgress({
+      overview: false,
+      tips: false,
+      learningSteps: false,
+      videos: false,
+      images: false,
+      communities: false,
+      wikipediaArticles: false,
+    });
     
     try {
-      // Use streaming for real-time content display
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/explore-topic`,
         {
@@ -133,7 +159,7 @@ const Learn = () => {
         throw new Error('Failed to start stream');
       }
 
-      // Initialize empty result object to populate as data streams in
+      // Accumulate all data but don't display until complete
       const streamingResult: LearnResult = {
         overview: '',
         videos: [],
@@ -160,16 +186,20 @@ const Learn = () => {
           if (line.startsWith('data: ')) {
             const dataStr = line.slice(6).trim();
             if (dataStr === '[DONE]') {
-              console.log('✅ Streaming completed');
+              // All data received - now display everything at once
+              setResult({ ...streamingResult });
+              setLearningSteps(streamingResult.learningSteps);
               setIsLoading(false);
               continue;
             }
 
             try {
               const data = JSON.parse(dataStr);
-              console.log(`📦 Received ${data.type}:`, data.content);
               
-              // Update the result object based on the type of data received
+              // Update progress indicator
+              setLoadingProgress(prev => ({ ...prev, [data.type]: true }));
+              
+              // Accumulate data without displaying
               if (data.type === 'overview') {
                 streamingResult.overview = data.content;
               } else if (data.type === 'tips') {
@@ -184,15 +214,6 @@ const Learn = () => {
                 streamingResult.communities = data.content;
               } else if (data.type === 'wikipediaArticles') {
                 streamingResult.wikipediaArticles = data.content;
-              }
-
-              // Update the UI with the latest data - this triggers re-render
-              console.log(`🔄 Updating UI with ${data.type}`);
-              setResult({ ...streamingResult });
-              
-              // Set learning steps as they arrive
-              if (data.type === 'learningSteps') {
-                setLearningSteps(data.content);
               }
             } catch (e) {
               console.error('Error parsing streaming data:', e);
@@ -445,7 +466,57 @@ const Learn = () => {
 
       {/* Main Content */}
       <div className="min-h-screen flex flex-col">
-        {!result ? (
+        {isLoading && !result ? (
+          // Beautiful Loading Screen
+          <div className="flex-1 flex items-center justify-center px-4 py-20">
+            <div className="w-full max-w-2xl mx-auto text-center space-y-8 animate-fade-in">
+              {/* Loading Icon */}
+              <div className="flex justify-center mb-8">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <Sparkles className="w-12 h-12 text-primary animate-pulse" />
+                  </div>
+                  <div className="absolute inset-0 w-24 h-24 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 animate-ping"></div>
+                </div>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-3xl font-bold glow-text">
+                Exploring {topic}...
+              </h2>
+
+              {/* Progress Items */}
+              <div className="space-y-4 mt-8">
+                {[
+                  { key: 'overview', label: 'Overview' },
+                  { key: 'tips', label: 'Learning Tips' },
+                  { key: 'learningSteps', label: 'Learning Steps' },
+                  { key: 'videos', label: 'Video Resources' },
+                  { key: 'images', label: 'Visual Guides' },
+                  { key: 'communities', label: 'Communities' },
+                  { key: 'wikipediaArticles', label: 'Articles' },
+                ].map((item, index) => (
+                  <div
+                    key={item.key}
+                    className={`flex items-center justify-between p-4 rounded-lg border transition-all duration-300 ${
+                      loadingProgress[item.key as keyof typeof loadingProgress]
+                        ? 'border-primary bg-primary/10 animate-fade-in'
+                        : 'border-border/30 bg-background/50'
+                    }`}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <span className="text-lg font-medium">{item.label}</span>
+                    {loadingProgress[item.key as keyof typeof loadingProgress] ? (
+                      <CheckCircle className="w-6 h-6 text-primary animate-scale-in" />
+                    ) : (
+                      <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : !result ? (
           // Initial Search State - Centered Layout
           <div className="flex-1 flex items-center justify-center px-4 py-20">
             <div className="w-full max-w-4xl mx-auto text-center space-y-12 animate-fade-in">

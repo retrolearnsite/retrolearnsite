@@ -745,7 +745,7 @@ Requirements:
       ];
     }
 
-    // If streaming is requested, send data incrementally AS IT'S GENERATED
+    // If streaming is requested, send data as it's generated (no artificial delays)
     if (stream) {
       console.log('Starting real-time streaming...');
       const encoder = new TextEncoder();
@@ -753,41 +753,27 @@ Requirements:
         async start(controller) {
           try {
             // Send overview immediately
-            console.log('Streaming overview...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'overview', content: learningContent.overview })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 200));
 
             // Send tips
-            console.log('Streaming tips...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tips', content: learningContent.tips })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 200));
 
             // Send learning steps
-            console.log('Streaming learning steps...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'learningSteps', content: learningContent.learningSteps || [] })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 200));
 
-            // Now fetch and stream videos
-            console.log('Fetching and streaming videos...');
+            // Send videos
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'videos', content: videos.slice(0, 4) })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 200));
 
-            // Fetch and stream images
-            console.log('Fetching and streaming images...');
+            // Send images
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'images', content: images.slice(0, 3) })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 200));
 
-            // Fetch and stream communities
-            console.log('Fetching and streaming communities...');
+            // Send communities
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'communities', content: communities.slice(0, 5) })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 200));
 
-            // Fetch and stream wikipedia articles
-            console.log('Fetching and streaming Wikipedia articles...');
+            // Send wikipedia articles
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'wikipediaArticles', content: wikipediaArticles.slice(0, 3) })}\n\n`));
             
             // Send done signal
-            console.log('Stream complete!');
             controller.enqueue(encoder.encode('data: [DONE]\n\n'));
             controller.close();
           } catch (error) {
