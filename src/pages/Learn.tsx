@@ -160,12 +160,14 @@ const Learn = () => {
           if (line.startsWith('data: ')) {
             const dataStr = line.slice(6).trim();
             if (dataStr === '[DONE]') {
+              console.log('✅ Streaming completed');
               setIsLoading(false);
               continue;
             }
 
             try {
               const data = JSON.parse(dataStr);
+              console.log(`📦 Received ${data.type}:`, data.content);
               
               // Update the result object based on the type of data received
               if (data.type === 'overview') {
@@ -184,7 +186,8 @@ const Learn = () => {
                 streamingResult.wikipediaArticles = data.content;
               }
 
-              // Update the UI with the latest data
+              // Update the UI with the latest data - this triggers re-render
+              console.log(`🔄 Updating UI with ${data.type}`);
               setResult({ ...streamingResult });
               
               // Set learning steps as they arrive

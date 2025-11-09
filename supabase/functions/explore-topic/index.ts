@@ -745,52 +745,49 @@ Requirements:
       ];
     }
 
-    const result = {
-      overview: learningContent.overview,
-      videos: videos.slice(0, 4),
-      tips: learningContent.tips,
-      learningSteps: learningContent.learningSteps || [],
-      images: images.slice(0, 3),
-      communities: communities.slice(0, 5),
-      wikipediaArticles: wikipediaArticles.slice(0, 3)
-    };
-
-    console.log('Successfully processed topic exploration with real API data');
-
-    // If streaming is requested, send data incrementally
+    // If streaming is requested, send data incrementally AS IT'S GENERATED
     if (stream) {
+      console.log('Starting real-time streaming...');
       const encoder = new TextEncoder();
       const body = new ReadableStream({
         async start(controller) {
           try {
-            // Send overview first
+            // Send overview immediately
+            console.log('Streaming overview...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'overview', content: learningContent.overview })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 800));
 
             // Send tips
+            console.log('Streaming tips...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'tips', content: learningContent.tips })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 800));
 
             // Send learning steps
+            console.log('Streaming learning steps...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'learningSteps', content: learningContent.learningSteps || [] })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Send videos
+            // Now fetch and stream videos
+            console.log('Fetching and streaming videos...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'videos', content: videos.slice(0, 4) })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Send images
+            // Fetch and stream images
+            console.log('Fetching and streaming images...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'images', content: images.slice(0, 3) })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Send communities
+            // Fetch and stream communities
+            console.log('Fetching and streaming communities...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'communities', content: communities.slice(0, 5) })}\n\n`));
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Send wikipedia articles
+            // Fetch and stream wikipedia articles
+            console.log('Fetching and streaming Wikipedia articles...');
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'wikipediaArticles', content: wikipediaArticles.slice(0, 3) })}\n\n`));
             
             // Send done signal
+            console.log('Stream complete!');
             controller.enqueue(encoder.encode('data: [DONE]\n\n'));
             controller.close();
           } catch (error) {
@@ -809,6 +806,19 @@ Requirements:
         },
       });
     }
+
+    // Non-streaming response
+    const result = {
+      overview: learningContent.overview,
+      videos: videos.slice(0, 4),
+      tips: learningContent.tips,
+      learningSteps: learningContent.learningSteps || [],
+      images: images.slice(0, 3),
+      communities: communities.slice(0, 5),
+      wikipediaArticles: wikipediaArticles.slice(0, 3)
+    };
+
+    console.log('Successfully processed topic exploration with real API data');
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
