@@ -51,93 +51,56 @@ serve(async (req) => {
     console.log('Exploring topic:', topic);
 
     // Get API keys
-    const githubPat = Deno.env.get('GITHUB_PAT');
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-    const geminiApiKeySecondary = Deno.env.get('GEMINI_API_KEY_SECONDARY');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     const youtubeApiKey = Deno.env.get('YOUTUBE_API_KEY');
     const redditApiKey = Deno.env.get('REDDIT_API_KEY');
     const tavilyApiKey = Deno.env.get('TAVILY_API_KEY');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!githubPat && !geminiApiKey && !geminiApiKeySecondary) {
-      throw new Error('No AI API keys configured');
+    if (!lovableApiKey) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
     const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
-    // Helper function to call GitHub Models GPT-5 API
-    const callGitHubModelsAPI = async (prompt: string) => {
+    // Helper function to call Lovable AI Gateway
+    const callLovableAI = async (prompt: string) => {
       const startTime = Date.now();
-      const response = await fetch('https://models.inference.ai.azure.com/v1/chat/completions', {
+      const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${githubPat}`,
+          'Authorization': `Bearer ${lovableApiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-5',
+          model: 'google/gemini-2.5-flash',
           messages: [
-            { role: 'system', content: 'You are an educational assistant that generates learning content.' },
+            { role: 'system', content: 'You are an educational assistant that generates learning content. Always respond with valid JSON.' },
             { role: 'user', content: prompt }
           ],
-          max_completion_tokens: 1000,
-          response_format: { type: "json_object" }
         }),
       });
 
       const responseTime = Date.now() - startTime;
 
       if (!response.ok) {
-        await logApiUsage(supabase, null, 'explore-topic', 'github-models', 'gpt-5', false, 'error', `Status ${response.status}`, responseTime);
-        throw new Error(`GitHub Models API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      await logApiUsage(supabase, null, 'explore-topic', 'github-models', 'gpt-5', false, 'success', null, responseTime);
-      return data.choices[0].message.content;
-    };
-
-    // Helper function to call Gemini API with fallback
-    const callGeminiAPI = async (prompt: string, apiKey: string, model: string = 'gemini-2.0-flash-exp') => {
-      const startTime = Date.now();
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: prompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.4,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 2048,
-              responseMimeType: "application/json"
-            }
-          })
-        }
-      );
-
-      const responseTime = Date.now() - startTime;
-
-      if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Gemini API error ${response.status}:`, errorText);
-        await logApiUsage(supabase, null, 'explore-topic', 'gemini', model, true, 'error', `Status ${response.status}`, responseTime);
-        throw new Error(`Gemini API error: ${response.status}`);
+        console.error(`Lovable AI Gateway error ${response.status}:`, errorText);
+        await logApiUsage(supabase, null, 'explore-topic', 'lovable-ai', 'gemini-2.5-flash', false, 'error', `Status ${response.status}: ${errorText}`, responseTime);
+        
+        if (response.status === 429) {
+          throw new Error('Rate limit exceeded. Please try again in a moment.');
+        }
+        if (response.status === 402) {
+          throw new Error('Payment required. Please add credits to your Lovable workspace.');
+        }
+        throw new Error(`AI Gateway error: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('Gemini API response received successfully');
-      await logApiUsage(supabase, null, 'explore-topic', 'gemini', model, true, 'success', null, responseTime);
-      return data;
+      await logApiUsage(supabase, null, 'explore-topic', 'lovable-ai', 'gemini-2.5-flash', false, 'success', null, responseTime);
+      return data.choices[0].message.content;
     };
 
     // Topic-specific prompt for generating relevant learning tasks
@@ -172,119 +135,16 @@ Requirements:
 - Return ONLY the JSON object, no markdown formatting, no explanations
 - Ensure all JSON is properly formatted with correct quotes and commas`;
 
-    console.log('Calling AI API...');
-    let geminiData;
+    console.log('Calling Lovable AI Gateway...');
     let aiContent;
     
-    // Try Gemini first (primary model)
-    const currentApiKey = geminiApiKey || geminiApiKeySecondary;
-    
-    if (!currentApiKey && !githubPat) {
-      throw new Error('No AI API keys available');
-    }
-    
-    if (currentApiKey) {
-      try {
-        console.log('Using Gemini (primary) for topic exploration');
-        geminiData = await callGeminiAPI(geminiPrompt, currentApiKey, 'gemini-2.0-flash-exp');
-        console.log('Gemini response structure:', JSON.stringify(geminiData, null, 2));
-        
-        // Check if response was blocked by safety filters
-        if (geminiData.promptFeedback?.blockReason) {
-          console.error('Gemini blocked response:', geminiData.promptFeedback.blockReason);
-          throw new Error(`Content blocked: ${geminiData.promptFeedback.blockReason}`);
-        }
-        
-        // Check if candidates exist and have content
-        if (!geminiData.candidates || geminiData.candidates.length === 0) {
-          console.error('No candidates in Gemini response');
-          throw new Error('Gemini returned no candidates');
-        }
-        
-        const candidate = geminiData.candidates[0];
-        if (candidate.finishReason === 'SAFETY') {
-          console.error('Response blocked by safety filter');
-          throw new Error('Content blocked by safety filters');
-        }
-        
-        aiContent = candidate?.content?.parts?.[0]?.text;
-        
-        if (!aiContent) {
-          console.error('No text content in candidate');
-          throw new Error('No text in Gemini response');
-        }
-        
-        console.log('Gemini generated content successfully');
-      } catch (error) {
-        console.error('Primary Gemini API error:', error);
-        // Try secondary key if primary fails
-        if (geminiApiKeySecondary && currentApiKey === geminiApiKey) {
-          console.log('Trying secondary Gemini API key...');
-          try {
-            geminiData = await callGeminiAPI(geminiPrompt, geminiApiKeySecondary, 'gemini-2.0-flash-exp');
-            console.log('Secondary Gemini response structure:', JSON.stringify(geminiData, null, 2));
-            
-            if (geminiData.promptFeedback?.blockReason) {
-              throw new Error(`Content blocked: ${geminiData.promptFeedback.blockReason}`);
-            }
-            
-            if (!geminiData.candidates || geminiData.candidates.length === 0) {
-              throw new Error('Gemini returned no candidates');
-            }
-            
-            const candidate = geminiData.candidates[0];
-            if (candidate.finishReason === 'SAFETY') {
-              throw new Error('Content blocked by safety filters');
-            }
-            
-            aiContent = candidate?.content?.parts?.[0]?.text;
-            
-            if (!aiContent) {
-              throw new Error('No text in secondary Gemini response');
-            }
-          } catch (secondaryError) {
-            console.error('Secondary Gemini API also failed, trying GitHub Models as last resort');
-            // Only try GitHub Models as last resort
-            if (githubPat) {
-              try {
-                console.log('Trying GitHub Models GPT-5 as fallback');
-                aiContent = await callGitHubModelsAPI(geminiPrompt);
-                console.log('GitHub Models GPT-5 response received');
-              } catch (gptError) {
-                console.error('GitHub Models also failed:', gptError);
-                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                throw new Error(`All AI providers failed: ${errorMessage}`);
-              }
-            } else {
-              throw secondaryError;
-            }
-          }
-        } else {
-          // If no secondary key, try GitHub Models as fallback
-          if (githubPat) {
-            try {
-              console.log('Trying GitHub Models GPT-5 as fallback');
-              aiContent = await callGitHubModelsAPI(geminiPrompt);
-              console.log('GitHub Models GPT-5 response received');
-            } catch (gptError) {
-              console.error('GitHub Models also failed:', gptError);
-              throw error;
-            }
-          } else {
-            throw error;
-          }
-        }
-      }
-    } else if (githubPat) {
-      // Only use GitHub Models if no Gemini key available
-      try {
-        console.log('Using GitHub Models GPT-5 (no Gemini key available)');
-        aiContent = await callGitHubModelsAPI(geminiPrompt);
-        console.log('GitHub Models GPT-5 response received');
-      } catch (error) {
-        console.error('GitHub Models GPT-5 error:', error);
-        throw error;
-      }
+    try {
+      console.log('Using Lovable AI (Gemini 2.5 Flash) for topic exploration');
+      aiContent = await callLovableAI(geminiPrompt);
+      console.log('Lovable AI response received successfully');
+    } catch (error) {
+      console.error('Lovable AI error:', error);
+      throw error;
     }
     
     console.log('AI API response received');
