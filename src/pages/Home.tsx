@@ -14,7 +14,7 @@ export default function Home() {
     loading
   } = useAuth();
   const navigate = useNavigate();
-  return <div className="p-4 scanlines">
+  return <div className="p-4">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center py-8 relative">
@@ -54,15 +54,15 @@ export default function Home() {
 
         {/* Stats Bar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-card border-2 border-primary p-4 text-center scanlines">
+          <div className="bg-card border-2 border-primary p-4 text-center">
             <div className="text-2xl font-retro font-bold glow-text">1,337</div>
             <div className="text-sm font-retro text-muted-foreground">Notes Transformed</div>
           </div>
-          <div className="bg-card border-2 border-secondary p-4 text-center scanlines">
+          <div className="bg-card border-2 border-secondary p-4 text-center">
             <div className="text-2xl font-retro font-bold glow-blue">42,069</div>
             <div className="text-sm font-retro text-muted-foreground">Flashcards Created</div>
           </div>
-          <div className="bg-card border-2 border-accent p-4 text-center scanlines">
+          <div className="bg-card border-2 border-accent p-4 text-center">
             <div className="text-2xl font-retro font-bold glow-pink">98.5%</div>
             <div className="text-sm font-retro text-muted-foreground">Success Rate</div>
           </div>
@@ -70,7 +70,7 @@ export default function Home() {
 
         {/* Feature Cards */}
         {!user ? (
-          <div className="text-center py-16 bg-card border-2 border-primary rounded-xl scanlines animate-fade-in">
+          <div className="text-center py-16 bg-card border-2 border-primary rounded-xl animate-fade-in">
             <User className="w-20 h-20 mx-auto mb-6 text-primary animate-pulse" />
             <h2 className="text-3xl font-retro font-bold glow-text mb-4">
               ACCESS REQUIRED
@@ -94,7 +94,7 @@ export default function Home() {
             {/* Primary Features Row */}
             <div className="grid gap-8 lg:grid-cols-2">
               {/* Note Wizard - Primary Feature */}
-              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-primary bg-card rounded-xl scanlines hover:scale-[1.02] animate-fade-in lg:col-span-2">
+              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-primary bg-card rounded-xl hover:scale-[1.02] animate-fade-in lg:col-span-2">
                 <CardHeader className="text-center pb-6">
                   <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <Wand2 className="w-10 h-10 text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
@@ -124,7 +124,7 @@ export default function Home() {
             {/* Secondary Features Grid */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* My Notes */}
-              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-secondary bg-card rounded-xl scanlines hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-secondary bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-secondary/10 group-hover:bg-secondary/20 transition-all duration-300">
                     <FileText className="w-8 h-8 text-secondary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
@@ -150,7 +150,7 @@ export default function Home() {
               </Card>
 
               {/* Work Rooms */}
-              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-accent bg-card rounded-xl scanlines hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-accent bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-all duration-300">
                     <Users className="w-8 h-8 text-accent group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
@@ -176,7 +176,7 @@ export default function Home() {
               </Card>
 
               {/* Quizzes */}
-              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-warning bg-card rounded-xl scanlines hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-warning bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-warning/10 group-hover:bg-warning/20 transition-all duration-300">
                     <Trophy className="w-8 h-8 text-warning group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
@@ -202,7 +202,7 @@ export default function Home() {
               </Card>
 
               {/* Learn Anything */}
-              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-destructive bg-card rounded-xl scanlines hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-neon transition-all duration-500 border-2 border-destructive bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-destructive/10 group-hover:bg-destructive/20 transition-all duration-300">
                     <Search className="w-8 h-8 text-destructive group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
