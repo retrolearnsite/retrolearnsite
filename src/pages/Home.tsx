@@ -27,44 +27,44 @@ export default function Home() {
             className="flex items-center justify-center gap-6 mb-6"
           >
             <div className="relative">
-              <img src={mascotImage} alt="Retro Learn Mascot" className="w-24 h-24 rounded-full border-4 border-primary shadow-neon" />
+              <img src={mascotImage} alt="Study Platform Logo" className="w-20 h-20 rounded-lg border-2 border-primary" />
               <div className="absolute -top-2 -right-2">
-                <Sparkles className="w-8 h-8 text-accent animate-pulse" />
+                <Sparkles className="w-6 h-6 text-primary animate-pulse" />
               </div>
             </div>
             <div>
-              <h1 className="text-4xl md:text-6xl font-retro gradient-text-retro mb-2">
-                RETRO LEARN
+              <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-2">
+                Study Platform
               </h1>
-              <div className="flex items-center justify-center gap-4 text-lg font-retro text-secondary">
+              <div className="flex items-center justify-center gap-4 text-lg text-muted-foreground">
                 <Brain className="w-5 h-5" />
-                <span>LEARN</span>
-                <Zap className="w-5 h-5 text-accent" />
-                <span className="glow-pink">STUDY</span>
+                <span>Learn</span>
+                <Zap className="w-5 h-5 text-primary" />
+                <span>Study</span>
                 <Sparkles className="w-5 h-5 text-primary" />
-                <span className="glow-blue">SUCCEED</span>
+                <span>Succeed</span>
               </div>
             </div>
           </motion.div>
           
-          <p className="text-lg font-retro text-muted-foreground max-w-2xl mx-auto">
-            Your ultimate retro-styled learning platform with AI-powered note transformation and collaborative study rooms
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Your AI-powered learning platform with note transformation and collaborative study rooms
           </p>
         </header>
 
         {/* Stats Bar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-card border-2 border-primary p-4 text-center">
-            <div className="text-2xl font-retro font-bold glow-text">1,337</div>
-            <div className="text-sm font-retro text-muted-foreground">Notes Transformed</div>
+          <div className="bg-card border border-border rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-foreground">1,337</div>
+            <div className="text-sm text-muted-foreground">Notes Transformed</div>
           </div>
-          <div className="bg-card border-2 border-secondary p-4 text-center">
-            <div className="text-2xl font-retro font-bold glow-blue">42,069</div>
-            <div className="text-sm font-retro text-muted-foreground">Flashcards Created</div>
+          <div className="bg-card border border-border rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-foreground">42,069</div>
+            <div className="text-sm text-muted-foreground">Flashcards Created</div>
           </div>
-          <div className="bg-card border-2 border-accent p-4 text-center">
-            <div className="text-2xl font-retro font-bold glow-pink">98.5%</div>
-            <div className="text-sm font-retro text-muted-foreground">Success Rate</div>
+          <div className="bg-card border border-border rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-foreground">98.5%</div>
+            <div className="text-sm text-muted-foreground">Success Rate</div>
           </div>
         </div>
 
