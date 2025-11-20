@@ -8,6 +8,8 @@ import { Trash2, Eye, Calendar, Sparkles, Trophy, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
+import { GlowCard } from '@/components/ui/spotlight-card';
+
 interface NoteCardProps {
   note: any;
   onViewNote: (note: any) => void;
@@ -176,7 +178,11 @@ export function NoteCard({ note, onViewNote, onDelete, deletingId, notesType = '
       transition={{ duration: 0.3 }}
       className="w-full"
     >
-      <div className="bg-background/80 backdrop-blur-sm border-l-4 border-primary/50 hover:border-primary transition-all duration-300 rounded-lg overflow-hidden hover:shadow-neon group">
+      <GlowCard 
+        customSize={true} 
+        glowColor="blue"
+        className="bg-background/80 w-full h-auto aspect-auto grid-rows-none p-0 overflow-hidden group"
+      >
         {/* Header Section */}
         <div className="p-4 space-y-3">
           {/* Title Row */}
@@ -285,7 +291,7 @@ export function NoteCard({ note, onViewNote, onDelete, deletingId, notesType = '
             </Button>
           </div>
         </div>
-      </div>
+      </GlowCard>
     </motion.div>
   );
 }

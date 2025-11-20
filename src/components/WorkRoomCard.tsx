@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/spotlight-card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, MessageSquare, ExternalLink, Copy, LogOut, Trash2, Globe, Lock, Hash } from 'lucide-react';
@@ -57,7 +58,11 @@ export function WorkRoomCard({ room, onEnterRoom, isCreator }: WorkRoomCardProps
   };
 
   return (
-    <Card className="group hover:scale-105 transition-all duration-300 border-2 border-primary/30 hover:border-primary/60 bg-card/90 backdrop-blur-sm hover:shadow-neon">
+    <GlowCard 
+      customSize={true} 
+      glowColor="blue"
+      className="group hover:scale-105 transition-all duration-300 bg-card/90 w-full h-auto aspect-auto grid-rows-none p-0"
+    >
       <CardHeader className="space-y-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 flex-wrap">
@@ -175,6 +180,6 @@ export function WorkRoomCard({ room, onEnterRoom, isCreator }: WorkRoomCardProps
           )}
         </div>
       </CardContent>
-    </Card>
+    </GlowCard>
   );
 }
