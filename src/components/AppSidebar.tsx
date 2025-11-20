@@ -102,7 +102,7 @@ function SidebarContent() {
           <img
             src={retroLogo}
             alt="RetroLearn Logo"
-            className="h-10 w-10 flex-shrink-0"
+            className="h-7 w-7 flex-shrink-0"
           />
           <motion.div
             initial={{ opacity: 0 }}
@@ -223,7 +223,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-      <SidebarBody className="justify-between gap-4">
+      <SidebarBody className="justify-between gap-4 h-screen">
         <SidebarContent />
       </SidebarBody>
     </Sidebar>
