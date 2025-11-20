@@ -317,7 +317,7 @@ export const NotesInput = ({
         <div className="space-y-4">
         <div className="flex items-center gap-3 mb-4">
           <FileText className="w-6 h-6 text-primary" />
-          <h2 className="text-xl font-retro glow-text">INPUT YOUR MESSY NOTES</h2>
+          <h2 className="text-xl font-retro text-foreground">Input Your Messy Notes</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
