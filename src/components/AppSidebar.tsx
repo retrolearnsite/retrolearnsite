@@ -102,31 +102,40 @@ export function AppSidebar() {
             <img
               src={retroLogo}
               alt="RetroLearn Logo"
-              className="h-10 w-10 flex-shrink-0"
+              className="h-8 w-8 flex-shrink-0"
             />
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: sidebarOpen ? 1 : 0 }}
-              className="flex flex-col"
+              animate={{ 
+                opacity: sidebarOpen ? 1 : 0,
+                display: sidebarOpen ? "flex" : "none"
+              }}
+              className="flex flex-col flex-1"
             >
-              <span className="font-retro text-xl glow-blue whitespace-nowrap">
+              <span className="font-retro text-lg glow-blue whitespace-nowrap">
                 RetroLearn
               </span>
               <span className="text-xs text-muted-foreground whitespace-nowrap">
                 Learn with Style
               </span>
             </motion.div>
-            <motion.div animate={{ opacity: sidebarOpen ? 1 : 0 }} className="ml-auto">
+            <motion.div 
+              animate={{ 
+                opacity: sidebarOpen ? 1 : 0,
+                display: sidebarOpen ? "block" : "none"
+              }} 
+              className="ml-auto"
+            >
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="hover:bg-accent h-8 w-8"
+                className="hover:bg-accent h-7 w-7"
               >
                 {theme === "dark" ? (
-                  <Sun className="h-4 w-4" />
+                  <Sun className="h-3.5 w-3.5" />
                 ) : (
-                  <Moon className="h-4 w-4" />
+                  <Moon className="h-3.5 w-3.5" />
                 )}
               </Button>
             </motion.div>
@@ -143,11 +152,11 @@ export function AppSidebar() {
         {/* Footer with User Info */}
         <div>
           {user ? (
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 px-2">
-                <Avatar className="h-8 w-8 flex-shrink-0">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-2">
+                <Avatar className="h-7 w-7 flex-shrink-0">
                   <AvatarImage src={user.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
@@ -158,10 +167,10 @@ export function AppSidebar() {
                   }}
                   className="flex flex-col flex-1 min-w-0"
                 >
-                  <p className="text-sm font-medium text-foreground truncate">
+                  <p className="text-xs font-medium text-foreground truncate">
                     {getUserDisplayName()}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-[10px] text-muted-foreground truncate">
                     {user.email}
                   </p>
                 </motion.div>
@@ -176,30 +185,33 @@ export function AppSidebar() {
                   onClick={handleSignOut}
                   variant="outline"
                   size="sm"
-                  className="w-full justify-start gap-2"
+                  className="w-full justify-start gap-2 h-8 text-xs"
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-3 w-3" />
                   Sign Out
                 </Button>
               </motion.div>
             </div>
           ) : (
-            <Button
-              onClick={() => navigate("/")}
-              variant="default"
-              size="sm"
-              className="w-full justify-start gap-2"
-            >
-              <LogIn className="h-4 w-4 flex-shrink-0" />
+            <div className="flex items-center gap-2 px-2">
+              <Button
+                onClick={() => navigate("/")}
+                variant="default"
+                size="icon"
+                className="h-7 w-7 flex-shrink-0"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+              </Button>
               <motion.span
                 animate={{
                   opacity: sidebarOpen ? 1 : 0,
                   display: sidebarOpen ? "inline" : "none",
                 }}
+                className="text-xs font-medium"
               >
                 Sign In
               </motion.span>
-            </Button>
+            </div>
           )}
         </div>
       </SidebarBody>
