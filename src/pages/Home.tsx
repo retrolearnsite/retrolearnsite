@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import retroLogo from '@/assets/vintage-tv-icon.png';
 import { Sparkles, Brain, FileText, Users, Wand2, User, Zap, Trophy, Search, ArrowRight } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
+import { GooeyText } from '@/components/ui/gooey-text-morphing';
 export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const {
@@ -33,13 +34,13 @@ export default function Home() {
               <h1 className="text-3xl md:text-6xl font-bold text-foreground mb-2">
                 Retro Learn
               </h1>
-              <div className="flex items-center justify-center gap-2 md:gap-4 text-sm md:text-lg text-muted-foreground">
-                <Brain className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-                <span>Learn</span>
-                <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-                <span>Study</span>
-                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-                <span>Succeed</span>
+              <div className="h-12 flex items-center justify-center mb-4">
+                <GooeyText
+                  texts={["Learn", "Study", "Succeed", "Transform"]}
+                  morphTime={1.2}
+                  cooldownTime={0.8}
+                  textClassName="text-2xl md:text-3xl font-bold text-primary"
+                />
               </div>
             </div>
           </motion.div>
