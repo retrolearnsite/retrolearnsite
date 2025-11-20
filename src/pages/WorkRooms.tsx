@@ -79,7 +79,7 @@ export default function WorkRooms() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-retro gradient-text-retro"
+              className="text-4xl md:text-5xl font-retro font-bold glow-text"
             >
               WORK ROOMS
             </motion.h1>
