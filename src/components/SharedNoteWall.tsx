@@ -208,12 +208,12 @@ export default function SharedNoteWall({ roomId, userId, isPublicRoom }: SharedN
                 {notes.map(note => (
                   <div
                     key={note.id}
-                    className="p-4 rounded-lg border-2 border-primary/20 bg-muted/20 hover:border-primary/40 transition-all cursor-pointer"
+                    className="group p-5 rounded-xl border border-primary/30 bg-gradient-to-br from-card/95 to-card/80 hover:from-card hover:to-card/95 hover:border-primary/50 transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg"
                     onClick={() => setSelectedNote(note)}
                   >
-                    <div className="space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <h4 className="font-retro text-sm font-bold line-clamp-1">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <h4 className="font-retro text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                           {note.title}
                         </h4>
                         <Button
@@ -223,29 +223,29 @@ export default function SharedNoteWall({ roomId, userId, isPublicRoom }: SharedN
                             e.stopPropagation();
                             setSelectedNote(note);
                           }}
-                          className="h-6 w-6 p-0"
+                          className="h-8 w-8 p-0 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <Eye className="w-3 h-3" />
+                          <Eye className="w-4 h-4" />
                         </Button>
                       </div>
 
                       {note.summary && (
-                        <p className="font-retro text-xs text-muted-foreground line-clamp-2">
+                        <p className="font-retro text-sm text-muted-foreground/90 leading-relaxed line-clamp-3">
                           {note.summary}
                         </p>
                       )}
 
-                      <div className="flex items-center gap-2 text-xs font-retro text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          <span className="truncate max-w-[100px]">
+                      <div className="flex items-center gap-4 pt-2 border-t border-border/30">
+                        <div className="flex items-center gap-1.5 text-xs font-retro text-muted-foreground/80">
+                          <User className="w-3.5 h-3.5" />
+                          <span className="truncate max-w-[120px]">
                             {note.shared_from_profile?.full_name || 
                              note.shared_from_profile?.email?.split('@')[0] || 
                              'Unknown'}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
+                        <div className="flex items-center gap-1.5 text-xs font-retro text-muted-foreground/80">
+                          <Calendar className="w-3.5 h-3.5" />
                           <span>{new Date(note.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>

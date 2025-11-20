@@ -197,7 +197,7 @@ export function MessageBubble({
       </Avatar>
 
       <div className={`flex-1 space-y-1 ${isOwn ? 'items-end' : 'items-start'} flex flex-col`}>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-1">
           <span className="font-retro text-sm font-bold glow-text">
             {message.user_name || 
              message.profiles?.full_name || 
@@ -211,7 +211,7 @@ export function MessageBubble({
               className="w-2 h-2 bg-green-500 rounded-full shadow-green"
             />
           )}
-          <span className="font-retro text-xs text-muted-foreground">
+          <span className="font-retro text-xs text-muted-foreground/70">
             {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
@@ -220,7 +220,7 @@ export function MessageBubble({
           <motion.div
             whileHover={{ scale: isSelectionMode && !isIdea && !isFile ? 1.05 : 1.02 }}
             className={`
-              px-4 py-3 rounded-2xl max-w-md
+              px-5 py-3.5 rounded-2xl max-w-md
               ${isSelectionMode && !isIdea && !isFile 
                 ? 'ring-2 ring-primary animate-pulse' 
                 : ''
@@ -229,15 +229,15 @@ export function MessageBubble({
                 ? 'bg-gradient-to-br from-yellow-500/20 via-orange-500/15 to-primary/10 border-2 border-yellow-500/50 shadow-lg shadow-yellow-500/20' 
                 : isFile
                 ? 'bg-gradient-to-br from-blue-500/20 via-cyan-500/15 to-primary/10 border-2 border-blue-500/50 shadow-lg shadow-blue-500/20'
-                : `bg-gradient-to-br ${userColors[colorIndex]} border border-border/50`
+                : `bg-gradient-to-br ${userColors[colorIndex]} border border-border/40`
               }
               backdrop-blur-sm
-              shadow-lg hover:shadow-neon transition-all
+              shadow-md hover:shadow-lg transition-all duration-200
               ${isOwn ? 'rounded-tr-sm' : 'rounded-tl-sm'}
             `}
           >
             {isIdea && (
-              <div className="flex items-center gap-2 mb-2 pb-2 border-b border-yellow-500/30">
+              <div className="flex items-center gap-2 mb-2.5 pb-2.5 border-b border-yellow-500/30">
                 <Lightbulb className="w-4 h-4 text-yellow-500" />
                 <Badge className="font-retro text-xs bg-yellow-500/20 text-yellow-500 border-yellow-500/50">
                   IDEA
@@ -261,7 +261,7 @@ export function MessageBubble({
                   <Download className="w-5 h-5 text-blue-500 group-hover:translate-y-0.5 transition-transform" />
                 </a>
               ) : (
-              <p className="font-retro text-sm leading-relaxed break-words">
+              <p className="font-retro text-sm leading-relaxed break-words whitespace-pre-wrap">
                 {message.message}
               </p>
             )}
