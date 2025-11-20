@@ -34,20 +34,21 @@ export default function Home() {
           <h1 className="text-3xl md:text-6xl font-bold text-foreground mb-6">
                 Retro Learn
               </h1>
-              <div className="h-16 md:h-20 flex items-center justify-center">
-                <GooeyText
-                  texts={["Learn", "Collaborate", "Succeed"]}
-                  morphTime={1.5}
-                  cooldownTime={1}
-                  textClassName="text-3xl md:text-4xl font-bold text-primary"
-                />
-              </div>
             </div>
           </motion.div>
           
-          <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            Your AI-powered learning platform with note transformation and collaborative study rooms
-          </p>
+          <div className="h-16 md:h-20 flex items-center justify-center px-4">
+            <GooeyText
+              texts={[
+                "Your AI-powered learning platform",
+                "Transform notes into study materials",
+                "Collaborate in study rooms"
+              ]}
+              morphTime={2}
+              cooldownTime={1.5}
+              textClassName="text-sm md:text-lg text-muted-foreground text-center max-w-2xl"
+            />
+          </div>
         </header>
 
         {/* Stats Bar */}
