@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { EmailConfirmationBanner } from "@/components/EmailConfirmationBanner";
+import { ThemeProvider } from "next-themes";
 import Home from "./pages/Home";
 import NoteWizard from "./pages/NoteWizard";
 import Notes from "./pages/Notes";
@@ -28,11 +29,13 @@ const App = () => {
   if (loading) {
     return (
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <div className="flex min-h-screen w-full bg-gradient-terminal items-center justify-center">
-            <div className="font-retro text-primary glow-text">LOADING...</div>
-          </div>
-        </TooltipProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <TooltipProvider>
+            <div className="flex min-h-screen w-full bg-background items-center justify-center">
+              <div className="text-primary">Loading...</div>
+            </div>
+          </TooltipProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     );
   }
@@ -41,19 +44,21 @@ const App = () => {
   if (!user) {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <EmailConfirmationBanner />
-        <Toaster />
-        <Sonner />
-          <div className="min-h-screen w-full bg-gradient-terminal">
-            <main className="flex-1 overflow-y-auto min-h-0">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="*" element={<Home />} />
-              </Routes>
-            </main>
-          </div>
-        </TooltipProvider>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <TooltipProvider>
+          <EmailConfirmationBanner />
+          <Toaster />
+          <Sonner />
+            <div className="min-h-screen w-full bg-background">
+              <main className="flex-1 overflow-y-auto min-h-0">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="*" element={<Home />} />
+                </Routes>
+              </main>
+            </div>
+          </TooltipProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     );
   }
@@ -61,42 +66,44 @@ const App = () => {
   // Authenticated users see the full app with sidebar
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <EmailConfirmationBanner />
-        <Toaster />
-        <Sonner />
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex min-h-svh w-full bg-gradient-terminal">
-            <AppSidebar />
-            <div className="flex-1 flex flex-col w-full">
-              <header className="h-14 border-b-2 border-primary/50 bg-card/95 backdrop-blur-sm flex items-center px-4 gap-4">
-                <SidebarTrigger className="font-retro">
-                  <Menu className="w-5 h-5" />
-                </SidebarTrigger>
-                <div className="flex-1">
-                  <h1 className="text-sm font-semibold text-sidebar-foreground">Study Platform</h1>
-                </div>
-              </header>
-              <main className="flex-1 min-h-0">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/note-wizard" element={<NoteWizard />} />
-                  <Route path="/notes" element={<Notes />} />
-                  <Route path="/workrooms" element={<WorkRooms />} />
-                  <Route path="/workroom/:roomId" element={<WorkRoom />} />
-                  <Route path="/discover" element={<Discover />} />
-                  <Route path="/quizzes" element={<Quizzes />} />
-                  <Route path="/learn" element={<Learn />} />
-                  <Route path="/user-guide" element={<UserGuide />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <TooltipProvider>
+          <EmailConfirmationBanner />
+          <Toaster />
+          <Sonner />
+          <SidebarProvider defaultOpen={true}>
+            <div className="flex min-h-svh w-full bg-background">
+              <AppSidebar />
+              <div className="flex-1 flex flex-col w-full">
+                <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-4">
+                  <SidebarTrigger>
+                    <Menu className="w-5 h-5" />
+                  </SidebarTrigger>
+                  <div className="flex-1">
+                    <h1 className="text-sm font-semibold text-foreground">Study Platform</h1>
+                  </div>
+                </header>
+                <main className="flex-1 min-h-0">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/note-wizard" element={<NoteWizard />} />
+                    <Route path="/notes" element={<Notes />} />
+                    <Route path="/workrooms" element={<WorkRooms />} />
+                    <Route path="/workroom/:roomId" element={<WorkRoom />} />
+                    <Route path="/discover" element={<Discover />} />
+                    <Route path="/quizzes" element={<Quizzes />} />
+                    <Route path="/learn" element={<Learn />} />
+                    <Route path="/user-guide" element={<UserGuide />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+              </div>
             </div>
-          </div>
-        </SidebarProvider>
-      </TooltipProvider>
+          </SidebarProvider>
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
