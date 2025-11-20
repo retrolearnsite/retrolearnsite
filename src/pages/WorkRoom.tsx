@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, ThumbsUp, Lightbulb, Repeat } from 'lucide-react';
+import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Globe, ThumbsUp, Lightbulb, Repeat } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -411,9 +411,12 @@ export default function WorkRoom() {
                 <h1 className="text-xl md:text-2xl font-retro font-bold glow-text">
                   {room.name}
                 </h1>
-                {room.is_public && <Badge className="font-retro animate-pulse">Public<Sparkles className="w-3 h-3 mr-1" />
+                {room.is_public && (
+                  <Badge className="font-retro animate-pulse">
+                    <Globe className="w-3 h-3 mr-1" />
                     PUBLIC
-                  </Badge>}
+                  </Badge>
+                )}
                 {room.subject_tags && room.subject_tags.length > 0 && <div className="hidden md:flex gap-1">
                     {room.subject_tags.slice(0, 2).map(tag => <Badge key={tag} variant="outline" className="font-retro text-xs">
                         #{tag}
