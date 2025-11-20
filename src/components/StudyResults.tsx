@@ -172,7 +172,7 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
           <div>
             <h2 className="text-2xl font-retro glow-text animate-fade-in flex items-center gap-3">
               <Zap className="w-6 h-6 text-accent animate-pulse" />
-              STUDY MATERIALS READY
+              Study Materials Ready
             </h2>
             <p className="text-sm text-muted-foreground font-retro mt-1">
               Your notes have been transformed into organized learning resources
@@ -194,11 +194,11 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
           <TabsList className="grid w-full grid-cols-3 bg-muted border border-primary">
             <TabsTrigger value="summary" className="font-retro">
               <FileText className="w-4 h-4 mr-2" />
-              SUMMARY
+              Summary
             </TabsTrigger>
             <TabsTrigger value="flashcards" className="font-retro">
               <Zap className="w-4 h-4 mr-2" />
-              FLASHCARDS
+              Flashcards
             </TabsTrigger>
             <TabsTrigger value="qa" className="font-retro">
               <HelpCircle className="w-4 h-4 mr-2" />

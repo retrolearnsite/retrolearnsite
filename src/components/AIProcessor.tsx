@@ -9,10 +9,10 @@ interface AIProcessorProps {
 }
 
 const processingSteps = [
-  { id: 1, label: "PARSING INPUT", description: "Analyzing text structure...", icon: Brain },
-  { id: 2, label: "CLEANING DATA", description: "Removing noise & organizing...", icon: Zap },
-  { id: 3, label: "EXTRACTING CONCEPTS", description: "Identifying key topics...", icon: Sparkles },
-  { id: 4, label: "GENERATING MATERIALS", description: "Creating study resources...", icon: CheckCircle },
+  { id: 1, label: "Parsing Input", description: "Analyzing text structure...", icon: Brain },
+  { id: 2, label: "Cleaning Data", description: "Removing noise & organizing...", icon: Zap },
+  { id: 3, label: "Extracting Concepts", description: "Identifying key topics...", icon: Sparkles },
+  { id: 4, label: "Generating Materials", description: "Creating study resources...", icon: CheckCircle },
 ];
 
 export const AIProcessor = ({ isProcessing, onComplete }: AIProcessorProps) => {
@@ -64,7 +64,7 @@ export const AIProcessor = ({ isProcessing, onComplete }: AIProcessorProps) => {
     <Card className="p-6 bg-card border-2 border-secondary scanlines">
       <div className="space-y-6">
         <div className="text-center">
-          <h3 className="text-xl font-retro glow-blue mb-2">AI WIZARD AT WORK</h3>
+          <h3 className="text-xl font-retro glow-blue mb-2">AI Wizard at Work</h3>
           <p className="text-sm text-muted-foreground font-retro">
             Transforming chaos into clarity...
           </p>
@@ -108,7 +108,7 @@ export const AIProcessor = ({ isProcessing, onComplete }: AIProcessorProps) => {
                 </div>
                 {isActive && (
                   <div className="text-primary font-retro text-xs cursor-blink">
-                    PROCESSING
+                    Processing
                   </div>
                 )}
                 {isComplete && (
@@ -123,7 +123,7 @@ export const AIProcessor = ({ isProcessing, onComplete }: AIProcessorProps) => {
           <Progress value={progress} className="h-3 bg-muted" />
           <div className="text-center">
             <span className="text-xs font-retro text-muted-foreground">
-              {Math.round(progress)}% COMPLETE
+              {Math.round(progress)}% Complete
             </span>
           </div>
         </div>
