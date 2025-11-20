@@ -67,7 +67,7 @@ export function AppSidebar() {
               <img src={mascotImage} alt="App Logo" className="w-8 h-8 rounded-md" />
             </div>
             {open && <div>
-                <h2 className="text-sm font-semibold text-sidebar-foreground">Study Platform</h2>
+                <h2 className="text-sm font-semibold text-sidebar-foreground">Retro Learn</h2>
                 <p className="text-xs text-muted-foreground">
                   AI Learning Tools
                 </p>
