@@ -31,15 +31,15 @@ export default function Home() {
               <img src={retroLogo} alt="Retro Learn Logo" className="w-16 h-16 md:w-20 md:h-20" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-6xl font-bold text-foreground mb-2">
+          <h1 className="text-3xl md:text-6xl font-bold text-foreground mb-6">
                 Retro Learn
               </h1>
-              <div className="h-12 flex items-center justify-center mb-4">
+              <div className="h-16 md:h-20 flex items-center justify-center">
                 <GooeyText
-                  texts={["Learn", "Study", "Succeed", "Transform"]}
-                  morphTime={1.2}
-                  cooldownTime={0.8}
-                  textClassName="text-2xl md:text-3xl font-bold text-primary"
+                  texts={["Learn", "Collaborate", "Succeed"]}
+                  morphTime={1.5}
+                  cooldownTime={1}
+                  textClassName="text-3xl md:text-4xl font-bold text-primary"
                 />
               </div>
             </div>
