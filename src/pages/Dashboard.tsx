@@ -126,10 +126,10 @@ export default function Dashboard() {
               HOME
             </Button>
             <div>
-              <h1 className="text-2xl md:text-4xl font-retro gradient-text-retro">
+              <h1 className="text-2xl md:text-4xl font-elegant font-bold gradient-text-retro">
                 Dashboard
               </h1>
-              <p className="text-xs md:text-sm font-retro text-muted-foreground">
+              <p className="text-xs md:text-sm font-elegant text-muted-foreground">
                 Track your learning progress
               </p>
             </div>
@@ -156,10 +156,10 @@ export default function Dashboard() {
                       TOTAL
                     </Badge>
                   </div>
-                  <div className="text-3xl font-retro font-bold glow-text mb-2">
+                  <div className="text-3xl font-elegant font-bold glow-text mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-sm font-retro text-muted-foreground">
+                  <div className="text-sm font-elegant text-muted-foreground">
                     {stat.label}
                   </div>
                 </CardContent>
@@ -181,17 +181,17 @@ export default function Dashboard() {
         }}>
             <Card className="border-2 border-accent hover:shadow-neon transition-all duration-300">
               <CardHeader>
-                <CardTitle className="font-retro glow-pink flex items-center gap-2">
+                <CardTitle className="font-elegant font-semibold glow-pink flex items-center gap-2">
                   <Trophy className="w-5 h-5" />
                   Quiz Performance
                 </CardTitle>
-                <CardDescription className="font-retro">
+                <CardDescription className="font-elegant">
                   Your average quiz score
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
-                  <div className="text-5xl font-retro font-bold glow-text mb-2">
+                  <div className="text-5xl font-elegant font-bold glow-text mb-2">
                     {stats?.averageQuizScore || 0}%
                   </div>
                   <Progress value={stats?.averageQuizScore || 0} className="h-3" />
@@ -230,21 +230,21 @@ export default function Dashboard() {
         }}>
             <Card className="border-2 border-warning hover:shadow-neon transition-all duration-300">
               <CardHeader>
-                <CardTitle className="font-retro glow-blue flex items-center gap-2">
+                <CardTitle className="font-elegant font-semibold glow-blue flex items-center gap-2">
                   <Award className="w-5 h-5" />
                   Study Streak
                 </CardTitle>
-                <CardDescription className="font-retro">
+                <CardDescription className="font-elegant">
                   Keep the momentum going!
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
-                  <div className="text-5xl font-retro font-bold glow-pink mb-2">
+                  <div className="text-5xl font-elegant font-bold glow-pink mb-2">
                     {stats?.studyStreak || 0}
                     <span className="text-2xl ml-2">🔥</span>
                   </div>
-                  <div className="font-retro text-muted-foreground">
+                  <div className="font-elegant text-muted-foreground">
                     Days in a row
                   </div>
                 </div>
@@ -279,7 +279,7 @@ export default function Dashboard() {
       }}>
           <Card className="border-2 border-primary">
             <CardHeader>
-              <CardTitle className="font-retro glow-text flex items-center gap-2">
+              <CardTitle className="font-elegant font-semibold glow-text flex items-center gap-2">
                 <Brain className="w-5 h-5" />
                 Quick Actions
               </CardTitle>
@@ -319,11 +319,11 @@ export default function Dashboard() {
       }}>
           <Card className="border-2 border-accent">
             <CardHeader>
-              <CardTitle className="font-retro glow-pink flex items-center gap-2">
+              <CardTitle className="font-elegant font-semibold glow-pink flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" />
                 Share Your Feedback
               </CardTitle>
-              <CardDescription className="font-retro">
+              <CardDescription className="font-elegant">
                 Help us improve RetroLearn
               </CardDescription>
             </CardHeader>

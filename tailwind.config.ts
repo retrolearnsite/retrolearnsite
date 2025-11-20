@@ -68,6 +68,8 @@ export default {
       fontFamily: {
         sans: ["system-ui", "-apple-system", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "monospace"],
+        retro: ['Courier New', 'monospace'],
+        elegant: ['Crimson Pro', 'serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
