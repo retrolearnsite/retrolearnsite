@@ -27,7 +27,7 @@ const App = () => {
   if (loading) {
     return (
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <TooltipProvider>
             <div className="flex min-h-screen w-full bg-background items-center justify-center">
               <div className="text-primary">Loading...</div>
@@ -42,7 +42,7 @@ const App = () => {
   if (!user) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <TooltipProvider>
           <EmailConfirmationBanner />
           <Toaster />
@@ -64,7 +64,7 @@ const App = () => {
   // Authenticated users see the full app with sidebar
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <TooltipProvider>
           <EmailConfirmationBanner />
           <Toaster />

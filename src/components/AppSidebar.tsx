@@ -9,12 +9,9 @@ import {
   HelpCircle,
   LogOut,
   LogIn,
-  Moon,
-  Sun,
   Compass,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import {
   Sidebar,
@@ -68,7 +65,6 @@ function SidebarContent() {
   const { open } = useSidebar();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
 
   const handleSignOut = async () => {
     await signOut();
@@ -123,26 +119,6 @@ function SidebarContent() {
             <span className="text-[10px] text-muted-foreground whitespace-nowrap">
               Learn with Style
             </span>
-          </motion.div>
-          <motion.div
-            animate={{
-              opacity: open ? 1 : 0,
-              display: open ? "block" : "none",
-            }}
-            className="ml-auto"
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="hover:bg-accent h-7 w-7"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-3.5 w-3.5" />
-              ) : (
-                <Moon className="h-3.5 w-3.5" />
-              )}
-            </Button>
           </motion.div>
         </div>
 
