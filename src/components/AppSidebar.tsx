@@ -99,10 +99,15 @@ function SidebarContent() {
       <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
         {/* Logo */}
         <div className="flex items-center gap-3 px-2 py-3 mb-2">
-          <img
+          <motion.img
             src={retroLogo}
             alt="RetroLearn Logo"
-            className="h-7 w-7 flex-shrink-0"
+            className="flex-shrink-0 object-contain"
+            initial={false}
+            animate={{
+              width: open ? 32 : 20,
+              height: open ? 32 : 20,
+            }}
           />
           <motion.div
             initial={{ opacity: 0 }}
