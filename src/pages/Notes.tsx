@@ -53,20 +53,20 @@ const Notes = () => {
             className="absolute left-0 top-8 font-retro"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
-            BACK HOME
+            Back Home
           </Button>
           
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-secondary/10 border-2 border-secondary">
-              <FileText className="w-8 h-8 text-secondary" />
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary">
+              <FileText className="w-8 h-8 text-primary" />
             </div>
             <div>
               <h1 className="text-3xl md:text-5xl font-retro gradient-text-retro mb-2">
-                MY NOTES
+                My Notes
               </h1>
-              <div className="flex items-center justify-center gap-2 text-lg font-retro text-secondary">
+              <div className="flex items-center justify-center gap-2 text-lg font-retro text-primary">
                 <FileText className="w-5 h-5" />
-                <span className="glow-blue">BROWSE & STUDY</span>
+                <span>Browse & Study</span>
               </div>
             </div>
           </div>

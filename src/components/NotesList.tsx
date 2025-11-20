@@ -28,10 +28,10 @@ export function NotesList({ onViewNote, notesType = 'regular' }: NotesListProps)
         <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-6 scanlines">
           <div className="flex items-center gap-3 mb-4">
             <FileText className="w-6 h-6 text-primary" />
-            <h2 className="font-retro text-xl glow-text">MY NOTES</h2>
+            <h2 className="font-retro text-xl glow-text">My Notes</h2>
           </div>
           <div className="text-center py-12">
-            <div className="font-retro text-muted-foreground animate-pulse">LOADING NOTES...</div>
+            <div className="font-retro text-muted-foreground animate-pulse">Loading notes...</div>
           </div>
         </div>
       </div>
@@ -39,13 +39,13 @@ export function NotesList({ onViewNote, notesType = 'regular' }: NotesListProps)
   }
 
   if (displayNotes.length === 0) {
-    const title = notesType === 'shared' ? 'SHARED NOTES' : 'MY NOTES';
+    const title = notesType === 'shared' ? 'Shared Notes' : 'My Notes';
     const description = notesType === 'shared' 
       ? 'Notes shared with you from work rooms'
       : 'Your transformed notes and study materials';
     const emptyMessage = notesType === 'shared'
-      ? 'NO SHARED NOTES YET'
-      : 'NO NOTES YET';
+      ? 'No shared notes yet'
+      : 'No notes yet';
     const emptySubtext = notesType === 'shared'
       ? 'When someone shares notes in your work rooms, they\'ll appear here'
       : 'Go to Note Wizard or the home page to create your first note';
@@ -73,7 +73,7 @@ export function NotesList({ onViewNote, notesType = 'regular' }: NotesListProps)
     );
   }
 
-  const title = notesType === 'shared' ? 'SHARED NOTES' : 'MY NOTES';
+  const title = notesType === 'shared' ? 'Shared Notes' : 'My Notes';
   const description = notesType === 'shared' 
     ? 'Notes shared with you from work rooms' 
     : 'Your transformed notes and study materials';
