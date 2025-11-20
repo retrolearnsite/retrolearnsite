@@ -11,11 +11,11 @@ interface GlowCardProps {
 }
 
 const glowColorMap = {
-  blue: { base: 220, spread: 200 },
-  purple: { base: 280, spread: 300 },
-  green: { base: 120, spread: 200 },
-  red: { base: 0, spread: 200 },
-  orange: { base: 30, spread: 200 }
+  blue: { base: 25, spread: 15 },      // Orange/copper tones matching primary
+  purple: { base: 25, spread: 15 },    // Same warm tone
+  green: { base: 25, spread: 15 },     // Same warm tone
+  red: { base: 15, spread: 20 },       // Slightly warmer red
+  orange: { base: 25, spread: 15 }     // Primary color range
 };
 
 const sizeMap = {
@@ -79,7 +79,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
         var(--spotlight-size) var(--spotlight-size) at
         calc(var(--x, 0) * 1px)
         calc(var(--y, 0) * 1px),
-        hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 70) * 1%) / var(--bg-spot-opacity, 0.1)), transparent
+        hsl(var(--hue, 25) 70% 60% / var(--bg-spot-opacity, 0.08)), transparent
       )`,
       backgroundColor: 'var(--backdrop, transparent)',
       backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
@@ -124,9 +124,9 @@ const GlowCard: React.FC<GlowCardProps> = ({
         calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
         calc(var(--x, 0) * 1px)
         calc(var(--y, 0) * 1px),
-        hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 50) * 1%) / var(--border-spot-opacity, 1)), transparent 100%
+        hsl(var(--hue, 25) 85% 60% / var(--border-spot-opacity, 0.6)), transparent 100%
       );
-      filter: brightness(2);
+      filter: brightness(1.3);
     }
     
     [data-glow]::after {
@@ -134,7 +134,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
         calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
         calc(var(--x, 0) * 1px)
         calc(var(--y, 0) * 1px),
-        hsl(0 100% 100% / var(--border-light-opacity, 1)), transparent 100%
+        hsl(30 90% 70% / var(--border-light-opacity, 0.4)), transparent 100%
       );
     }
     
