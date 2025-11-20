@@ -176,7 +176,7 @@ export default function SharedNoteWall({ roomId, userId, isPublicRoom }: SharedN
         <CardHeader>
           <CardTitle className="font-retro text-xl glow-text">
             <FileText className="w-5 h-5 inline mr-2" />
-            SHARED NOTES
+            Shared Notes
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -194,7 +194,7 @@ export default function SharedNoteWall({ roomId, userId, isPublicRoom }: SharedN
         <CardHeader>
           <CardTitle className="font-retro text-xl glow-text">
             <FileText className="w-5 h-5 inline mr-2" />
-            SHARED NOTES ({notes.length})
+            Shared Notes ({notes.length})
           </CardTitle>
         </CardHeader>
         <CardContent>

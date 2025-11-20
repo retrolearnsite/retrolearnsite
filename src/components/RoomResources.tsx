@@ -157,7 +157,7 @@ export default function RoomResources({ roomId, userId }: RoomResourcesProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="font-retro text-xl glow-text">
             <FileText className="w-5 h-5 inline mr-2" />
-            RESOURCES
+            Resources
           </CardTitle>
           <Dialog>
             <DialogTrigger asChild>

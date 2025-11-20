@@ -291,7 +291,7 @@ export default function RoomMiniQuiz({ roomId, userId }: RoomMiniQuizProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="font-retro text-xl glow-text">
             <Brain className="w-5 h-5 inline mr-2" />
-            MINI QUIZZES
+            Mini Quizzes
           </CardTitle>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
