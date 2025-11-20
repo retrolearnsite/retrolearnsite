@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 import mascotImage from '@/assets/retro-wizard-mascot.jpg';
-import retroLogo from '@/assets/retro-tv-logo.png';
+import retroLogo from '@/assets/vintage-tv-icon.png';
 
 interface SplashScreenProps {
   onComplete: () => void;

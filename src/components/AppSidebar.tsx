@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import mascotImage from "@/assets/retro-wizard-mascot.jpg";
-import retroLogo from '@/assets/retro-tv-logo.png';
+import retroLogo from '@/assets/vintage-tv-icon.png';
 const navigationItems = [{
   title: "Home",
   url: "/",
