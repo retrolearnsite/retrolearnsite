@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { ExpandableTabs } from '@/components/ui/expandable-tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,6 +95,7 @@ export default function Quizzes() {
   const [showQuizCreated, setShowQuizCreated] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState<'do-quizzes' | 'create-quiz'>('do-quizzes');
 
   useEffect(() => {
     fetchQuizzes();
@@ -765,22 +767,27 @@ export default function Quizzes() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="do-quizzes" className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-auto p-1">
-            <TabsTrigger value="do-quizzes" className="font-retro py-2.5 text-sm sm:text-base">
-              <Play className="w-4 h-4 mr-1 sm:mr-2" />
-              DO QUIZZES
-            </TabsTrigger>
-            <TabsTrigger value="create-quiz" className="font-retro py-2.5 text-sm sm:text-base">
-              <Plus className="w-4 h-4 mr-1 sm:mr-2" />
-              CREATE QUIZ
-            </TabsTrigger>
-          </TabsList>
+        <div className="w-full space-y-8">
+          <div className="flex justify-center">
+            <ExpandableTabs
+              tabs={[
+                { title: "DO QUIZZES", icon: Play },
+                { title: "CREATE QUIZ", icon: Plus }
+              ]}
+              activeColor="text-primary"
+              className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm shadow-neon font-retro"
+              onChange={(index) => {
+                if (index === 0) setActiveTab('do-quizzes');
+                else if (index === 1) setActiveTab('create-quiz');
+              }}
+            />
+          </div>
 
           {/* Do Quizzes Tab */}
-          <TabsContent value="do-quizzes" className="mt-8 space-y-6">
-            {/* Search Bar */}
-            <div className="max-w-xl mx-auto">
+          {activeTab === 'do-quizzes' && (
+            <div className="mt-8 space-y-6">
+              {/* Search Bar */}
+              <div className="max-w-xl mx-auto">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <Input
@@ -879,11 +886,13 @@ export default function Quizzes() {
                 </Button>
               </div>
             )}
-          </TabsContent>
+            </div>
+          )}
 
           {/* Create Quiz Tab */}
-          <TabsContent value="create-quiz" className="mt-8">
-            <Card className="max-w-2xl mx-auto border-2 border-accent/50 bg-card/95 backdrop-blur-sm shadow-neon">
+          {activeTab === 'create-quiz' && (
+            <div className="mt-8">
+              <Card className="max-w-2xl mx-auto border-2 border-accent/50 bg-card/95 backdrop-blur-sm shadow-neon">
               <CardHeader className="text-center space-y-3">
                 <div className="flex justify-center">
                   <div className="p-4 rounded-full bg-accent/20">
@@ -956,8 +965,9 @@ export default function Quizzes() {
                 </p>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+            </div>
+          )}
+        </div>
 
         <ContinueGuideButton />
       </div>
