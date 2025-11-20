@@ -190,6 +190,15 @@ All colors MUST be HSL for consistent theming.
       0 0 15px hsl(var(--secondary));
   }
 
+  /* Retro Gradient Text */
+  .gradient-text-retro {
+    background: linear-gradient(to bottom, #ffd319, #ff2975, #8c1eff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+
   /* Terminal Cursor Blink */
   .cursor-blink::after {
     content: '█';

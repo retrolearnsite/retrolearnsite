@@ -9,6 +9,7 @@ import { useUserGuideProgress } from "@/hooks/useUserGuideProgress";
 import { useToast } from "@/hooks/use-toast";
 import mascotImage from "@/assets/retro-wizard-mascot.jpg";
 import { setGuideStep, clearGuideStep, markGuideCompleted } from "@/components/ContinueGuideButton";
+import { RetroGrid } from "@/components/ui/retro-grid";
 interface GuideStep {
   id: string;
   title: string;
@@ -194,7 +195,9 @@ const UserGuide = () => {
   }
   const isLastStep = currentStep === guideSteps.length - 1;
   const isFirstStep = currentStep === 0;
-  return <div className="min-h-screen bg-gradient-terminal p-4 md:p-8">
+  return <div className="relative min-h-screen">
+      <RetroGrid className="opacity-20" />
+      <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
         {/* Simple Header */}
         <div className="flex items-center justify-between mb-8">
@@ -221,7 +224,7 @@ const UserGuide = () => {
             
             {/* Title */}
             <div className="space-y-2">
-              <h1 className="text-3xl md:text-5xl font-retro font-bold glow-text">
+              <h1 className="text-3xl md:text-5xl font-retro gradient-text-retro">
                 {currentGuideStep.title}
               </h1>
               <p className="text-lg md:text-xl text-primary font-retro">
@@ -267,6 +270,7 @@ const UserGuide = () => {
           {guideSteps.map((_, index) => <button key={index} onClick={() => jumpToStep(index)} className={`w-2 h-2 rounded-full transition-all ${index === currentStep ? 'bg-primary w-8' : index < currentStep ? 'bg-primary/50' : 'bg-muted'}`} aria-label={`Go to step ${index + 1}`} />)}
         </div>
       </div>
+    </div>
     </div>;
 };
 export default UserGuide;

@@ -156,7 +156,7 @@ export default function Dashboard() {
               HOME
             </Button>
             <div>
-              <h1 className="text-3xl md:text-4xl font-retro font-bold glow-text">
+              <h1 className="text-3xl md:text-4xl font-retro gradient-text-retro">
                 DASHBOARD
               </h1>
               <p className="text-sm font-retro text-muted-foreground">

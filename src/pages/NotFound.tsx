@@ -1,5 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { RetroGrid } from "@/components/ui/retro-grid";
 
 const NotFound = () => {
   const location = useLocation();
@@ -9,11 +10,12 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
-        <Link to="/" className="text-blue-500 underline hover:text-blue-700">
+    <div className="relative flex min-h-screen items-center justify-center">
+      <RetroGrid className="opacity-30" />
+      <div className="relative z-10 text-center">
+        <h1 className="mb-4 text-4xl font-retro gradient-text-retro">404</h1>
+        <p className="mb-4 text-xl font-retro text-foreground">Oops! Page not found</p>
+        <Link to="/" className="font-retro text-primary underline hover:text-secondary transition-colors">
           Return to Home
         </Link>
       </div>
