@@ -104,43 +104,47 @@ const NoteWizard = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:ml-[80px]">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <header className="text-center py-8 relative">
+      <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
+        {/* Back Button - separate from header on mobile */}
+        <div className="flex justify-start md:justify-end pt-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate('/')}
-            className="absolute right-4 top-4 text-foreground"
+            className="text-foreground font-retro"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
-            Back Home
+            <span className="hidden sm:inline">Back Home</span>
+            <span className="sm:hidden">Back</span>
           </Button>
-          
-          <div className="flex items-center justify-center gap-6 mb-6">
+        </div>
+
+        {/* Header */}
+        <header className="text-center py-4 md:py-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-4 md:mb-6">
             <div>
               <img 
                 src={retroLogo} 
                 alt="Retro Learn Logo" 
-                className="w-20 h-20"
+                className="w-16 h-16 md:w-20 md:h-20"
               />
             </div>
             <div>
-              <h1 className="text-3xl md:text-5xl font-retro gradient-text-retro mb-2">
+              <h1 className="text-2xl md:text-5xl font-retro gradient-text-retro mb-2">
                 Retro Note Wizard
               </h1>
-              <div className="flex items-center justify-center gap-4 text-lg font-retro text-foreground">
-                <Brain className="w-5 h-5 text-primary" />
+              <div className="flex items-center justify-center gap-2 md:gap-4 text-sm md:text-lg font-retro text-foreground">
+                <Brain className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 <span>Transform</span>
-                <Zap className="w-5 h-5 text-primary" />
+                <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 <span>Study</span>
-                <Sparkles className="w-5 h-5 text-primary" />
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 <span>Succeed</span>
               </div>
             </div>
           </div>
           
-          <p className="text-lg font-retro text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm md:text-lg font-retro text-muted-foreground max-w-2xl mx-auto px-4">
             Turn your messy notes into organized summaries, flashcards, and Q&A sets with the power of AI magic ✨
           </p>
         </header>
