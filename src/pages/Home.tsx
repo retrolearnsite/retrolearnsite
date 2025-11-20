@@ -27,14 +27,14 @@ export default function Home() {
             className="flex items-center justify-center gap-6 mb-6"
           >
             <div className="relative">
-              <img src={mascotImage} alt="Study Platform Logo" className="w-20 h-20 rounded-lg border-2 border-primary" />
+              <img src={mascotImage} alt="Retro Learn Logo" className="w-20 h-20 rounded-lg border-2 border-primary" />
               <div className="absolute -top-2 -right-2">
                 <Sparkles className="w-6 h-6 text-primary animate-pulse" />
               </div>
             </div>
             <div>
               <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-2">
-                Study Platform
+                Retro Learn
               </h1>
               <div className="flex items-center justify-center gap-4 text-lg text-muted-foreground">
                 <Brain className="w-5 h-5" />
@@ -76,7 +76,7 @@ export default function Home() {
               Sign In Required
             </h2>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto text-lg">
-              Sign in to access all Study Platform features and start your learning journey
+              Sign in to access all Retro Learn features and start your learning journey
             </p>
             <Button 
               variant="default" 

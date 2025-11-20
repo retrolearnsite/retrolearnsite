@@ -80,7 +80,7 @@ const App = () => {
                     <Menu className="w-5 h-5" />
                   </SidebarTrigger>
                   <div className="flex-1">
-                    <h1 className="text-sm font-semibold text-foreground">Study Platform</h1>
+                    <h1 className="text-sm font-semibold text-foreground">Retro Learn</h1>
                   </div>
                 </header>
                 <main className="flex-1 min-h-0">
