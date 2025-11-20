@@ -76,8 +76,8 @@ export default function Dashboard() {
     return streak;
   };
   if (loading || loadingStats) {
-    return <div className="min-h-screen bg-background p-4">
-        <div className="max-w-6xl mx-auto py-24 text-center text-muted-foreground animate-pulse">
+    return <div className="min-h-screen bg-background p-4 md:p-8">
+        <div className="max-w-6xl mx-auto py-12 md:py-24 text-center text-muted-foreground animate-pulse">
           Loading dashboard...
         </div>
       </div>;
@@ -110,8 +110,8 @@ export default function Dashboard() {
     color: 'text-warning',
     gradient: 'from-warning/20 to-warning/5'
   }];
-  return <div className="min-h-screen bg-background p-4">
-      <div className="max-w-6xl mx-auto space-y-8">
+  return <div className="min-h-screen bg-background p-4 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <motion.header initial={{
         opacity: 0,
@@ -119,26 +119,26 @@ export default function Dashboard() {
       }} animate={{
         opacity: 1,
         y: 0
-      }} className="flex items-center justify-between py-6">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="font-retro">
+      }} className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 md:py-6 gap-4">
+          <div className="flex items-start sm:items-center gap-2 md:gap-4 flex-col sm:flex-row w-full sm:w-auto">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="font-retro self-start">
               <ArrowLeft className="w-4 h-4 mr-2" />
               HOME
             </Button>
             <div>
-              <h1 className="text-3xl md:text-4xl font-retro gradient-text-retro">
+              <h1 className="text-2xl md:text-4xl font-retro gradient-text-retro">
                 Dashboard
               </h1>
-              <p className="text-sm font-retro text-muted-foreground">
+              <p className="text-xs md:text-sm font-retro text-muted-foreground">
                 Track your learning progress
               </p>
             </div>
           </div>
-          <Sparkles className="w-8 h-8 text-accent animate-pulse" />
+          <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-accent animate-pulse" />
         </motion.header>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {statCards.map((stat, index) => <motion.div key={stat.label} initial={{
           opacity: 0,
           y: 20

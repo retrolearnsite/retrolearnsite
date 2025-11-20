@@ -51,7 +51,7 @@ export default function WorkRooms() {
       </div>;
   }
   return <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <motion.div initial={{
         opacity: 0,
@@ -74,7 +74,7 @@ export default function WorkRooms() {
             opacity: 1
           }} transition={{
             delay: 0.1
-          }} className="text-4xl font-retro glow-text font-mono font-bold md:text-8xl">WORKROOMS</motion.h1>
+          }} className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-retro glow-text font-mono font-bold">WORKROOMS</motion.h1>
             <motion.p initial={{
             opacity: 0
           }} animate={{

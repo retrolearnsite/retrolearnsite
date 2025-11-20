@@ -418,7 +418,7 @@ export default function Quizzes() {
       <div className="min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
         <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
           {/* Header */}
-          <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center justify-between flex-wrap gap-2 md:gap-4">
             <Button 
               variant="outline" 
               onClick={resetQuiz} 
@@ -436,7 +436,7 @@ export default function Quizzes() {
           <Card className="border-2 border-primary/50 bg-card/95 backdrop-blur-sm shadow-neon">
             <CardHeader className="space-y-4">
               <div className="text-center space-y-2">
-                <CardTitle className="font-retro text-2xl md:text-3xl glow-text">
+                <CardTitle className="font-retro text-xl md:text-3xl glow-text">
                   {currentQuiz.title}
                 </CardTitle>
                 <Progress value={progress} className="h-2" />
@@ -446,8 +446,8 @@ export default function Quizzes() {
             <CardContent className="space-y-8">
               {currentQuestion && (
                 <>
-                  <div className="bg-muted/30 p-6 rounded-lg border border-border/50">
-                    <h3 className="text-lg md:text-xl font-retro text-foreground leading-relaxed">
+                  <div className="bg-muted/30 p-4 md:p-6 rounded-lg border border-border/50">
+                    <h3 className="text-base md:text-xl font-retro text-foreground leading-relaxed">
                       {currentQuestion.question_text}
                     </h3>
                   </div>
@@ -461,7 +461,7 @@ export default function Quizzes() {
                       <div
                         key={option}
                         className={`
-                          flex items-start gap-4 p-5 rounded-lg border-2 
+                          flex items-start gap-2 md:gap-4 p-3 md:p-5 rounded-lg border-2 
                           transition-all duration-300 cursor-pointer
                           ${answers[currentQuestion.id] === option
                             ? 'border-primary bg-primary/10 shadow-lg'
@@ -476,9 +476,9 @@ export default function Quizzes() {
                         />
                         <Label
                           htmlFor={`${currentQuestion.id}-${option}`}
-                          className="font-retro text-base flex-1 cursor-pointer leading-relaxed"
+                          className="font-retro text-sm md:text-base flex-1 cursor-pointer leading-relaxed"
                         >
-                          <span className="font-bold text-primary mr-3 text-lg">
+                          <span className="font-bold text-primary mr-2 md:mr-3 text-base md:text-lg">
                             {option}.
                           </span>
                           {currentQuestion[`option_${option.toLowerCase()}` as keyof QuizQuestion]}
@@ -488,15 +488,16 @@ export default function Quizzes() {
                   </RadioGroup>
 
                   {/* Navigation */}
-                  <div className="flex justify-between items-center pt-4 gap-4">
+                  <div className="flex justify-between items-center pt-4 gap-2 md:gap-4">
                     <Button
                       variant="outline"
                       onClick={previousQuestion}
                       disabled={currentQuestionIndex === 0}
-                      className="font-retro"
+                      className="font-retro text-sm md:text-base"
                     >
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      Previous
+                      <ArrowLeft className="w-4 h-4 mr-1 md:mr-2" />
+                      <span className="hidden sm:inline">Previous</span>
+                      <span className="sm:hidden">Prev</span>
                     </Button>
 
                     {currentQuestionIndex === questions.length - 1 ? (

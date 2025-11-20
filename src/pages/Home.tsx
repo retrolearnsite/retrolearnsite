@@ -14,37 +14,37 @@ export default function Home() {
     loading
   } = useAuth();
   const navigate = useNavigate();
-  return <div className="min-h-screen p-4 bg-background">
-      <div className="max-w-6xl mx-auto space-y-8">
+  return <div className="min-h-screen p-4 md:p-8 bg-background">
+      <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
-        <header className="text-center py-8 relative">
+        <header className="text-center py-4 md:py-8 relative">
 
           {/* Main Header */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex items-center justify-center gap-6 mb-6"
+            className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-4 md:mb-6"
           >
             <div>
-              <img src={retroLogo} alt="Retro Learn Logo" className="w-20 h-20" />
+              <img src={retroLogo} alt="Retro Learn Logo" className="w-16 h-16 md:w-20 md:h-20" />
             </div>
             <div>
-              <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-2">
+              <h1 className="text-3xl md:text-6xl font-bold text-foreground mb-2">
                 Retro Learn
               </h1>
-              <div className="flex items-center justify-center gap-4 text-lg text-muted-foreground">
-                <Brain className="w-5 h-5 text-primary" />
+              <div className="flex items-center justify-center gap-2 md:gap-4 text-sm md:text-lg text-muted-foreground">
+                <Brain className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 <span>Learn</span>
-                <Zap className="w-5 h-5 text-primary" />
+                <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 <span>Study</span>
-                <Sparkles className="w-5 h-5 text-primary" />
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 <span>Succeed</span>
               </div>
             </div>
           </motion.div>
           
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Your AI-powered learning platform with note transformation and collaborative study rooms
           </p>
         </header>
