@@ -474,7 +474,7 @@ export default function WorkRoom() {
                     <div className="flex items-center justify-between">
                       <CardTitle className="font-retro text-lg glow-text flex items-center gap-2">
                         <MessageCircle className="w-5 h-5" />
-                        LIVE CHAT
+                        Live Chat
                       </CardTitle>
                       <Badge variant={connectionStatus === 'connected' ? 'default' : 'secondary'} className="font-retro text-xs animate-pulse">
                         {connectionStatus === 'connected' ? '● Connected' : 'Connecting...'}
@@ -654,7 +654,7 @@ export default function WorkRoom() {
                   <CardHeader>
                     <CardTitle className="font-retro text-xl glow-text flex items-center gap-2">
                       <Brain className="w-5 h-5" />
-                      AI STUDY BUDDY
+                      AI Study Buddy
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -671,7 +671,7 @@ export default function WorkRoom() {
                   <CardHeader>
                     <CardTitle className="font-retro text-lg glow-text">
                       <Users className="w-5 h-5 inline mr-2" />
-                      MEMBERS ({members.length})
+                      Members ({members.length})
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -725,7 +725,7 @@ export default function WorkRoom() {
           <DialogHeader>
             <DialogTitle className="font-retro text-2xl glow-text flex items-center gap-2">
               <Brain className="w-6 h-6" />
-              AI STUDY BUDDY
+              AI Study Buddy
             </DialogTitle>
           </DialogHeader>
           <AIStudyBuddy

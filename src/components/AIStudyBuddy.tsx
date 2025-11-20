@@ -140,7 +140,7 @@ export default function AIStudyBuddy({
       <CardHeader>
         <CardTitle className="font-retro text-xl glow-text flex items-center gap-2">
           <Bot className="w-5 h-5" />
-          AI STUDY BUDDY
+          AI Study Buddy
           {isDragOver && <Badge className="animate-pulse">Drop here!</Badge>}
         </CardTitle>
       </CardHeader>

@@ -96,7 +96,7 @@ export default function RoomLeaderboard({ roomId }: RoomLeaderboardProps) {
         <CardHeader>
           <CardTitle className="font-retro text-xl glow-text">
             <Trophy className="w-5 h-5 inline mr-2" />
-            LEADERBOARD
+            Leaderboard
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -114,7 +114,7 @@ export default function RoomLeaderboard({ roomId }: RoomLeaderboardProps) {
         <CardHeader>
           <CardTitle className="font-retro text-xl glow-text">
             <Trophy className="w-5 h-5 inline mr-2" />
-            LEADERBOARD
+            Leaderboard
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -131,7 +131,7 @@ export default function RoomLeaderboard({ roomId }: RoomLeaderboardProps) {
       <CardHeader>
         <CardTitle className="font-retro text-xl glow-text">
           <Trophy className="w-5 h-5 inline mr-2" />
-          LEADERBOARD
+          Leaderboard
         </CardTitle>
       </CardHeader>
       <CardContent>
