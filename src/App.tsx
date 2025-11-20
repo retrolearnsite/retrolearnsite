@@ -71,7 +71,7 @@ const App = () => {
           <Sonner />
           <div className="flex min-h-svh w-full bg-background">
             <AppSidebar />
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto md:ml-[80px]">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/note-wizard" element={<NoteWizard />} />
