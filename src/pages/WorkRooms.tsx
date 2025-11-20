@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useWorkRooms } from '@/hooks/useWorkRooms';
 import { WorkRoomCard } from '@/components/WorkRoomCard';
@@ -6,7 +7,7 @@ import { JoinRoomDialog } from '@/components/JoinRoomDialog';
 import DiscoverRooms from '@/components/DiscoverRooms';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ExpandableTabs } from '@/components/ui/expandable-tabs';
 import { ArrowLeft, Users, Globe, Home, Plus, KeyRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Database } from '@/integrations/supabase/types';
@@ -19,6 +20,7 @@ export default function WorkRooms() {
   const { user } = useAuth();
   const { rooms, loading, refetch } = useWorkRooms();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'my-rooms' | 'discover'>('my-rooms');
 
   const handleEnterRoom = (room: WorkRoom) => {
     navigate(`/workroom/${room.id}`);
@@ -97,27 +99,26 @@ export default function WorkRooms() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="w-full space-y-8"
         >
-          <Tabs defaultValue="my-rooms" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 h-auto p-1.5 bg-card/90 backdrop-blur-sm border-2 border-primary/30 shadow-neon">
-              <TabsTrigger
-                value="my-rooms"
-                className="font-retro py-3 data-[state=active]:bg-primary/20 data-[state=active]:shadow-neon transition-all"
-              >
-                <Home className="w-4 h-4 mr-2" />
-                MY ROOMS
-              </TabsTrigger>
-              <TabsTrigger
-                value="discover"
-                className="font-retro py-3 data-[state=active]:bg-primary/20 data-[state=active]:shadow-neon transition-all"
-              >
-                <Globe className="w-4 h-4 mr-2" />
-                DISCOVER
-              </TabsTrigger>
-            </TabsList>
+          <div className="flex justify-center">
+            <ExpandableTabs
+              tabs={[
+                { title: "MY ROOMS", icon: Home },
+                { title: "DISCOVER", icon: Globe }
+              ]}
+              activeColor="text-primary"
+              className="border-2 border-primary/30 bg-card/90 backdrop-blur-sm shadow-neon font-retro"
+              onChange={(index) => {
+                if (index === 0) setActiveTab('my-rooms');
+                else if (index === 1) setActiveTab('discover');
+              }}
+            />
+          </div>
 
-            {/* My Rooms Tab */}
-            <TabsContent value="my-rooms" className="mt-8 space-y-6">
+          {/* My Rooms Tab */}
+          {activeTab === 'my-rooms' && (
+            <div className="mt-8 space-y-6">
               {/* Actions */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -178,13 +179,15 @@ export default function WorkRooms() {
                   ))}
                 </div>
               )}
-            </TabsContent>
+            </div>
+          )}
 
-            {/* Discover Tab */}
-            <TabsContent value="discover" className="mt-8">
+          {/* Discover Tab */}
+          {activeTab === 'discover' && (
+            <div className="mt-8">
               <DiscoverRooms />
-            </TabsContent>
-          </Tabs>
+            </div>
+          )}
         </motion.div>
         
         {/* Guide Continue Button */}
