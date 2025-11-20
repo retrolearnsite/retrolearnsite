@@ -1,9 +1,10 @@
-import { Home, FileText, Users, Trophy, GraduationCap, BookOpen, BarChart, User, LogOut, Sparkles } from "lucide-react";
+import { Home, FileText, Users, Trophy, GraduationCap, BookOpen, BarChart, User, LogOut, Moon, Sun } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useTheme } from "next-themes";
 import mascotImage from "@/assets/retro-wizard-mascot.jpg";
 const navigationItems = [{
   title: "Home",
@@ -42,6 +43,7 @@ export function AppSidebar() {
     user,
     signOut
   } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const handleSignOut = async () => {
     await signOut();
@@ -59,16 +61,28 @@ export function AppSidebar() {
   };
   return <Sidebar className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="border-b border-sidebar-border p-4">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <img src={mascotImage} alt="App Logo" className="w-8 h-8 rounded-md" />
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <img src={mascotImage} alt="App Logo" className="w-8 h-8 rounded-md" />
+            </div>
+            {open && <div>
+                <h2 className="text-sm font-semibold text-sidebar-foreground">Study Platform</h2>
+                <p className="text-xs text-muted-foreground">
+                  AI Learning Tools
+                </p>
+              </div>}
           </div>
-          {open && <div>
-              <h2 className="text-sm font-semibold text-sidebar-foreground">Study Platform</h2>
-              <p className="text-xs text-muted-foreground">
-                AI Learning Tools
-              </p>
-            </div>}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="h-8 w-8"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
         </div>
       </SidebarHeader>
 
@@ -94,31 +108,31 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t-2 border-primary/50 p-4">
+      <SidebarFooter className="border-t border-sidebar-border p-4">
         {user ? <div className="space-y-2">
             <div className="flex items-center gap-3 px-2 py-2">
-              <Avatar className="w-8 h-8 border-2 border-primary">
-                <AvatarFallback className="bg-primary/20 text-primary font-retro text-xs">
+              <Avatar className="w-8 h-8 border border-sidebar-border">
+                <AvatarFallback className="bg-sidebar-accent text-sidebar-accent-foreground text-xs">
                   {getUserInitials()}
                 </AvatarFallback>
               </Avatar>
               {open && <div className="flex-1 min-w-0">
-                  <p className="font-retro text-xs font-semibold text-foreground truncate">
+                  <p className="text-xs font-medium text-sidebar-foreground truncate">
                     {getUserDisplayName()}
                   </p>
-                  <p className="font-retro text-xs text-muted-foreground truncate">
+                  <p className="text-xs text-muted-foreground truncate">
                     {user.email}
                   </p>
                 </div>}
             </div>
-            {open && <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full font-retro text-xs border-primary/50 hover:bg-destructive/20 hover:text-destructive hover:border-destructive">
+            {open && <Button variant="ghost" size="sm" onClick={handleSignOut} className="w-full justify-start text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent text-xs">
                 <LogOut className="w-4 h-4 mr-2" />
-                LOGOUT
+                Sign Out
               </Button>}
           </div> : <Button variant="default" size="sm" onClick={() => navigate('/')} className="w-full text-xs">
-            <User className="w-4 h-4 mr-2" />
-            {open ? 'LOGIN' : ''}
-          </Button>}
+              <User className="w-4 h-4 mr-2" />
+              {open ? 'Sign In' : ''}
+            </Button>}
       </SidebarFooter>
     </Sidebar>;
 }
