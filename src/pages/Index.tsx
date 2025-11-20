@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import mascotImage from "@/assets/retro-wizard-mascot.jpg";
+import retroLogo from "@/assets/vintage-tv-icon.png";
 import { Sparkles, Zap, Brain, User, LogOut, FileText, Wand2, Mail, Calendar, Hash, Users } from "lucide-react";
 
 const Index = () => {
@@ -167,15 +167,12 @@ const Index = () => {
         {/* Header */}
         <header className="text-center py-8 relative">
           <div className="flex items-center justify-center gap-6 mb-6">
-            <div className="relative">
+            <div>
               <img 
-                src={mascotImage} 
-                alt="Retro Wizard Mascot" 
-                className="w-24 h-24 rounded-full border-4 border-primary shadow-neon"
+                src={retroLogo} 
+                alt="Retro Learn Logo" 
+                className="w-24 h-24"
               />
-              <div className="absolute -top-2 -right-2">
-                <Sparkles className="w-8 h-8 text-accent animate-pulse" />
-              </div>
             </div>
             <div>
               <h1 className="text-4xl md:text-6xl font-retro gradient-text-retro mb-2">

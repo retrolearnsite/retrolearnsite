@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import mascotImage from '@/assets/retro-wizard-mascot.jpg';
 import retroLogo from '@/assets/vintage-tv-icon.png';
 import { Sparkles, Brain, FileText, Users, Wand2, User, Zap, Trophy, Search, ArrowRight } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
