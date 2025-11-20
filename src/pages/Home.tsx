@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import mascotImage from '@/assets/retro-wizard-mascot.jpg';
 import { Sparkles, Brain, FileText, Users, Wand2, User, Zap, Trophy, Search, ArrowRight } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
-import { RetroGrid } from '@/components/ui/retro-grid';
 export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const {
@@ -15,9 +14,8 @@ export default function Home() {
     loading
   } = useAuth();
   const navigate = useNavigate();
-  return <div className="relative min-h-screen p-4">
-      <RetroGrid className="opacity-30" />
-      <div className="relative z-10 max-w-6xl mx-auto space-y-8">
+  return <div className="min-h-screen p-4 bg-background">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center py-8 relative">
 

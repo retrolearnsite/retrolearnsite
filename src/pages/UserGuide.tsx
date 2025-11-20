@@ -9,7 +9,6 @@ import { useUserGuideProgress } from "@/hooks/useUserGuideProgress";
 import { useToast } from "@/hooks/use-toast";
 import mascotImage from "@/assets/retro-wizard-mascot.jpg";
 import { setGuideStep, clearGuideStep, markGuideCompleted } from "@/components/ContinueGuideButton";
-import { RetroGrid } from "@/components/ui/retro-grid";
 interface GuideStep {
   id: string;
   title: string;
@@ -195,9 +194,8 @@ const UserGuide = () => {
   }
   const isLastStep = currentStep === guideSteps.length - 1;
   const isFirstStep = currentStep === 0;
-  return <div className="relative min-h-screen">
-      <RetroGrid className="opacity-20" />
-      <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 md:p-8">
+  return (
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
         {/* Simple Header */}
         <div className="flex items-center justify-between mb-8">
@@ -271,6 +269,6 @@ const UserGuide = () => {
         </div>
       </div>
     </div>
-    </div>;
+  );
 };
 export default UserGuide;

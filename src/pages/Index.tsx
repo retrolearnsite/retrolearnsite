@@ -16,7 +16,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import mascotImage from "@/assets/retro-wizard-mascot.jpg";
 import { Sparkles, Zap, Brain, User, LogOut, FileText, Wand2, Mail, Calendar, Hash, Users } from "lucide-react";
-import { RetroGrid } from "@/components/ui/retro-grid";
 
 const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -163,9 +162,7 @@ const Index = () => {
   };
 
   return (
-    <div className="relative min-h-screen">
-      <RetroGrid className="opacity-20" />
-      <div className="relative z-10 p-4 scanlines">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center py-8 relative">
@@ -299,7 +296,6 @@ const Index = () => {
           onClose={() => setShowAuthModal(false)}
         />
       </div>
-    </div>
     </div>
   );
 };

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, FileText, Sparkles, Users } from "lucide-react";
 import { ContinueGuideButton } from "@/components/ContinueGuideButton";
-import { RetroGrid } from "@/components/ui/retro-grid";
 
 const Notes = () => {
   const [currentNote, setCurrentNote] = useState<any>(null);
@@ -30,8 +29,8 @@ const Notes = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-terminal p-4 scanlines">
-        <div className="max-w-6xl mx-auto py-24 text-center font-retro text-muted-foreground">
+      <div className="min-h-screen bg-background p-4">
+        <div className="max-w-6xl mx-auto py-24 text-center text-muted-foreground">
           Loading your notes...
         </div>
       </div>
@@ -43,10 +42,8 @@ const Notes = () => {
   }
 
   return (
-    <div className="relative min-h-screen">
-      <RetroGrid className="opacity-20" />
-      <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 scanlines">
-        <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-background p-4">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center py-8 relative">
           <Button
@@ -125,7 +122,6 @@ const Notes = () => {
         {/* Guide Continue Button */}
         <ContinueGuideButton />
       </div>
-    </div>
     </div>
   );
 };

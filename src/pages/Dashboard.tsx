@@ -22,7 +22,6 @@ import {
   MessageSquare
 } from 'lucide-react';
 import FeedbackForm from '@/components/FeedbackForm';
-import { RetroGrid } from '@/components/ui/retro-grid';
 
 interface DashboardStats {
   totalNotes: number;
@@ -112,12 +111,9 @@ export default function Dashboard() {
 
   if (loading || loadingStats) {
     return (
-      <div className="relative min-h-screen">
-        <RetroGrid className="opacity-20" />
-        <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 scanlines">
-          <div className="max-w-6xl mx-auto py-24 text-center font-retro text-muted-foreground animate-pulse">
-            Loading dashboard...
-          </div>
+      <div className="min-h-screen bg-background p-4">
+        <div className="max-w-6xl mx-auto py-24 text-center text-muted-foreground animate-pulse">
+          Loading dashboard...
         </div>
       </div>
     );
@@ -135,10 +131,8 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="relative min-h-screen">
-      <RetroGrid className="opacity-20" />
-      <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 scanlines">
-        <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-background p-4">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <motion.header 
           initial={{ opacity: 0, y: -20 }}
@@ -362,7 +356,6 @@ export default function Dashboard() {
           </Card>
         </motion.div>
       </div>
-    </div>
     </div>
   );
 }

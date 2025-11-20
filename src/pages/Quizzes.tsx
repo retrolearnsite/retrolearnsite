@@ -33,7 +33,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { ContinueGuideButton } from '@/components/ContinueGuideButton';
-import { RetroGrid } from '@/components/ui/retro-grid';
 
 interface Quiz {
   id: string;
@@ -742,10 +741,8 @@ export default function Quizzes() {
 
   // Main Dashboard View
   return (
-    <div className="relative min-h-screen">
-      <RetroGrid className="opacity-20" />
-      <div className="relative z-10 min-h-screen bg-gradient-terminal p-3 sm:p-6 lg:p-8 scanlines">
-        <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
+    <div className="min-h-screen bg-background p-3 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
         {/* Header */}
         <div className="space-y-4">
           <Link to="/">
@@ -974,7 +971,6 @@ export default function Quizzes() {
 
         <ContinueGuideButton />
       </div>
-    </div>
     </div>
   );
 }
