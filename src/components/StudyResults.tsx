@@ -204,23 +204,25 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
           </TabsList>
 
           <TabsContent value="summary" className="mt-6">
-            <Card className="p-6 bg-muted border-2 border-secondary">
+            <Card className="p-8 bg-muted border-2 border-secondary">
               {keyPoints.length > 0 && (
-                <div className="mb-4 space-y-2">
-                  <h3 className="font-retro font-bold text-primary">KEY POINTS</h3>
-                  <ul className="space-y-1">
+                <div className="mb-8 space-y-4">
+                  <h3 className="font-retro font-bold text-primary text-lg mb-4">KEY POINTS</h3>
+                  <ul className="space-y-4">
                     {keyPoints.map((point, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-accent font-bold">•</span>
-                        <span className="font-retro text-sm">{parseMarkdownBold(point)}</span>
+                      <li key={index} className="flex items-start gap-3 group">
+                        <span className="text-accent font-bold text-lg mt-0.5 flex-shrink-0">•</span>
+                        <span className="font-retro text-base leading-relaxed text-foreground/90 group-hover:text-foreground transition-colors">
+                          {parseMarkdownBold(point)}
+                        </span>
                       </li>
                     ))}
                   </ul>
-                  <hr className="border-secondary my-4" />
+                  <hr className="border-secondary/50 my-6" />
                 </div>
               )}
               <ScrollArea className="h-[400px] pr-4">
-                <div className="font-retro text-sm text-foreground whitespace-pre-wrap">
+                <div className="font-retro text-base leading-relaxed text-foreground/90 whitespace-pre-wrap space-y-4">
                   {parseMarkdownBold(summary)}
                 </div>
               </ScrollArea>
