@@ -62,8 +62,8 @@ export const ContinueGuideButton = () => {
       <Button
         onClick={handleContinue}
         size="lg"
-        variant="neon"
-        className="font-retro shadow-neon gap-2"
+        variant="default"
+        className="gap-2 shadow-lg"
       >
         <BookOpen className="w-5 h-5" />
         Continue Guide

@@ -176,13 +176,13 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="cyber" size="sm" onClick={handleExport}>
+            <Button variant="secondary" size="sm" onClick={handleExport}>
               <Download className="w-4 h-4" />
-              EXPORT
+              Export
             </Button>
-            <Button variant="terminal" size="sm" onClick={() => navigate('/note-wizard')}>
+            <Button variant="outline" size="sm" onClick={() => navigate('/note-wizard')}>
               <RefreshCw className="w-4 h-4" />
-              NEW NOTES
+              New Notes
             </Button>
           </div>
         </div>
@@ -234,11 +234,11 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
                     Card {currentFlashcard + 1} of {flashcards.length}
                   </span>
                   <div className="flex gap-2">
-                    <Button variant="terminal" size="sm" onClick={prevCard}>
-                      PREV
+                    <Button variant="outline" size="sm" onClick={prevCard}>
+                      Prev
                     </Button>
-                    <Button variant="terminal" size="sm" onClick={nextCard}>
-                      NEXT
+                    <Button variant="outline" size="sm" onClick={nextCard}>
+                      Next
                     </Button>
                   </div>
                 </div>

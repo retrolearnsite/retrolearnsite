@@ -79,10 +79,10 @@ export default function Home() {
               Sign in to access all Retro Learn features and start your learning journey
             </p>
             <Button 
-              variant="neon" 
+              variant="default" 
               size="lg"
               onClick={() => setShowAuthModal(true)} 
-              className="font-retro hover:scale-105 transition-transform" 
+              className="hover:scale-105 transition-transform" 
               disabled={loading}
             >
               <User className="w-5 h-5 mr-2" />

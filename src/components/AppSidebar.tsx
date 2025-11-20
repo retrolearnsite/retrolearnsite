@@ -57,17 +57,16 @@ export function AppSidebar() {
     const name = getUserDisplayName();
     return name.slice(0, 2).toUpperCase();
   };
-  return <Sidebar className="border-r-2 border-primary bg-card/95 backdrop-blur-sm">
-      <SidebarHeader className="border-b-2 border-primary/50 p-4">
+  return <Sidebar className="border-r border-sidebar-border bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <img src={mascotImage} alt="Retro Wizard" className="w-10 h-10 rounded-full border-2 border-primary shadow-neon" />
-            <Sparkles className="w-4 h-4 text-accent absolute -top-1 -right-1 animate-pulse" />
+            <img src={mascotImage} alt="App Logo" className="w-8 h-8 rounded-md" />
           </div>
           {open && <div>
-              <h2 className="font-retro text-sm font-bold glow-text">RETRO LEARN</h2>
-              <p className="text-xs font-retro text-muted-foreground">
-                Study AI Platform
+              <h2 className="text-sm font-semibold text-sidebar-foreground">Study Platform</h2>
+              <p className="text-xs text-muted-foreground">
+                AI Learning Tools
               </p>
             </div>}
         </div>
@@ -75,7 +74,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="font-retro text-primary">
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2">
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -84,8 +83,8 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <NavLink to={item.url} end={item.url === '/'} className={({
                   isActive
-                }) => `flex items-center gap-3 px-3 py-2 rounded-lg font-retro text-sm transition-all ${isActive ? "bg-primary/20 text-primary border-l-4 border-primary shadow-neon" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}>
-                      <item.icon className="w-5 h-5" />
+                }) => `flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"}`}>
+                      <item.icon className="w-4 h-4" />
                       {open && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -116,7 +115,7 @@ export function AppSidebar() {
                 <LogOut className="w-4 h-4 mr-2" />
                 LOGOUT
               </Button>}
-          </div> : <Button variant="neon" size="sm" onClick={() => navigate('/')} className="w-full font-retro text-xs">
+          </div> : <Button variant="default" size="sm" onClick={() => navigate('/')} className="w-full text-xs">
             <User className="w-4 h-4 mr-2" />
             {open ? 'LOGIN' : ''}
           </Button>}
