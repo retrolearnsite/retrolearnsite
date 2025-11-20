@@ -51,29 +51,29 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-card border-2 border-primary scanlines">
+      <DialogContent className="sm:max-w-md bg-card border border-border">
         <DialogHeader className="text-center">
-          <DialogTitle className="text-2xl font-retro glow-text">
-            ACCESS TERMINAL
+          <DialogTitle className="text-2xl font-semibold">
+            Welcome Back
           </DialogTitle>
-          <DialogDescription className="font-retro text-muted-foreground">
+          <DialogDescription className="text-muted-foreground">
             Sign in to save your notes and study progress
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-background border border-primary">
+          <TabsList className="grid w-full grid-cols-2 bg-muted">
             <TabsTrigger 
               value="signin" 
-              className="font-retro data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
-              SIGN IN
+              Sign In
             </TabsTrigger>
             <TabsTrigger 
               value="signup"
-              className="font-retro data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
-              SIGN UP
+              Sign Up
             </TabsTrigger>
           </TabsList>
 

@@ -74,7 +74,7 @@ const App = () => {
                   <Menu className="w-5 h-5" />
                 </SidebarTrigger>
                 <div className="flex-1">
-                  <h1 className="font-retro text-sm font-bold glow-text">RETRO LEARN</h1>
+                  <h1 className="text-sm font-semibold text-sidebar-foreground">Study Platform</h1>
                 </div>
               </header>
               <main className="flex-1 min-h-0">
