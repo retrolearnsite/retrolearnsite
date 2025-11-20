@@ -116,9 +116,24 @@ export default function AIStudyBuddy({
 
     } catch (error: any) {
       console.error('Error asking AI:', error);
+      
+      // Check if it's a function error with a response
+      let errorMessage = "Failed to get AI response";
+      
+      if (error?.context?.body) {
+        try {
+          const errorBody = JSON.parse(error.context.body);
+          errorMessage = errorBody.error || errorMessage;
+        } catch {
+          // If parsing fails, use default message
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to get AI response",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
