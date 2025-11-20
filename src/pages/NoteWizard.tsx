@@ -106,23 +106,23 @@ const NoteWizard = () => {
     <div className="min-h-screen bg-background p-4 md:ml-[80px]">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
-        <header className="text-center py-8">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/')}
-              className="text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back Home
-            </Button>
-            
+        <header className="text-center py-8 relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="absolute right-4 top-4 text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back Home
+          </Button>
+          
+          <div className="flex flex-col items-center justify-center gap-4 mb-6">
             <div>
               <img 
                 src={retroLogo} 
                 alt="Retro Learn Logo" 
-                className="w-20 h-20"
+                className="w-20 h-20 mx-auto"
               />
             </div>
             <div>
