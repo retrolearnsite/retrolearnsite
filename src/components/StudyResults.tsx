@@ -166,21 +166,24 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
   };
 
   return (
-    <Card className="p-6 bg-card border-2 border-success scanlines">
+    <Card className="p-6 bg-card border-2 border-success scanlines shadow-neon">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-retro glow-text">STUDY MATERIALS READY</h2>
+            <h2 className="text-2xl font-retro glow-text animate-fade-in flex items-center gap-3">
+              <Zap className="w-6 h-6 text-accent animate-pulse" />
+              STUDY MATERIALS READY
+            </h2>
             <p className="text-sm text-muted-foreground font-retro mt-1">
               Your notes have been transformed into organized learning resources
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" size="sm" onClick={handleExport}>
+            <Button variant="secondary" size="sm" onClick={handleExport} className="hover-scale">
               <Download className="w-4 h-4" />
               Export
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/note-wizard')}>
+            <Button variant="outline" size="sm" onClick={() => navigate('/note-wizard')} className="hover-scale">
               <RefreshCw className="w-4 h-4" />
               New Notes
             </Button>
@@ -230,42 +233,63 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
           </TabsContent>
 
           <TabsContent value="flashcards" className="mt-6">
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-retro text-muted-foreground">
-                    Card {currentFlashcard + 1} of {flashcards.length}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-retro text-muted-foreground">
+                      Card {currentFlashcard + 1} of {flashcards.length}
+                    </span>
+                    <div className="flex-1 bg-muted h-2 w-48 rounded-full overflow-hidden border border-primary/30">
+                      <div 
+                        className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
+                        style={{ width: `${((currentFlashcard + 1) / flashcards.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={prevCard}>
-                      Prev
+                    <Button variant="outline" size="sm" onClick={prevCard} className="hover-scale font-retro">
+                      ← PREV
                     </Button>
-                    <Button variant="outline" size="sm" onClick={nextCard}>
-                      Next
+                    <Button variant="outline" size="sm" onClick={nextCard} className="hover-scale font-retro">
+                      NEXT →
                     </Button>
                   </div>
                 </div>
                 
-                <Card 
-                  className="h-[300px] cursor-pointer bg-muted border-2 border-accent hover:shadow-pink transition-all duration-300"
-                  onClick={() => setIsFlipped(!isFlipped)}
-                >
-                  <div className="h-full flex items-center justify-center p-6">
-                    <div className="text-center">
-                      <div className="text-lg font-retro mb-4 glow-pink">
+                <div className="perspective-1000">
+                  <Card 
+                    className={`h-[400px] cursor-pointer bg-gradient-to-br from-muted to-muted/50 border-2 ${
+                      isFlipped ? 'border-accent shadow-pink' : 'border-primary shadow-blue'
+                    } hover:shadow-neon transition-all duration-500 animate-scale-in scanlines overflow-hidden relative group`}
+                    onClick={() => setIsFlipped(!isFlipped)}
+                  >
+                    <div className="absolute top-4 right-4 z-10">
+                      <div className={`px-3 py-1 rounded-md border-2 font-retro text-xs ${
+                        isFlipped ? 'border-accent bg-accent/20 text-accent glow-pink' : 'border-primary bg-primary/20 text-primary glow-blue'
+                      }`}>
                         {isFlipped ? "ANSWER" : "QUESTION"}
                       </div>
-                      <p className="font-retro text-foreground">
-                        {isFlipped 
-                          ? parseMarkdownBold(flashcards[currentFlashcard].back)
-                          : parseMarkdownBold(flashcards[currentFlashcard].front)
-                        }
-                      </p>
-                      <div className="mt-6 text-xs text-muted-foreground font-retro">
+                    </div>
+                    
+                    <div className="h-full flex items-center justify-center p-8">
+                      <div className="text-center max-w-2xl">
+                        <p className="font-retro text-lg leading-relaxed text-foreground group-hover:text-primary transition-colors">
+                          {isFlipped 
+                            ? parseMarkdownBold(flashcards[currentFlashcard].back)
+                            : parseMarkdownBold(flashcards[currentFlashcard].front)
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground font-retro bg-background/80 px-4 py-2 rounded-full border border-primary/30">
+                        <Zap className="w-3 h-3" />
                         Click to {isFlipped ? "see question" : "reveal answer"}
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               </div>
           </TabsContent>
 
@@ -273,13 +297,24 @@ export const StudyResults = ({ isVisible, onReset, noteData }: StudyResultsProps
             <ScrollArea className="h-[400px]">
               <div className="space-y-4">
                 {qaData.map((item: any, index: number) => (
-                  <Card key={index} className="p-4 bg-muted border border-secondary">
-                    <div className="space-y-3">
-                      <div className="font-retro font-bold text-primary">
-                        Q: {parseMarkdownBold(item.question)}
-                      </div>
-                      <div className="font-retro text-sm text-foreground pl-4 border-l-2 border-accent">
-                        A: {parseMarkdownBold(item.answer)}
+                  <Card 
+                    key={index} 
+                    className="p-6 bg-gradient-to-br from-muted to-muted/50 border-2 border-secondary hover:border-primary transition-all duration-300 group hover:shadow-blue animate-fade-in"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center font-retro text-sm glow-blue">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-retro font-bold text-primary text-base mb-3 group-hover:glow-blue transition-all">
+                            {parseMarkdownBold(item.question)}
+                          </div>
+                          <div className="font-retro text-sm text-foreground/90 leading-relaxed pl-4 border-l-2 border-accent bg-accent/5 py-2 pr-2 rounded-r">
+                            {parseMarkdownBold(item.answer)}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </Card>
