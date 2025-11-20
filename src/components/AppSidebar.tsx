@@ -20,6 +20,7 @@ import {
   Sidebar,
   SidebarBody,
   SidebarLink,
+  useSidebar,
 } from "@/components/ui/animated-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -63,11 +64,11 @@ const navigationItems = [
   },
 ];
 
-export function AppSidebar() {
+function SidebarContent() {
+  const { open } = useSidebar();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -94,126 +95,136 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-      <SidebarBody className="justify-between gap-10">
-        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-          {/* Logo */}
-          <div className="flex items-center gap-3 px-2 py-2">
-            <img
-              src={retroLogo}
-              alt="RetroLearn Logo"
-              className="h-8 w-8 flex-shrink-0"
-            />
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ 
-                opacity: sidebarOpen ? 1 : 0,
-                display: sidebarOpen ? "flex" : "none"
-              }}
-              className="flex flex-col flex-1"
+    <>
+      <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-2 py-3 mb-2">
+          <img
+            src={retroLogo}
+            alt="RetroLearn Logo"
+            className="h-10 w-10 flex-shrink-0"
+          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: open ? 1 : 0,
+              display: open ? "flex" : "none",
+            }}
+            className="flex flex-col flex-1"
+          >
+            <span className="font-retro text-lg glow-blue whitespace-nowrap">
+              RetroLearn
+            </span>
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+              Learn with Style
+            </span>
+          </motion.div>
+          <motion.div
+            animate={{
+              opacity: open ? 1 : 0,
+              display: open ? "block" : "none",
+            }}
+            className="ml-auto"
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="hover:bg-accent h-7 w-7"
             >
-              <span className="font-retro text-lg glow-blue whitespace-nowrap">
-                RetroLearn
-              </span>
-              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                Learn with Style
-              </span>
-            </motion.div>
-            <motion.div 
-              animate={{ 
-                opacity: sidebarOpen ? 1 : 0,
-                display: sidebarOpen ? "block" : "none"
-              }} 
-              className="ml-auto"
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="hover:bg-accent h-7 w-7"
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-3.5 w-3.5" />
-                ) : (
-                  <Moon className="h-3.5 w-3.5" />
-                )}
-              </Button>
-            </motion.div>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="mt-8 flex flex-col gap-2">
-            {navigationItems.map((link, idx) => (
-              <SidebarLink key={idx} link={link} />
-            ))}
-          </div>
+              {theme === "dark" ? (
+                <Sun className="h-3.5 w-3.5" />
+              ) : (
+                <Moon className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          </motion.div>
         </div>
 
-        {/* Footer with User Info */}
-        <div>
-          {user ? (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 px-2">
-                <Avatar className="h-7 w-7 flex-shrink-0">
-                  <AvatarImage src={user.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
-                    {getUserInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                <motion.div
-                  animate={{
-                    opacity: sidebarOpen ? 1 : 0,
-                    display: sidebarOpen ? "flex" : "none",
-                  }}
-                  className="flex flex-col flex-1 min-w-0"
-                >
-                  <p className="text-xs font-medium text-foreground truncate">
-                    {getUserDisplayName()}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground truncate">
-                    {user.email}
-                  </p>
-                </motion.div>
-              </div>
+        {/* Navigation Links */}
+        <div className="mt-4 flex flex-col gap-1">
+          {navigationItems.map((link, idx) => (
+            <SidebarLink key={idx} link={link} />
+          ))}
+        </div>
+      </div>
+
+      {/* Footer with User Info */}
+      <div className="pt-4 border-t border-border">
+        {user ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 px-2">
+              <Avatar className="h-8 w-8 flex-shrink-0">
+                <AvatarImage src={user.user_metadata?.avatar_url} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
               <motion.div
                 animate={{
-                  opacity: sidebarOpen ? 1 : 0,
-                  display: sidebarOpen ? "block" : "none",
+                  opacity: open ? 1 : 0,
+                  display: open ? "flex" : "none",
                 }}
+                className="flex flex-col flex-1 min-w-0"
               >
-                <Button
-                  onClick={handleSignOut}
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start gap-2 h-8 text-xs"
-                >
-                  <LogOut className="h-3 w-3" />
-                  Sign Out
-                </Button>
+                <p className="text-xs font-medium text-foreground truncate">
+                  {getUserDisplayName()}
+                </p>
+                <p className="text-[10px] text-muted-foreground truncate">
+                  {user.email}
+                </p>
               </motion.div>
             </div>
-          ) : (
-            <div className="flex items-center gap-2 px-2">
+            <motion.div
+              animate={{
+                opacity: open ? 1 : 0,
+                display: open ? "block" : "none",
+              }}
+            >
               <Button
-                onClick={() => navigate("/")}
-                variant="default"
-                size="icon"
-                className="h-7 w-7 flex-shrink-0"
+                onClick={handleSignOut}
+                variant="outline"
+                size="sm"
+                className="w-full justify-start gap-2 h-8 text-xs"
               >
-                <LogIn className="h-3.5 w-3.5" />
+                <LogOut className="h-3 w-3" />
+                Sign Out
               </Button>
-              <motion.span
-                animate={{
-                  opacity: sidebarOpen ? 1 : 0,
-                  display: sidebarOpen ? "inline" : "none",
-                }}
-                className="text-xs font-medium"
-              >
-                Sign In
-              </motion.span>
-            </div>
-          )}
-        </div>
+            </motion.div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 px-2">
+            <Button
+              onClick={() => navigate("/")}
+              variant="default"
+              size="icon"
+              className="h-8 w-8 flex-shrink-0"
+            >
+              <LogIn className="h-4 w-4" />
+            </Button>
+            <motion.span
+              animate={{
+                opacity: open ? 1 : 0,
+                display: open ? "inline" : "none",
+              }}
+              className="text-xs font-medium"
+            >
+              Sign In
+            </motion.span>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+export function AppSidebar() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  return (
+    <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
+      <SidebarBody className="justify-between gap-4">
+        <SidebarContent />
       </SidebarBody>
     </Sidebar>
   );
