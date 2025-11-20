@@ -378,7 +378,7 @@ export default function WorkRoom() {
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-50 border-b-2 border-primary/30 bg-card/95 backdrop-blur-xl"
+        className="sticky top-0 z-30 border-b-2 border-primary/30 bg-card/95 backdrop-blur-xl"
       >
         <div className="max-w-[1800px] mx-auto px-4 md:px-6 py-4">
           <div className="flex items-center justify-between gap-4">
