@@ -117,12 +117,12 @@ const NoteWizard = () => {
             Back Home
           </Button>
           
-          <div className="flex flex-col items-center justify-center gap-4 mb-6">
+          <div className="flex items-center justify-center gap-6 mb-6">
             <div>
               <img 
                 src={retroLogo} 
                 alt="Retro Learn Logo" 
-                className="w-20 h-20 mx-auto"
+                className="w-20 h-20"
               />
             </div>
             <div>
