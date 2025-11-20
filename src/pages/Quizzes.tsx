@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { ExpandableTabs } from '@/components/ui/expandable-tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GlowCard } from '@/components/ui/spotlight-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -806,9 +807,11 @@ export default function Quizzes() {
                 const isMine = quiz.creator_id === user?.id;
                 
                 return (
-                  <Card
+                  <GlowCard
                     key={quiz.id}
-                    className="group hover:scale-105 transition-all duration-300 border-2 border-primary/20 hover:border-primary/50 bg-card/90 backdrop-blur-sm hover:shadow-neon"
+                    customSize={true}
+                    glowColor="blue"
+                    className="group hover:scale-105 transition-all duration-300 bg-card/90 w-full h-auto aspect-auto grid-rows-none p-0"
                   >
                     <CardHeader className="space-y-2 pb-3">
                       <div className="flex items-center gap-2">
@@ -854,7 +857,7 @@ export default function Quizzes() {
                         START
                       </Button>
                     </CardContent>
-                  </Card>
+                  </GlowCard>
                 );
               })}
             </div>
