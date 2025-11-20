@@ -103,7 +103,7 @@ const NoteWizard = () => {
 
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-4 md:ml-[80px]">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center py-8">
@@ -112,10 +112,10 @@ const NoteWizard = () => {
               variant="ghost"
               size="sm"
               onClick={() => navigate('/')}
-              className="absolute left-4 top-8 font-retro"
+              className="text-foreground"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              BACK HOME
+              Back Home
             </Button>
             
             <div>
@@ -127,15 +127,15 @@ const NoteWizard = () => {
             </div>
             <div>
               <h1 className="text-3xl md:text-5xl font-retro gradient-text-retro mb-2">
-                RETRO NOTE WIZARD
+                Retro Note Wizard
               </h1>
-              <div className="flex items-center justify-center gap-4 text-lg font-retro text-secondary">
-                <Brain className="w-5 h-5" />
-                <span>TRANSFORM</span>
-                <Zap className="w-5 h-5 text-accent" />
-                <span className="glow-pink">STUDY</span>
+              <div className="flex items-center justify-center gap-4 text-lg font-retro text-foreground">
+                <Brain className="w-5 h-5 text-primary" />
+                <span>Transform</span>
+                <Zap className="w-5 h-5 text-primary" />
+                <span>Study</span>
                 <Sparkles className="w-5 h-5 text-primary" />
-                <span className="glow-blue">SUCCEED</span>
+                <span>Succeed</span>
               </div>
             </div>
           </div>
