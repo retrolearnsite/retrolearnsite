@@ -444,11 +444,12 @@ const Learn = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Back button - positioned at top with proper spacing from header */}
-      <div className="pt-6 px-6 flex items-center gap-4">
+      <div className="pt-4 md:pt-6 px-4 md:px-6 flex items-center gap-2 md:gap-4">
         <Link to="/" onClick={autoSaveProgress}>
-          <Button variant="outline" size="sm" className="gap-2 animate-fade-in">
+          <Button variant="outline" size="sm" className="gap-2 animate-fade-in text-sm md:text-base">
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            <span className="hidden sm:inline">Back to Home</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </Link>
         {result && user && (
@@ -468,20 +469,20 @@ const Learn = () => {
       <div className="min-h-screen flex flex-col">
         {isLoading && !result ? (
           // Beautiful Loading Screen
-          <div className="flex-1 flex items-center justify-center px-4 py-20">
-            <div className="w-full max-w-2xl mx-auto text-center space-y-8 animate-fade-in">
+          <div className="flex-1 flex items-center justify-center px-4 py-12 md:py-20">
+            <div className="w-full max-w-2xl mx-auto text-center space-y-6 md:space-y-8 animate-fade-in">
               {/* Loading Icon */}
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center mb-6 md:mb-8">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center">
-                    <Sparkles className="w-12 h-12 text-primary animate-pulse" />
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center">
+                    <Sparkles className="w-10 h-10 md:w-12 md:h-12 text-primary animate-pulse" />
                   </div>
-                  <div className="absolute inset-0 w-24 h-24 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 animate-ping"></div>
+                  <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 animate-ping"></div>
                 </div>
               </div>
 
               {/* Title */}
-              <h2 className="text-3xl font-bold glow-text">
+              <h2 className="text-2xl md:text-3xl font-bold glow-text">
                 Exploring {topic}...
               </h2>
 
@@ -531,40 +532,40 @@ const Learn = () => {
               </div>
 
               {/* Main Heading */}
-              <div className="space-y-4">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold glow-text leading-tight">
+              <div className="space-y-3 md:space-y-4 px-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold glow-text leading-tight">
                   What would you like to learn?
                 </h1>
-                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto">
                   Enter any topic and discover insights, videos, and community resources
                 </p>
               </div>
 
               {/* Search Form */}
-              <div className="max-w-3xl mx-auto space-y-6">
-                <form onSubmit={handleSearch} className="space-y-6">
+              <div className="max-w-3xl mx-auto space-y-4 md:space-y-6 px-4">
+                <form onSubmit={handleSearch} className="space-y-4 md:space-y-6">
                   <div className="relative">
                     <Input
                       placeholder="Enter a topic you want to learn..."
                       value={topic}
                       onChange={(e) => setTopic(e.target.value)}
-                      className="text-xl py-8 px-6 rounded-2xl border-primary/30 bg-background/50 backdrop-blur-sm text-center placeholder:text-muted-foreground/70"
+                      className="text-base md:text-xl py-6 md:py-8 px-4 md:px-6 rounded-2xl border-primary/30 bg-background/50 backdrop-blur-sm text-center placeholder:text-muted-foreground/70"
                       disabled={isLoading}
                     />
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full max-w-md mx-auto btn-glow py-8 text-xl rounded-2xl bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 transform hover:scale-105"
+                    className="w-full max-w-md mx-auto btn-glow py-6 md:py-8 text-base md:text-xl rounded-2xl bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 transform hover:scale-105"
                     disabled={isLoading || !topic.trim()}
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                        <Loader2 className="mr-2 md:mr-3 h-5 w-5 md:h-6 md:w-6 animate-spin" />
                         Exploring...
                       </>
                     ) : (
                       <>
-                        Start Learning <Sparkles className="ml-3 h-6 w-6" />
+                        Start Learning <Sparkles className="ml-2 md:ml-3 h-5 w-5 md:h-6 md:w-6" />
                       </>
                     )}
                   </Button>
@@ -572,14 +573,14 @@ const Learn = () => {
               </div>
 
               {/* Popular Topics */}
-              <div className="space-y-6">
-                <h3 className="text-2xl font-semibold text-muted-foreground">Popular cosmic topics:</h3>
-                <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+              <div className="space-y-4 md:space-y-6 px-4">
+                <h3 className="text-lg md:text-2xl font-semibold text-muted-foreground">Popular cosmic topics:</h3>
+                <div className="flex flex-wrap justify-center gap-2 md:gap-3 max-w-4xl mx-auto">
                   {popularTopics.map((popularTopic, index) => (
                     <Button
                       key={popularTopic}
                       variant="outline"
-                      className="rounded-full px-6 py-3 text-lg hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 transform hover:scale-105 animate-fade-in"
+                      className="rounded-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-lg hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 transform hover:scale-105 animate-fade-in"
                       style={{ animationDelay: `${index * 100}ms` }}
                       onClick={() => handlePopularTopicClick(popularTopic)}
                       disabled={isLoading}
@@ -592,12 +593,12 @@ const Learn = () => {
 
               {/* Finish Learning About Section */}
               {user && savedLearningProgress.length > 0 && (
-                <div className="space-y-6 mt-16">
+                <div className="space-y-4 md:space-y-6 mt-10 md:mt-16 px-4">
                   <div className="text-center">
-                    <h3 className="text-2xl font-semibold text-muted-foreground mb-2">Finish Learning About...</h3>
-                    <p className="text-lg text-muted-foreground/80">Continue your learning journey</p>
+                    <h3 className="text-xl md:text-2xl font-semibold text-muted-foreground mb-2">Finish Learning About...</h3>
+                    <p className="text-base md:text-lg text-muted-foreground/80">Continue your learning journey</p>
                   </div>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 max-w-6xl mx-auto">
                     {savedLearningProgress.map((progress, index) => (
                       <Card 
                         key={progress.id} 
@@ -663,12 +664,12 @@ const Learn = () => {
           </div>
         ) : (
           // Results State - Full Layout
-          <div className="flex-1 px-4 py-8 pt-20"> {/* Added pt-20 to account for back button */}
+          <div className="flex-1 px-4 md:px-6 py-6 md:py-8 pt-16 md:pt-20"> {/* Added pt-16/20 to account for back button */}
             <div className="container mx-auto max-w-7xl">
               {/* Header with new search option */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-3xl font-bold glow-text ml-0 sm:ml-2">Exploring: {topic}</h2>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <h2 className="text-xl md:text-3xl font-bold glow-text">Exploring: {topic}</h2>
                   {isLoading && (
                     <div className="flex items-center gap-2 text-primary animate-pulse">
                       <Loader2 className="h-5 w-5 animate-spin" />

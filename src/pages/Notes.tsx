@@ -44,36 +44,37 @@ const Notes = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
-        <header className="text-center py-8 relative">
+        <header className="text-center py-4 md:py-8 relative">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate('/')}
-            className="absolute left-0 top-8 font-retro"
+            className="absolute left-0 top-2 md:top-8 font-retro"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
-            Back Home
+            <span className="hidden sm:inline">Back Home</span>
+            <span className="sm:hidden">Back</span>
           </Button>
           
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary">
-              <FileText className="w-8 h-8 text-primary" />
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mb-4 md:mb-6">
+            <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 border-2 border-primary">
+              <FileText className="w-6 h-6 md:w-8 md:h-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-5xl font-retro gradient-text-retro mb-2">
+              <h1 className="text-2xl md:text-5xl font-retro gradient-text-retro mb-2">
                 My Notes
               </h1>
-              <div className="flex items-center justify-center gap-2 text-lg font-retro text-primary">
-                <FileText className="w-5 h-5" />
+              <div className="flex items-center justify-center gap-2 text-sm md:text-lg font-retro text-primary">
+                <FileText className="w-4 h-4 md:w-5 md:h-5" />
                 <span>Browse & Study</span>
               </div>
             </div>
           </div>
           
-          <p className="text-lg font-retro text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm md:text-lg font-retro text-muted-foreground max-w-2xl mx-auto px-4">
             Access all your transformed notes, flashcards, and study materials in one place
           </p>
         </header>
