@@ -74,9 +74,7 @@ export default function WorkRooms() {
             opacity: 1
           }} transition={{
             delay: 0.1
-          }} className="text-4xl font-retro glow-text font-mono font-bold md:text-8xl">
-              WORK ROOMS
-            </motion.h1>
+          }} className="text-4xl font-retro glow-text font-mono font-bold md:text-8xl">WORKROOMS</motion.h1>
             <motion.p initial={{
             opacity: 0
           }} animate={{
