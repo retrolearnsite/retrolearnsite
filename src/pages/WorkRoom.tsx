@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Send, Users, FileText, Copy, Share, MessageCircle, Brain, Pin, Sparkles, ThumbsUp, Lightbulb, Repeat } from 'lucide-react';
@@ -30,6 +30,7 @@ import SharedNoteWall from '@/components/SharedNoteWall';
 import { RoomLoadingScreen } from '@/components/RoomLoadingScreen';
 import { MessageBubble } from '@/components/MessageBubble';
 import { ReactionPicker } from '@/components/ReactionPicker';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 
 type WorkRoom = Database['public']['Tables']['work_rooms']['Row'];
 
@@ -447,25 +448,19 @@ export default function WorkRoom() {
             transition={{ delay: 0.2 }}
             className="lg:col-span-9"
           >
-            <Tabs defaultValue="chat" value={activeTab} onValueChange={handleTabChange}>
-              <TabsList className="grid w-full grid-cols-4 h-auto p-1 bg-card/90 backdrop-blur-sm border-2 border-primary/30 shadow-neon mb-4">
-                <TabsTrigger value="chat" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                  <MessageCircle className="w-4 h-4 mr-1" />
-                  <span className="hidden sm:inline">Chat</span>
-                </TabsTrigger>
-                <TabsTrigger value="notes" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                  <FileText className="w-4 h-4 mr-1" />
-                  <span className="hidden sm:inline">Notes</span>
-                </TabsTrigger>
-                <TabsTrigger value="quizzes" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                  <Brain className="w-4 h-4 mr-1" />
-                  <span className="hidden sm:inline">Quizzes</span>
-                </TabsTrigger>
-                <TabsTrigger value="resources" className="font-retro py-3 data-[state=active]:bg-primary/20">
-                  <Pin className="w-4 h-4 mr-1" />
-                  <span className="hidden sm:inline">Pinned</span>
-                </TabsTrigger>
-              </TabsList>
+            <AnimatedTabs
+              tabs={[
+                { value: "chat", label: "Chat", icon: MessageCircle },
+                { value: "notes", label: "Notes", icon: FileText },
+                { value: "quizzes", label: "Quizzes", icon: Brain },
+                { value: "resources", label: "Pinned", icon: Pin },
+              ]}
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              className="mb-4"
+            />
+            
+            <Tabs value={activeTab} onValueChange={handleTabChange}>
 
               {/* Chat Tab */}
               <TabsContent value="chat">
