@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 import mascotImage from '@/assets/retro-wizard-mascot.jpg';
-import retroLogo from '@/assets/retro-learn-logo.png';
+import retroLogo from '@/assets/retro-tv-logo.png';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -44,7 +44,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             <img
               src={retroLogo}
               alt="Retro Learn"
-              className="w-full h-full rounded-full border-4 border-primary shadow-neon"
+              className="w-full h-full rounded-full shadow-neon"
             />
             <motion.div
               animate={{ rotate: 360 }}
