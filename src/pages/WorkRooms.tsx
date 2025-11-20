@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { Database } from '@/integrations/supabase/types';
 import { ContinueGuideButton } from '@/components/ContinueGuideButton';
 import { motion } from 'framer-motion';
+import { RetroGrid } from '@/components/ui/retro-grid';
 
 type WorkRoom = Database['public']['Tables']['work_rooms']['Row'];
 
@@ -28,8 +29,10 @@ export default function WorkRooms() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
-        <div className="max-w-7xl mx-auto">
+      <div className="relative min-h-screen">
+        <RetroGrid className="opacity-20" />
+        <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
+          <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -52,11 +55,14 @@ export default function WorkRooms() {
           </motion.div>
         </div>
       </div>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
+    <div className="relative min-h-screen">
+      <RetroGrid className="opacity-20" />
+      <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 md:p-8 scanlines">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <motion.div
@@ -79,7 +85,7 @@ export default function WorkRooms() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-retro font-bold glow-text"
+              className="text-4xl md:text-6xl font-retro gradient-text-retro"
             >
               WORK ROOMS
             </motion.h1>
@@ -193,6 +199,7 @@ export default function WorkRooms() {
         {/* Guide Continue Button */}
         <ContinueGuideButton />
       </div>
+    </div>
     </div>
   );
 }

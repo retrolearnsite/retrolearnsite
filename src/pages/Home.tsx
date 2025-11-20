@@ -35,7 +35,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <h1 className="text-4xl md:text-6xl font-retro font-bold glow-text mb-2">
+              <h1 className="text-4xl md:text-6xl font-retro gradient-text-retro mb-2">
                 RETRO LEARN
               </h1>
               <div className="flex items-center justify-center gap-4 text-lg font-retro text-secondary">

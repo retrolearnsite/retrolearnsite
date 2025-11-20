@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, FileText, Sparkles, Users } from "lucide-react";
 import { ContinueGuideButton } from "@/components/ContinueGuideButton";
+import { RetroGrid } from "@/components/ui/retro-grid";
 
 const Notes = () => {
   const [currentNote, setCurrentNote] = useState<any>(null);
@@ -42,8 +43,10 @@ const Notes = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-terminal p-4 scanlines">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="relative min-h-screen">
+      <RetroGrid className="opacity-20" />
+      <div className="relative z-10 min-h-screen bg-gradient-terminal p-4 scanlines">
+        <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center py-8 relative">
           <Button
@@ -61,7 +64,7 @@ const Notes = () => {
               <FileText className="w-8 h-8 text-secondary" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-5xl font-retro font-bold glow-text mb-2">
+              <h1 className="text-3xl md:text-5xl font-retro gradient-text-retro mb-2">
                 MY NOTES
               </h1>
               <div className="flex items-center justify-center gap-2 text-lg font-retro text-secondary">
@@ -122,6 +125,7 @@ const Notes = () => {
         {/* Guide Continue Button */}
         <ContinueGuideButton />
       </div>
+    </div>
     </div>
   );
 };
