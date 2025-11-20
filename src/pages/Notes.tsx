@@ -4,12 +4,14 @@ import { StudyResults } from "@/components/StudyResults";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { AnimatedTabs } from "@/components/ui/animated-tabs";
 import { ArrowLeft, FileText, Sparkles, Users } from "lucide-react";
 import { ContinueGuideButton } from "@/components/ContinueGuideButton";
 
 const Notes = () => {
   const [currentNote, setCurrentNote] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("my-notes");
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -85,17 +87,16 @@ const Notes = () => {
               noteData={currentNote}
             />
           ) : (
-            <Tabs defaultValue="my-notes" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="my-notes" className="flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  My Notes
-                </TabsTrigger>
-                <TabsTrigger value="shared-notes" className="flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  Shared Notes
-                </TabsTrigger>
-              </TabsList>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <AnimatedTabs
+                tabs={[
+                  { value: "my-notes", label: "My Notes", icon: FileText },
+                  { value: "shared-notes", label: "Shared Notes", icon: Users }
+                ]}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                className="mb-6"
+              />
               
               <TabsContent value="my-notes" className="space-y-4">
                 <NotesList onViewNote={handleViewNote} notesType="regular" />
