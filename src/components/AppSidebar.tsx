@@ -113,7 +113,7 @@ function SidebarContent() {
             }}
             className="flex flex-col flex-1"
           >
-            <span className="font-retro text-lg glow-blue whitespace-nowrap">
+            <span className="font-retro text-xl font-bold glow-blue whitespace-nowrap">
               RetroLearn
             </span>
             <span className="text-[10px] text-muted-foreground whitespace-nowrap">
