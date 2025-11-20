@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import mascotImage from '@/assets/retro-wizard-mascot.jpg';
+import retroLogo from '@/assets/retro-learn-logo.png';
 import { Sparkles, Brain, FileText, Users, Wand2, User, Zap, Trophy, Search, ArrowRight } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
 export default function Home() {
@@ -27,7 +28,7 @@ export default function Home() {
             className="flex items-center justify-center gap-6 mb-6"
           >
             <div className="relative">
-              <img src={mascotImage} alt="Retro Learn Logo" className="w-20 h-20 rounded-lg border-2 border-primary" />
+              <img src={retroLogo} alt="Retro Learn Logo" className="w-20 h-20 rounded-lg border-2 border-primary" />
               <div className="absolute -top-2 -right-2">
                 <Sparkles className="w-6 h-6 text-primary animate-pulse" />
               </div>
@@ -37,7 +38,7 @@ export default function Home() {
                 Retro Learn
               </h1>
               <div className="flex items-center justify-center gap-4 text-lg text-muted-foreground">
-                <Brain className="w-5 h-5" />
+                <Brain className="w-5 h-5 text-primary" />
                 <span>Learn</span>
                 <Zap className="w-5 h-5 text-primary" />
                 <span>Study</span>

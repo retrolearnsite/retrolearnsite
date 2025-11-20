@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import mascotImage from "@/assets/retro-wizard-mascot.jpg";
+import retroLogo from '@/assets/retro-learn-logo.png';
 const navigationItems = [{
   title: "Home",
   url: "/",
@@ -64,7 +65,7 @@ export function AppSidebar() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <img src={mascotImage} alt="App Logo" className="w-8 h-8 rounded-md" />
+              <img src={retroLogo} alt="Retro Learn Logo" className="w-8 h-8 rounded-md" />
             </div>
             {open && <div>
                 <h2 className="text-sm font-semibold text-sidebar-foreground">Retro Learn</h2>
