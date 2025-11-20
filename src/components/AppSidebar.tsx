@@ -96,9 +96,9 @@ function SidebarContent() {
 
   return (
     <>
-      <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+      <div className="flex flex-col flex-1 min-h-0">
         {/* Logo */}
-        <div className="flex items-center gap-3 px-2 py-3 mb-2">
+        <div className="flex items-center gap-3 px-2 py-3 mb-2 flex-shrink-0">
           <motion.img
             src={retroLogo}
             alt="RetroLearn Logo"
@@ -147,7 +147,7 @@ function SidebarContent() {
         </div>
 
         {/* Navigation Links */}
-        <div className="mt-4 flex flex-col gap-1">
+        <div className="mt-4 flex flex-col gap-1 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
           {navigationItems.map((link, idx) => (
             <SidebarLink key={idx} link={link} />
           ))}
@@ -155,7 +155,7 @@ function SidebarContent() {
       </div>
 
       {/* Footer with User Info */}
-      <div className="pt-4 border-t border-border">
+      <div className="pt-4 border-t border-border flex-shrink-0">
         {user ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2 px-2">
