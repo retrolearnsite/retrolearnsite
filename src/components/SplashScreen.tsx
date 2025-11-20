@@ -60,7 +60,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             transition={{ delay: 0.3 }}
           >
             <h1 className="text-5xl font-retro font-bold glow-text mb-4">
-              STUDY PLATFORM
+              RETRO LEARN
             </h1>
             <div className="flex items-center justify-center gap-2 text-secondary font-retro">
               <Zap className="w-5 h-5 animate-pulse" />
