@@ -90,7 +90,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-screen px-4 py-4 hidden md:flex md:flex-col bg-background border-r border-border w-[320px] flex-shrink-0 fixed left-0 top-0",
+        "h-screen px-4 py-4 hidden md:flex md:flex-col bg-background border-r border-border w-[320px] flex-shrink-0 fixed left-0 top-0 z-50",
         className
       )}
       animate={{
@@ -117,7 +117,7 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-16 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-background border-b border-border w-full"
+          "h-16 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-background border-b border-border w-full fixed top-0 left-0 right-0 z-40"
         )}
       >
         <div className="flex justify-end z-20 w-full">
@@ -128,27 +128,39 @@ export const MobileSidebar = ({
         </div>
         <AnimatePresence>
           {open && (
-            <motion.div
-              initial={{ x: "-100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "-100%", opacity: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
-              className={cn(
-                "fixed h-full w-full inset-0 bg-background p-10 z-[100] flex flex-col justify-between",
-                className
-              )}
-            >
-              <div
-                className="absolute right-10 top-10 z-50 text-foreground cursor-pointer"
-                onClick={() => setOpen(!open)}
+            <>
+              {/* Backdrop blur overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[90]"
+                onClick={() => setOpen(false)}
+              />
+              {/* Sidebar content */}
+              <motion.div
+                initial={{ x: "-100%", opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: "-100%", opacity: 0 }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeInOut",
+                }}
+                className={cn(
+                  "fixed h-full w-full inset-0 bg-background p-10 z-[100] flex flex-col justify-between",
+                  className
+                )}
               >
-                <X />
-              </div>
-              {children}
-            </motion.div>
+                <div
+                  className="absolute right-10 top-10 z-50 text-foreground cursor-pointer"
+                  onClick={() => setOpen(!open)}
+                >
+                  <X />
+                </div>
+                {children}
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </div>
