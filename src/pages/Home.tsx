@@ -121,19 +121,19 @@ export default function Home() {
             {/* Secondary Features Grid */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* My Notes */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
-                <CardHeader className="text-center pb-4">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
+                <CardHeader className="text-center pb-4 flex-grow">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <FileText className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
                     My Notes
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm">
+                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
                     Browse and manage your study materials
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-center">
+                <CardContent className="text-center pt-0">
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/notes')}
@@ -147,19 +147,19 @@ export default function Home() {
               </Card>
 
               {/* Work Rooms */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
-                <CardHeader className="text-center pb-4">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
+                <CardHeader className="text-center pb-4 flex-grow">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <Users className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
                     Work Rooms
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm">
+                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
                     Collaborate and study together
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-center">
+                <CardContent className="text-center pt-0">
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/workrooms')}
@@ -173,19 +173,19 @@ export default function Home() {
               </Card>
 
               {/* Quizzes */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
-                <CardHeader className="text-center pb-4">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
+                <CardHeader className="text-center pb-4 flex-grow">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <Trophy className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
                     Quizzes
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm">
+                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
                     Test your knowledge with AI
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-center">
+                <CardContent className="text-center pt-0">
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/quizzes')}
@@ -199,19 +199,19 @@ export default function Home() {
               </Card>
 
               {/* Learn Anything */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
-                <CardHeader className="text-center pb-4">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
+                <CardHeader className="text-center pb-4 flex-grow">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <Search className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
                     Learn Anything
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm">
+                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
                     Discover any topic instantly
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-center">
+                <CardContent className="text-center pt-0">
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/learn')}
