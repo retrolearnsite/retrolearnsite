@@ -150,7 +150,7 @@ const NoteWizard = () => {
           {!user ? (
             <div className="text-center py-12 bg-card border-2 border-primary scanlines">
               <Sparkles className="w-16 h-16 mx-auto mb-4 text-primary" />
-              <h2 className="text-2xl font-retro font-bold glow-text mb-2">ACCESS REQUIRED</h2>
+              <h2 className="text-2xl font-retro font-bold text-foreground mb-2">Access Required</h2>
               <p className="font-retro text-muted-foreground mb-6 max-w-md mx-auto">Sign in to transform your notes using the Retro Note Wizard</p>
               <Button variant="default" onClick={() => setShowAuthModal(true)}>Login to Continue</Button>
             </div>
