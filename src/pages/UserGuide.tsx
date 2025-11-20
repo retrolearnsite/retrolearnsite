@@ -23,7 +23,7 @@ const guideSteps: GuideStep[] = [{
   id: "welcome",
   title: "Welcome!",
   subtitle: "Let's get you started",
-  description: "Study Platform transforms your messy notes into organized study materials with AI magic. This quick tour will show you how!",
+  description: "Retro Learn transforms your messy notes into organized study materials with AI magic. This quick tour will show you how!",
   icon: Sparkles,
   emoji: "✨"
 }, {
@@ -134,7 +134,7 @@ const UserGuide = () => {
         await forceSave();
         toast({
           title: "🎉 Congratulations!",
-          description: "You've completed the Study Platform guide! You're now ready to master all features.",
+          description: "You've completed the Retro Learn guide! You're now ready to master all features.",
           duration: 5000
         });
         navigate('/');
@@ -142,7 +142,7 @@ const UserGuide = () => {
     } else {
       toast({
         title: "🎉 Welcome Back!",
-        description: "You've already mastered Study Platform. Time to put your skills to use!",
+        description: "You've already mastered Retro Learn. Time to put your skills to use!",
         duration: 3000
       });
       navigate('/');
