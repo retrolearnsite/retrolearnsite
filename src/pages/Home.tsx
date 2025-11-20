@@ -124,10 +124,10 @@ export default function Home() {
             {/* Secondary Features Grid */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* My Notes */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border-2 border-secondary bg-card rounded-xl hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-secondary/10 group-hover:bg-secondary/20 transition-all duration-300">
-                    <FileText className="w-8 h-8 text-secondary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
+                    <FileText className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
                   <CardTitle className="text-lg text-card-foreground transition-all duration-300">
                     MY NOTES
@@ -140,7 +140,7 @@ export default function Home() {
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/notes')}
-                    className="group-hover:bg-secondary/20 transition-all duration-300 w-full text-sm"
+                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <FileText className="w-4 h-4 mr-2" />
                     VIEW NOTES
@@ -150,10 +150,10 @@ export default function Home() {
               </Card>
 
               {/* Work Rooms */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border-2 border-accent bg-card rounded-xl hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-all duration-300">
-                    <Users className="w-8 h-8 text-accent group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
+                    <Users className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
                   <CardTitle className="text-lg text-card-foreground transition-all duration-300">
                     WORK ROOMS
@@ -166,7 +166,7 @@ export default function Home() {
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/workrooms')}
-                    className="group-hover:bg-accent/20 transition-all duration-300 w-full text-sm"
+                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <Users className="w-4 h-4 mr-2" />
                     JOIN ROOMS
@@ -176,10 +176,10 @@ export default function Home() {
               </Card>
 
               {/* Quizzes */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border-2 border-warning bg-card rounded-xl hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-warning/10 group-hover:bg-warning/20 transition-all duration-300">
-                    <Trophy className="w-8 h-8 text-warning group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
+                    <Trophy className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
                   <CardTitle className="text-lg text-card-foreground transition-all duration-300">
                     QUIZZES
@@ -192,7 +192,7 @@ export default function Home() {
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/quizzes')}
-                    className="group-hover:bg-warning/20 transition-all duration-300 w-full text-sm"
+                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <Trophy className="w-4 h-4 mr-2" />
                     START QUIZ
@@ -202,10 +202,10 @@ export default function Home() {
               </Card>
 
               {/* Learn Anything */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border-2 border-destructive bg-card rounded-xl hover:scale-105 animate-fade-in">
+              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in">
                 <CardHeader className="text-center pb-4">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-destructive/10 group-hover:bg-destructive/20 transition-all duration-300">
-                    <Search className="w-8 h-8 text-destructive group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
+                    <Search className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
                   <CardTitle className="text-lg text-card-foreground transition-all duration-300">
                     LEARN ANYTHING
@@ -218,7 +218,7 @@ export default function Home() {
                   <Button 
                     variant="outline" 
                     onClick={() => navigate('/learn')}
-                    className="group-hover:bg-destructive/20 transition-all duration-300 w-full text-sm"
+                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <Search className="w-4 h-4 mr-2" />
                     EXPLORE TOPICS
