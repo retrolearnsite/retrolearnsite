@@ -7,22 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  FileText, 
-  Trophy, 
-  Users, 
-  Brain, 
-  TrendingUp, 
-  Calendar,
-  Sparkles,
-  ArrowLeft,
-  Clock,
-  Target,
-  Award,
-  MessageSquare
-} from 'lucide-react';
+import { FileText, Trophy, Users, Brain, TrendingUp, Calendar, Sparkles, ArrowLeft, Clock, Target, Award, MessageSquare } from 'lucide-react';
 import FeedbackForm from '@/components/FeedbackForm';
-
 interface DashboardStats {
   totalNotes: number;
   totalQuizzes: number;
@@ -32,42 +18,31 @@ interface DashboardStats {
   recentActivity: any[];
   studyStreak: number;
 }
-
 export default function Dashboard() {
-  const { user, loading } = useAuth();
+  const {
+    user,
+    loading
+  } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
-
   useEffect(() => {
     if (!loading && !user) {
       navigate('/');
     }
   }, [user, loading, navigate]);
-
   useEffect(() => {
     if (user) {
       fetchDashboardStats();
     }
   }, [user]);
-
   const fetchDashboardStats = async () => {
     if (!user) return;
-
     try {
       // Fetch all stats in parallel
-      const [notesResult, quizzesResult, attemptsResult, roomsResult] = await Promise.all([
-        supabase.from('notes').select('id, created_at').eq('user_id', user.id),
-        supabase.from('quizzes').select('id, created_at').eq('creator_id', user.id),
-        supabase.from('quiz_attempts').select('score, total_questions, completed_at').eq('user_id', user.id),
-        supabase.from('room_members').select('room_id').eq('user_id', user.id)
-      ]);
-
+      const [notesResult, quizzesResult, attemptsResult, roomsResult] = await Promise.all([supabase.from('notes').select('id, created_at').eq('user_id', user.id), supabase.from('quizzes').select('id, created_at').eq('creator_id', user.id), supabase.from('quiz_attempts').select('score, total_questions, completed_at').eq('user_id', user.id), supabase.from('room_members').select('room_id').eq('user_id', user.id)]);
       const totalAttempts = attemptsResult.data?.length || 0;
-      const averageScore = totalAttempts > 0 
-        ? Math.round((attemptsResult.data?.reduce((sum, a) => sum + (a.score / a.total_questions * 100), 0) || 0) / totalAttempts)
-        : 0;
-
+      const averageScore = totalAttempts > 0 ? Math.round((attemptsResult.data?.reduce((sum, a) => sum + a.score / a.total_questions * 100, 0) || 0) / totalAttempts) : 0;
       setStats({
         totalNotes: notesResult.data?.length || 0,
         totalQuizzes: quizzesResult.data?.length || 0,
@@ -83,19 +58,12 @@ export default function Dashboard() {
       setLoadingStats(false);
     }
   };
-
   const calculateStreak = (attempts: any[]) => {
     // Simple streak calculation based on consecutive days
     if (!attempts.length) return 0;
-    
-    const dates = attempts
-      .map(a => new Date(a.completed_at).toDateString())
-      .filter((v, i, a) => a.indexOf(v) === i)
-      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-    
+    const dates = attempts.map(a => new Date(a.completed_at).toDateString()).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
     let streak = 0;
     const today = new Date().toDateString();
-    
     for (let i = 0; i < dates.length; i++) {
       const expectedDate = new Date();
       expectedDate.setDate(expectedDate.getDate() - i);
@@ -105,53 +73,61 @@ export default function Dashboard() {
         break;
       }
     }
-    
     return streak;
   };
-
   if (loading || loadingStats) {
-    return (
-      <div className="min-h-screen bg-background p-4">
+    return <div className="min-h-screen bg-background p-4">
         <div className="max-w-6xl mx-auto py-24 text-center text-muted-foreground animate-pulse">
           Loading dashboard...
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!user) {
     return null;
   }
-
-  const statCards = [
-    { icon: FileText, label: 'Total Notes', value: stats?.totalNotes || 0, color: 'text-primary', gradient: 'from-primary/20 to-primary/5' },
-    { icon: Trophy, label: 'Quizzes Created', value: stats?.totalQuizzes || 0, color: 'text-accent', gradient: 'from-accent/20 to-accent/5' },
-    { icon: Target, label: 'Quiz Attempts', value: stats?.totalQuizAttempts || 0, color: 'text-secondary', gradient: 'from-secondary/20 to-secondary/5' },
-    { icon: Users, label: 'Work Rooms', value: stats?.totalWorkRooms || 0, color: 'text-warning', gradient: 'from-warning/20 to-warning/5' }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background p-4">
+  const statCards = [{
+    icon: FileText,
+    label: 'Total Notes',
+    value: stats?.totalNotes || 0,
+    color: 'text-primary',
+    gradient: 'from-primary/20 to-primary/5'
+  }, {
+    icon: Trophy,
+    label: 'Quizzes Created',
+    value: stats?.totalQuizzes || 0,
+    color: 'text-accent',
+    gradient: 'from-accent/20 to-accent/5'
+  }, {
+    icon: Target,
+    label: 'Quiz Attempts',
+    value: stats?.totalQuizAttempts || 0,
+    color: 'text-secondary',
+    gradient: 'from-secondary/20 to-secondary/5'
+  }, {
+    icon: Users,
+    label: 'Work Rooms',
+    value: stats?.totalWorkRooms || 0,
+    color: 'text-warning',
+    gradient: 'from-warning/20 to-warning/5'
+  }];
+  return <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
-        <motion.header 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between py-6"
-        >
+        <motion.header initial={{
+        opacity: 0,
+        y: -20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} className="flex items-center justify-between py-6">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/')}
-              className="font-retro"
-            >
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="font-retro">
               <ArrowLeft className="w-4 h-4 mr-2" />
               HOME
             </Button>
             <div>
               <h1 className="text-3xl md:text-4xl font-retro gradient-text-retro">
-                DASHBOARD
+                Dashboard
               </h1>
               <p className="text-sm font-retro text-muted-foreground">
                 Track your learning progress
@@ -163,13 +139,15 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {statCards.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
+          {statCards.map((stat, index) => <motion.div key={stat.label} initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: index * 0.1
+        }}>
               <Card className={`border-2 hover:shadow-neon transition-all duration-300 hover:scale-105 bg-gradient-to-br ${stat.gradient}`}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -186,18 +164,21 @@ export default function Dashboard() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
-          ))}
+            </motion.div>)}
         </div>
 
         {/* Performance Cards */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Quiz Performance */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          x: -20
+        }} animate={{
+          opacity: 1,
+          x: 0
+        }} transition={{
+          delay: 0.4
+        }}>
             <Card className="border-2 border-accent hover:shadow-neon transition-all duration-300">
               <CardHeader>
                 <CardTitle className="font-retro glow-pink flex items-center gap-2">
@@ -238,11 +219,15 @@ export default function Dashboard() {
           </motion.div>
 
           {/* Study Streak */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          x: 20
+        }} animate={{
+          opacity: 1,
+          x: 0
+        }} transition={{
+          delay: 0.5
+        }}>
             <Card className="border-2 border-warning hover:shadow-neon transition-all duration-300">
               <CardHeader>
                 <CardTitle className="font-retro glow-blue flex items-center gap-2">
@@ -283,11 +268,15 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 0.6
+      }}>
           <Card className="border-2 border-primary">
             <CardHeader>
               <CardTitle className="font-retro glow-text flex items-center gap-2">
@@ -297,35 +286,19 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Button
-                  variant="outline"
-                  className="font-retro h-auto py-4 flex-col gap-2 hover:bg-primary/20"
-                  onClick={() => navigate('/note-wizard')}
-                >
+                <Button variant="outline" className="font-retro h-auto py-4 flex-col gap-2 hover:bg-primary/20" onClick={() => navigate('/note-wizard')}>
                   <Sparkles className="w-6 h-6" />
                   <span>Create Note</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="font-retro h-auto py-4 flex-col gap-2 hover:bg-secondary/20"
-                  onClick={() => navigate('/quizzes')}
-                >
+                <Button variant="outline" className="font-retro h-auto py-4 flex-col gap-2 hover:bg-secondary/20" onClick={() => navigate('/quizzes')}>
                   <Trophy className="w-6 h-6" />
                   <span>Take Quiz</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="font-retro h-auto py-4 flex-col gap-2 hover:bg-accent/20"
-                  onClick={() => navigate('/workrooms')}
-                >
+                <Button variant="outline" className="font-retro h-auto py-4 flex-col gap-2 hover:bg-accent/20" onClick={() => navigate('/workrooms')}>
                   <Users className="w-6 h-6" />
                   <span>Join Room</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="font-retro h-auto py-4 flex-col gap-2 hover:bg-warning/20"
-                  onClick={() => navigate('/notes')}
-                >
+                <Button variant="outline" className="font-retro h-auto py-4 flex-col gap-2 hover:bg-warning/20" onClick={() => navigate('/notes')}>
                   <FileText className="w-6 h-6" />
                   <span>View Notes</span>
                 </Button>
@@ -335,11 +308,15 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Feedback Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        delay: 0.7
+      }}>
           <Card className="border-2 border-accent">
             <CardHeader>
               <CardTitle className="font-retro glow-pink flex items-center gap-2">
@@ -356,6 +333,5 @@ export default function Dashboard() {
           </Card>
         </motion.div>
       </div>
-    </div>
-  );
+    </div>;
 }
