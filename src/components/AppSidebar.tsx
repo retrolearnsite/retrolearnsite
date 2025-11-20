@@ -20,7 +20,6 @@ import {
   Sidebar,
   SidebarBody,
   SidebarLink,
-  useSidebar,
 } from "@/components/ui/animated-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -65,7 +64,6 @@ const navigationItems = [
 ];
 
 export function AppSidebar() {
-  const { open } = useSidebar();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
@@ -108,7 +106,7 @@ export function AppSidebar() {
             />
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: open ? 1 : 0 }}
+              animate={{ opacity: sidebarOpen ? 1 : 0 }}
               className="flex flex-col"
             >
               <span className="font-retro text-xl glow-blue whitespace-nowrap">
@@ -118,7 +116,7 @@ export function AppSidebar() {
                 Learn with Style
               </span>
             </motion.div>
-            <motion.div animate={{ opacity: open ? 1 : 0 }} className="ml-auto">
+            <motion.div animate={{ opacity: sidebarOpen ? 1 : 0 }} className="ml-auto">
               <Button
                 variant="ghost"
                 size="icon"
@@ -155,8 +153,8 @@ export function AppSidebar() {
                 </Avatar>
                 <motion.div
                   animate={{
-                    opacity: open ? 1 : 0,
-                    display: open ? "flex" : "none",
+                    opacity: sidebarOpen ? 1 : 0,
+                    display: sidebarOpen ? "flex" : "none",
                   }}
                   className="flex flex-col flex-1 min-w-0"
                 >
@@ -170,8 +168,8 @@ export function AppSidebar() {
               </div>
               <motion.div
                 animate={{
-                  opacity: open ? 1 : 0,
-                  display: open ? "block" : "none",
+                  opacity: sidebarOpen ? 1 : 0,
+                  display: sidebarOpen ? "block" : "none",
                 }}
               >
                 <Button
@@ -195,8 +193,8 @@ export function AppSidebar() {
               <LogIn className="h-4 w-4 flex-shrink-0" />
               <motion.span
                 animate={{
-                  opacity: open ? 1 : 0,
-                  display: open ? "inline" : "none",
+                  opacity: sidebarOpen ? 1 : 0,
+                  display: sidebarOpen ? "inline" : "none",
                 }}
               >
                 Sign In
