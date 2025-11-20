@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import mascotImage from "@/assets/retro-wizard-mascot.jpg";
+import retroLogo from "@/assets/vintage-tv-icon.png";
 import { Sparkles, Zap, Brain, ArrowLeft, Wand2 } from "lucide-react";
 import { AuthModal } from "@/components/AuthModal";
 import { ContinueGuideButton } from "@/components/ContinueGuideButton";
@@ -118,15 +118,12 @@ const NoteWizard = () => {
               BACK HOME
             </Button>
             
-            <div className="relative">
+            <div>
               <img 
-                src={mascotImage} 
-                alt="Retro Wizard Mascot" 
-                className="w-20 h-20 rounded-full border-4 border-primary shadow-neon"
+                src={retroLogo} 
+                alt="Retro Learn Logo" 
+                className="w-20 h-20"
               />
-              <div className="absolute -top-2 -right-2">
-                <Sparkles className="w-6 h-6 text-accent animate-pulse" />
-              </div>
             </div>
             <div>
               <h1 className="text-3xl md:text-5xl font-retro gradient-text-retro mb-2">

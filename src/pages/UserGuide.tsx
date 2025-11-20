@@ -7,7 +7,6 @@ import { ArrowLeft, ArrowRight, PlayCircle, Star, Brain, Users, FileText, Sparkl
 import { useAuth } from "@/hooks/useAuth";
 import { useUserGuideProgress } from "@/hooks/useUserGuideProgress";
 import { useToast } from "@/hooks/use-toast";
-import mascotImage from "@/assets/retro-wizard-mascot.jpg";
 import { setGuideStep, clearGuideStep, markGuideCompleted } from "@/components/ContinueGuideButton";
 interface GuideStep {
   id: string;
