@@ -126,8 +126,8 @@ export default function Home() {
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <FileText className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-card-foreground transition-all duration-300">
-                    MY NOTES
+                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                    My Notes
                   </CardTitle>
                   <CardDescription className="text-muted-foreground text-sm">
                     Browse and manage your study materials
@@ -140,7 +140,7 @@ export default function Home() {
                     className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <FileText className="w-4 h-4 mr-2" />
-                    VIEW NOTES
+                    View Notes
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </CardContent>
@@ -152,8 +152,8 @@ export default function Home() {
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <Users className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-card-foreground transition-all duration-300">
-                    WORK ROOMS
+                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                    Work Rooms
                   </CardTitle>
                   <CardDescription className="text-muted-foreground text-sm">
                     Collaborate and study together
@@ -166,7 +166,7 @@ export default function Home() {
                     className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <Users className="w-4 h-4 mr-2" />
-                    JOIN ROOMS
+                    Join Rooms
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </CardContent>
@@ -178,8 +178,8 @@ export default function Home() {
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <Trophy className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-card-foreground transition-all duration-300">
-                    QUIZZES
+                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                    Quizzes
                   </CardTitle>
                   <CardDescription className="text-muted-foreground text-sm">
                     Test your knowledge with AI
@@ -192,7 +192,7 @@ export default function Home() {
                     className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <Trophy className="w-4 h-4 mr-2" />
-                    START QUIZ
+                    Start Quiz
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </CardContent>
@@ -204,8 +204,8 @@ export default function Home() {
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
                     <Search className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
                   </div>
-                  <CardTitle className="text-lg text-card-foreground transition-all duration-300">
-                    LEARN ANYTHING
+                  <CardTitle className="text-lg text-foreground transition-all duration-300">
+                    Learn Anything
                   </CardTitle>
                   <CardDescription className="text-muted-foreground text-sm">
                     Discover any topic instantly
@@ -218,7 +218,7 @@ export default function Home() {
                     className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
                   >
                     <Search className="w-4 h-4 mr-2" />
-                    EXPLORE TOPICS
+                    Explore Topics
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </CardContent>
