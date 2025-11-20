@@ -237,7 +237,7 @@ const UserGuide = () => {
 
             {/* Action Button */}
             {currentGuideStep.route && currentGuideStep.action && <div className="pt-4">
-                <Button variant="wizard" size="lg" onClick={goToFeature} className="font-retro text-lg px-8 py-6" disabled={!user}>
+                <Button variant="default" size="lg" onClick={goToFeature} className="text-lg px-8 py-6" disabled={!user}>
                   <Rocket className="w-5 h-5 mr-2" />
                   {currentGuideStep.action}
                 </Button>
@@ -252,7 +252,7 @@ const UserGuide = () => {
         <div className="flex items-center justify-between gap-4">
           
 
-          <Button variant={isLastStep ? "neon" : "default"} onClick={handleNextStep} size="lg" className="font-retro flex-1 max-w-xs text-center px-[220px] mx-[165px]">
+          <Button variant="default" onClick={handleNextStep} size="lg" className="flex-1 max-w-xs text-center px-[220px] mx-[165px]">
             {isLastStep ? <>
                 <Star className="w-4 h-4 mr-2" />
                 Start Learning!

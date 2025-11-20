@@ -225,9 +225,8 @@ const Index = () => {
                 Sign in to transform your notes into study materials and track your progress
               </p>
               <Button
-                variant="neon"
+                variant="default"
                 onClick={() => setShowAuthModal(true)}
-                className="font-retro"
                 disabled={loading}
               >
                 <User className="w-4 h-4 mr-2" />

@@ -107,11 +107,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   placeholder="••••••••"
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isLoading}
-                className="w-full font-retro"
-                variant="neon"
+                className="w-full"
+                variant="default"
               >
                 {isLoading ? (
                   <>
@@ -176,18 +176,18 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full font-retro"
-                variant="neon"
+                className="w-full"
+                variant="default"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    CREATING...
+                    Creating...
                   </>
                 ) : (
                   <>
                     <UserPlus className="w-4 h-4 mr-2" />
-                    CREATE ACCOUNT
+                    Create Account
                   </>
                 )}
               </Button>

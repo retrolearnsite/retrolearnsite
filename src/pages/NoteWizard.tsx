@@ -155,7 +155,7 @@ const NoteWizard = () => {
               <Sparkles className="w-16 h-16 mx-auto mb-4 text-primary" />
               <h2 className="text-2xl font-retro font-bold glow-text mb-2">ACCESS REQUIRED</h2>
               <p className="font-retro text-muted-foreground mb-6 max-w-md mx-auto">Sign in to transform your notes using the Retro Note Wizard</p>
-              <Button variant="neon" onClick={() => setShowAuthModal(true)} className="font-retro">LOGIN TO CONTINUE</Button>
+              <Button variant="default" onClick={() => setShowAuthModal(true)}>Login to Continue</Button>
             </div>
           ) : (
             <>

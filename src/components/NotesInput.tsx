@@ -292,22 +292,22 @@ export const NotesInput = ({
           </div>
           <DialogFooter className="gap-2">
             <Button
-              variant="terminal"
+              variant="outline"
               onClick={handleReRecord}
               disabled={isProcessing}
               className="flex-1"
             >
               <Mic className="w-4 h-4 mr-2" />
-              RE-RECORD
+              Re-record
             </Button>
             <Button
-              variant="wizard"
+              variant="default"
               onClick={handleContinueWithTranscription}
               disabled={isProcessing || !transcribedText.trim()}
               className="flex-1"
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              CONTINUE
+              Continue
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -321,29 +321,29 @@ export const NotesInput = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-          <Button variant="cyber" size="sm" className="text-xs">
+          <Button variant="secondary" size="sm" className="text-xs">
             <FileText className="w-4 h-4" />
-            TEXT INPUT
+            Text Input
           </Button>
           <Button 
-            variant={isRecording ? "destructive" : "terminal"} 
+            variant={isRecording ? "destructive" : "outline"} 
             size="sm" 
             onClick={isRecording ? stopRecording : startRecording}
             disabled={isProcessing || isTranscribing}
             className="text-xs"
           >
             <Mic className={`w-4 h-4 ${isRecording ? 'animate-pulse' : ''}`} />
-            {isRecording ? 'STOP' : isTranscribing ? 'TRANSCRIBING...' : 'VOICE'}
+            {isRecording ? 'Stop' : isTranscribing ? 'Transcribing...' : 'Voice'}
           </Button>
           <Button 
-            variant="terminal" 
+            variant="outline" 
             size="sm" 
             onClick={handleImageScan}
             disabled={isProcessing}
             className="text-xs"
           >
             <ImageIcon className="w-4 h-4" />
-            ADD IMAGE
+            Add Image
           </Button>
         </div>
 
@@ -404,22 +404,22 @@ export const NotesInput = ({
 
         <div className="flex gap-3">
           <Button 
-            variant="wizard" 
+            variant="default" 
             size="lg" 
             onClick={handleSubmit}
             disabled={(!notes.trim() && images.length === 0) || isProcessing}
             className="flex-1"
           >
             <Sparkles className="w-5 h-5" />
-            {isProcessing ? "PROCESSING..." : "TRANSFORM NOTES"}
+            {isProcessing ? "Processing..." : "Transform Notes"}
           </Button>
           <Button 
-            variant="terminal" 
+            variant="outline" 
             size="lg" 
             onClick={loadDemo}
             disabled={isProcessing}
           >
-            DEMO
+            Demo
           </Button>
         </div>
 
