@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { EmailConfirmationBanner } from "@/components/EmailConfirmationBanner";
+import { SplashScreen } from "@/components/SplashScreen";
 import { ThemeProvider } from "next-themes";
 import Home from "./pages/Home";
 import NoteWizard from "./pages/NoteWizard";
@@ -23,15 +25,15 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const { user, loading } = useAuth();
+  const [showSplash, setShowSplash] = useState(true);
 
-  if (loading) {
+  // Show splash screen on initial load or while auth is loading
+  if (showSplash || loading) {
     return (
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <TooltipProvider>
-            <div className="flex min-h-screen w-full bg-background items-center justify-center">
-              <div className="text-primary">Loading...</div>
-            </div>
+            <SplashScreen onComplete={() => setShowSplash(false)} />
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>
