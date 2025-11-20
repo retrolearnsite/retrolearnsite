@@ -232,14 +232,15 @@ serve(async (req) => {
       throw new Error('AI generated invalid quiz structure');
     }
 
-    // Create the quiz in database
+    // Create the quiz in database (default to private with just_created flag)
     const { data: quiz, error: quizError } = await supabase
       .from('quizzes')
       .insert({
         title,
         description: description || null,
         creator_id: user.id,
-        is_public: true
+        is_public: false,
+        just_created: true
       })
       .select()
       .single();

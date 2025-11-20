@@ -351,7 +351,10 @@ export default function Quizzes() {
   const makeQuizPublic = async (quizId: string) => {
     const { error } = await supabase
       .from('quizzes')
-      .update({ is_public: true })
+      .update({ 
+        is_public: true,
+        just_created: false 
+      })
       .eq('id', quizId);
 
     if (error) {
@@ -367,16 +370,34 @@ export default function Quizzes() {
       });
       fetchQuizzes();
       setShowQuizCreated(false);
+      setNewlyCreatedQuiz(null);
     }
   };
 
-  const keepQuizPrivate = async () => {
-    toast({
-      title: "Quiz kept private",
-      description: "Your quiz is only visible to you"
-    });
-    fetchQuizzes();
-    setShowQuizCreated(false);
+  const keepQuizPrivate = async (quizId: string) => {
+    const { error } = await supabase
+      .from('quizzes')
+      .update({ 
+        is_public: false,
+        just_created: false 
+      })
+      .eq('id', quizId);
+
+    if (error) {
+      toast({
+        title: "Error updating quiz",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Quiz kept private",
+        description: "Your quiz is only visible to you"
+      });
+      fetchQuizzes();
+      setShowQuizCreated(false);
+      setNewlyCreatedQuiz(null);
+    }
   };
 
   const filteredQuizzes = allQuizzes.filter(
@@ -703,7 +724,7 @@ export default function Quizzes() {
             </div>
 
             <Button
-              onClick={keepQuizPrivate}
+              onClick={() => keepQuizPrivate(newlyCreatedQuiz.id)}
               className="w-full font-retro"
               variant="ghost"
             >
