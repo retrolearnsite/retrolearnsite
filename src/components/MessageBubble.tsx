@@ -220,7 +220,7 @@ export function MessageBubble({
           <motion.div
             whileHover={{ scale: isSelectionMode && !isIdea && !isFile ? 1.05 : 1.02 }}
             className={`
-              px-5 py-3.5 rounded-2xl max-w-md
+              px-6 py-4 rounded-2xl max-w-2xl
               ${isSelectionMode && !isIdea && !isFile 
                 ? 'ring-2 ring-primary animate-pulse' 
                 : ''
@@ -261,9 +261,18 @@ export function MessageBubble({
                   <Download className="w-5 h-5 text-blue-500 group-hover:translate-y-0.5 transition-transform" />
                 </a>
               ) : (
-              <p className="font-retro text-sm leading-relaxed break-words whitespace-pre-wrap">
-                {message.message}
-              </p>
+              <div className="font-retro text-sm leading-[1.8] break-words whitespace-pre-wrap space-y-3">
+                {message.message.split('\n\n').map((paragraph: string, idx: number) => (
+                  <p key={idx} className="last:mb-0">
+                    {paragraph.split('\n').map((line: string, lineIdx: number) => (
+                      <span key={lineIdx}>
+                        {line}
+                        {lineIdx < paragraph.split('\n').length - 1 && <br />}
+                      </span>
+                    ))}
+                  </p>
+                ))}
+              </div>
             )}
           </motion.div>
 
