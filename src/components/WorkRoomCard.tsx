@@ -61,9 +61,9 @@ export function WorkRoomCard({ room, onEnterRoom, isCreator }: WorkRoomCardProps
     <GlowCard 
       customSize={true} 
       glowColor="blue"
-      className="group hover:scale-105 transition-all duration-300 bg-card/90 w-full h-auto aspect-auto grid-rows-none p-0"
+      className="group hover:scale-105 transition-all duration-300 bg-card/90 w-full h-full flex flex-col p-0"
     >
-      <CardHeader className="space-y-3">
+      <CardHeader className="space-y-3 flex-shrink-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={room.is_public ? "default" : "secondary"} className="font-retro text-xs">
@@ -124,7 +124,7 @@ export function WorkRoomCard({ room, onEnterRoom, isCreator }: WorkRoomCardProps
         )}
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-1 flex flex-col justify-end">
         <div className="flex items-center justify-between text-xs font-retro text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="w-4 h-4" />
