@@ -759,11 +759,11 @@ export default function Quizzes() {
           </Link>
 
           <div className="text-center space-y-3">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-retro gradient-text-retro">
-              RETRO QUIZZES
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-retro">
+              RETRO <span className="text-primary">QUIZZES</span>
             </h1>
             <p className="text-sm sm:text-base md:text-lg font-retro text-muted-foreground max-w-xl mx-auto px-4">
-              Challenge yourself with AI-generated quizzes
+              Challenge yourself with <span className="text-chart-2">AI-generated</span> quizzes
             </p>
           </div>
         </div>

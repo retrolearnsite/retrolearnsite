@@ -60,14 +60,14 @@ const Notes = () => {
           </Button>
           
           <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mb-4 md:mb-6">
-            <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 border-2 border-primary">
+            <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-primary/20 to-chart-2/20 border-2 border-primary shadow-lg">
               <FileText className="w-6 h-6 md:w-8 md:h-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-5xl font-retro gradient-text-retro mb-2">
-                My Notes
+              <h1 className="text-2xl md:text-5xl font-retro mb-2">
+                My <span className="text-primary">Notes</span>
               </h1>
-              <div className="flex items-center justify-center gap-2 text-sm md:text-lg font-retro text-primary">
+              <div className="flex items-center justify-center gap-2 text-sm md:text-lg font-retro text-chart-2">
                 <FileText className="w-4 h-4 md:w-5 md:h-5" />
                 <span>Browse & Study</span>
               </div>
@@ -75,7 +75,7 @@ const Notes = () => {
           </div>
           
           <p className="text-sm md:text-lg font-retro text-muted-foreground max-w-2xl mx-auto px-4">
-            Access all your transformed notes, flashcards, and study materials in one place
+            Access all your <span className="text-primary font-medium">transformed notes</span>, flashcards, and study materials
           </p>
         </header>
 

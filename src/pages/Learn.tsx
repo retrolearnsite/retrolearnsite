@@ -533,11 +533,11 @@ const Learn = () => {
 
               {/* Main Heading */}
               <div className="space-y-3 md:space-y-4 px-4">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold glow-text leading-tight">
-                  What would you like to learn?
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold leading-tight">
+                  What would you like to <span className="text-primary">learn</span>?
                 </h1>
                 <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto">
-                  Enter any topic and discover insights, videos, and community resources
+                  Enter any topic and discover <span className="text-chart-2">insights</span>, videos, and community resources
                 </p>
               </div>
 
@@ -574,7 +574,7 @@ const Learn = () => {
 
               {/* Popular Topics */}
               <div className="space-y-4 md:space-y-6 px-4">
-                <h3 className="text-lg md:text-2xl font-semibold text-muted-foreground">Popular cosmic topics:</h3>
+                <h3 className="text-lg md:text-2xl font-semibold text-muted-foreground">Popular <span className="text-primary">topics</span>:</h3>
                 <div className="flex flex-wrap justify-center gap-2 md:gap-3 max-w-4xl mx-auto">
                   {popularTopics.map((popularTopic, index) => (
                     <Button

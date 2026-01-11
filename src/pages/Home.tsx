@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import retroLogo from '@/assets/vintage-tv-icon.png';
 import { Sparkles, Brain, FileText, Users, Wand2, User, Zap, Trophy, Search, ArrowRight } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
-import { GooeyText } from '@/components/ui/gooey-text-morphing';
+
 export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const {
@@ -31,40 +31,46 @@ export default function Home() {
               <img src={retroLogo} alt="Retro Learn Logo" className="w-16 h-16 md:w-20 md:h-20" />
             </div>
             <div>
-          <h1 className="text-3xl md:text-6xl font-bold text-foreground mb-6">
-                Retro Learn
+              <h1 className="text-3xl md:text-6xl font-bold text-foreground">
+                Retro <span className="text-primary">Learn</span>
               </h1>
             </div>
           </motion.div>
           
-          <div className="h-16 md:h-20 flex items-center justify-center px-4">
-            <GooeyText
-              texts={[
-                "Your AI-powered learning platform",
-                "Transform notes into study materials",
-                "Collaborate in study rooms"
-              ]}
-              morphTime={2}
-              cooldownTime={1.5}
-              textClassName="text-sm md:text-lg text-muted-foreground text-center max-w-2xl"
-            />
-          </div>
+          <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+            Your <span className="text-primary font-medium">AI-powered</span> learning platform with note transformation and collaborative study rooms
+          </p>
         </header>
 
         {/* Stats Bar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-card border border-border rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-card-foreground">1,337</div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 rounded-lg p-4 text-center hover:shadow-lg hover:border-primary/50 transition-all"
+          >
+            <div className="text-2xl font-bold text-primary">1,337</div>
             <div className="text-sm text-muted-foreground">Notes Transformed</div>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-card-foreground">42,069</div>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-gradient-to-br from-chart-2/10 to-chart-2/5 border-2 border-chart-2/30 rounded-lg p-4 text-center hover:shadow-lg hover:border-chart-2/50 transition-all"
+          >
+            <div className="text-2xl font-bold text-chart-2">42,069</div>
             <div className="text-sm text-muted-foreground">Flashcards Created</div>
-          </div>
-          <div className="bg-card border border-border rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-card-foreground">98.5%</div>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-gradient-to-br from-chart-1/10 to-chart-1/5 border-2 border-chart-1/30 rounded-lg p-4 text-center hover:shadow-lg hover:border-chart-1/50 transition-all"
+          >
+            <div className="text-2xl font-bold text-chart-1">98.5%</div>
             <div className="text-sm text-muted-foreground">Success Rate</div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Feature Cards */}
