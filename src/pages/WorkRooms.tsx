@@ -74,7 +74,9 @@ export default function WorkRooms() {
             opacity: 1
           }} transition={{
             delay: 0.1
-          }} className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-retro glow-text font-mono font-bold">WORKROOMS</motion.h1>
+          }} className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-retro font-mono font-bold">
+              WORK<span className="text-primary">ROOMS</span>
+            </motion.h1>
             <motion.p initial={{
             opacity: 0
           }} animate={{
@@ -82,7 +84,7 @@ export default function WorkRooms() {
           }} transition={{
             delay: 0.2
           }} className="text-base md:text-lg font-retro text-muted-foreground max-w-2xl mx-auto">
-              Collaborate, share knowledge, and learn together in public or private study rooms
+              <span className="text-chart-2">Collaborate</span>, share knowledge, and <span className="text-primary">learn together</span> in study rooms
             </motion.p>
           </div>
         </motion.div>

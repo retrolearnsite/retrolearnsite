@@ -126,15 +126,15 @@ export default function Dashboard() {
               HOME
             </Button>
             <div>
-              <h1 className="text-2xl md:text-4xl font-elegant font-bold gradient-text-retro">
-                Dashboard
+              <h1 className="text-2xl md:text-4xl font-elegant font-bold">
+                Your <span className="text-primary">Dashboard</span>
               </h1>
               <p className="text-xs md:text-sm font-elegant text-muted-foreground">
-                Track your learning progress
+                Track your <span className="text-chart-2">learning progress</span>
               </p>
             </div>
           </div>
-          <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-accent animate-pulse" />
+          <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-primary animate-pulse" />
         </motion.header>
 
         {/* Stats Grid */}
