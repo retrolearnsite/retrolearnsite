@@ -178,10 +178,9 @@ export function NoteCard({ note, onViewNote, onDelete, deletingId, notesType = '
       transition={{ duration: 0.3 }}
       className="w-full"
     >
-      <GlowCard 
-        customSize={true} 
-        glowColor="blue"
-        className="bg-background/80 w-full h-auto aspect-auto grid-rows-none p-0 overflow-hidden group"
+      <div 
+        className="bg-card border border-border/50 hover:border-primary/30 w-full h-auto p-0 overflow-hidden group rounded-sm transition-all"
+        style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}
       >
         {/* Header Section */}
         <div className="p-4 space-y-3">
