@@ -1,256 +1,187 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import retroLogo from '@/assets/vintage-tv-icon.png';
-import { Sparkles, Brain, FileText, Users, Wand2, User, Zap, Trophy, Search, ArrowRight } from 'lucide-react';
+import { Sparkles, FileText, Users, User, Trophy, Search, ArrowRight, Wand2 } from 'lucide-react';
 import { AuthModal } from '@/components/AuthModal';
+
+function StatusBadge({ icon, label, color = 'orange' }: { icon: string; label: string; color?: 'orange' | 'yellow' | 'teal' }) {
+  const colorMap = {
+    orange: 'border-crt-orange text-crt-orange',
+    yellow: 'border-crt-yellow text-crt-yellow',
+    teal: 'border-crt-teal text-crt-teal',
+  };
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 border ${colorMap[color]} font-mono text-[11px] uppercase tracking-[0.08em]`} style={{ borderRadius: '2px' }}>
+      <span className="blink-dot">{icon}</span>
+      {label}
+    </span>
+  );
+}
+
+function StatCard({ number, label, trend, trendUp, accentColor }: {
+  number: string; label: string; trend: string; trendUp: boolean;
+  accentColor: 'orange' | 'yellow' | 'teal';
+}) {
+  const topBorderColor = { orange: '#e8622a', yellow: '#f0c040', teal: '#3ecfcf' };
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 }}
+      className="bg-card border border-border/50 p-5 relative"
+      style={{
+        borderTop: `3px solid ${topBorderColor[accentColor]}`,
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+        borderRadius: '2px',
+        borderColor: 'rgba(232,98,42,0.2)',
+      }}
+    >
+      <div className="font-display text-[38px] leading-none text-foreground">{number}</div>
+      <div className="text-sm text-muted-foreground mt-1 font-sans">{label}</div>
+      <div className={`text-xs font-mono mt-3 ${trendUp ? 'text-crt-teal' : 'text-crt-red'}`}>
+        {trendUp ? '▲' : '▼'} {trend}
+      </div>
+    </motion.div>
+  );
+}
+
+function FeatureCard({ icon: Icon, title, description, buttonLabel, onClick, iconColor = 'text-primary' }: {
+  icon: any; title: string; description: string; buttonLabel: string; onClick: () => void; iconColor?: string;
+}) {
+  return (
+    <div className="group bg-card border border-border/50 p-5 flex flex-col h-full hover:border-primary/30 transition-all" style={{ borderRadius: '2px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}>
+      <div className={`w-12 h-12 flex items-center justify-center mb-4 bg-primary/10 ${iconColor}`} style={{ borderRadius: '2px' }}>
+        <Icon className="w-6 h-6" />
+      </div>
+      <h3 className="font-display text-lg text-foreground mb-1">{title}</h3>
+      <p className="text-sm text-muted-foreground mb-4 flex-grow">{description}</p>
+      <Button
+        variant="outline"
+        onClick={onClick}
+        className="w-full justify-center gap-2 font-mono text-xs uppercase tracking-[0.08em] border-primary/30 text-primary hover:bg-primary/10 transition-all"
+        style={{ borderRadius: '3px' }}
+      >
+        {buttonLabel}
+        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+      </Button>
+    </div>
+  );
+}
 
 export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const {
-    user,
-    loading
-  } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
-  return <div className="min-h-screen p-4 md:p-8 bg-background">
-      <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
-        {/* Header */}
-        <header className="text-center py-4 md:py-8 relative">
 
-          {/* Main Header */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-4 md:mb-6"
-          >
-            <div>
-              <img src={retroLogo} alt="Retro Learn Logo" className="w-16 h-16 md:w-20 md:h-20" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-6xl font-bold text-foreground">
+  return (
+    <div className="min-h-screen p-4 md:p-8 bg-background relative">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Hero Section */}
+        <header className="text-center py-8 md:py-14 relative crt-scanlines crt-glow" style={{ borderRadius: '2px' }}>
+          <div className="relative z-10">
+            {/* Status Badge */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="mb-6">
+              <StatusBadge icon="◼" label="AI-POWERED" color="orange" />
+            </motion.div>
+
+            {/* Logo + Title */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-4"
+            >
+              <img src={retroLogo} alt="RetroLearn Logo" className="w-16 h-16 md:w-20 md:h-20" />
+              <h1 className="font-display text-4xl md:text-[52px] leading-none text-glow-orange">
                 Retro <span className="text-primary">Learn</span>
               </h1>
-            </div>
-          </motion.div>
-          
-          <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-            Your <span className="text-primary font-medium">AI-powered</span> learning platform with note transformation and collaborative study rooms
-          </p>
+            </motion.div>
+
+            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto font-sans">
+              Your <span className="text-primary font-medium">AI-powered</span> learning platform with note transformation and collaborative study rooms
+            </p>
+          </div>
         </header>
 
-        {/* Stats Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 rounded-lg p-4 text-center hover:shadow-lg hover:border-primary/50 transition-all"
-          >
-            <div className="text-2xl font-bold text-primary">1,337</div>
-            <div className="text-sm text-muted-foreground">Notes Transformed</div>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-chart-2/10 to-chart-2/5 border-2 border-chart-2/30 rounded-lg p-4 text-center hover:shadow-lg hover:border-chart-2/50 transition-all"
-          >
-            <div className="text-2xl font-bold text-chart-2">42,069</div>
-            <div className="text-sm text-muted-foreground">Flashcards Created</div>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-chart-1/10 to-chart-1/5 border-2 border-chart-1/30 rounded-lg p-4 text-center hover:shadow-lg hover:border-chart-1/50 transition-all"
-          >
-            <div className="text-2xl font-bold text-chart-1">98.5%</div>
-            <div className="text-sm text-muted-foreground">Success Rate</div>
-          </motion.div>
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StatCard number="1,337" label="Notes Transformed" trend="+12% this week" trendUp accentColor="orange" />
+          <StatCard number="42,069" label="Flashcards Created" trend="+8% this week" trendUp accentColor="yellow" />
+          <StatCard number="98.5%" label="Success Rate" trend="+2.1% this month" trendUp accentColor="teal" />
         </div>
 
-        {/* Feature Cards */}
+        {/* Main Content */}
         {!user ? (
-          <div className="text-center py-16 bg-card border border-border rounded-xl animate-fade-in">
-            <User className="w-20 h-20 mx-auto mb-6 text-primary animate-pulse" />
-            <h2 className="text-3xl font-bold text-card-foreground mb-4">
-              Sign In Required
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto text-lg">
-              Sign in to access all Retro Learn features and start your learning journey
+          <div className="text-center py-16 bg-card border border-border/50 relative" style={{ borderRadius: '2px' }}>
+            <User className="w-16 h-16 mx-auto mb-6 text-primary" />
+            <h2 className="font-display text-3xl text-foreground mb-3">SIGN IN REQUIRED</h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto font-sans">
+              Sign in to access all RetroLearn features and start your learning journey
             </p>
-            <Button 
-              variant="default" 
-              size="lg"
-              onClick={() => setShowAuthModal(true)} 
-              className="hover:scale-105 transition-transform" 
+            <Button
+              onClick={() => setShowAuthModal(true)}
               disabled={loading}
+              className="bg-primary text-primary-foreground font-mono text-sm uppercase tracking-[0.08em] hover:bg-crt-yellow hover:text-background transition-all px-8"
+              style={{ borderRadius: '3px' }}
             >
-              <User className="w-5 h-5 mr-2" />
-              Sign In to Continue
+              <User className="w-4 h-4 mr-2" />
+              ▶ SIGN IN TO CONTINUE
             </Button>
           </div>
         ) : (
-          <div className="space-y-8">
-            {/* Primary Features Row */}
-            <div className="grid gap-8 lg:grid-cols-2">
-              {/* Note Wizard - Primary Feature */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-[1.02] animate-fade-in lg:col-span-2">
-                <CardHeader className="text-center pb-6">
-                  <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
-                    <Wand2 className="w-10 h-10 text-primary group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
-                  </div>
-                  <CardTitle className="text-2xl text-foreground transition-all duration-300">
-                    Note Wizard
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground text-lg max-w-md mx-auto">
-                    Transform your messy notes into organized study materials with AI magic
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    onClick={() => navigate('/note-wizard')}
-                    className="group-hover:bg-primary/10 transition-all duration-300 hover:scale-105"
-                  >
-                    <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
-                    Start Transforming
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform duration-300" />
-                  </Button>
-                </CardContent>
-              </Card>
+          <div className="space-y-6">
+            {/* Note Wizard - Hero Feature */}
+            <div
+              className="bg-card border border-border/50 p-6 md:p-8 relative crt-scanlines"
+              style={{ borderLeft: '4px solid var(--crt-orange)', borderRadius: '2px', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}
+            >
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                <div className="w-16 h-16 flex items-center justify-center bg-primary/10 text-primary flex-shrink-0" style={{ borderRadius: '2px' }}>
+                  <Wand2 className="w-8 h-8" />
+                </div>
+                <div className="flex-grow text-center md:text-left">
+                  <h2 className="font-display text-2xl text-foreground mb-1">Note Wizard</h2>
+                  <p className="text-sm text-muted-foreground font-sans">Transform your messy notes into organized study materials with AI magic</p>
+                </div>
+                <Button
+                  onClick={() => navigate('/note-wizard')}
+                  className="bg-primary text-primary-foreground font-mono text-sm uppercase tracking-[0.08em] hover:bg-crt-yellow hover:text-background transition-all px-6 flex-shrink-0"
+                  style={{ borderRadius: '3px' }}
+                >
+                  ▶ START TRANSFORMING
+                </Button>
+              </div>
             </div>
 
-            {/* Secondary Features Grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {/* My Notes */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
-                <CardHeader className="text-center pb-4 flex-grow">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
-                    <FileText className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
-                  </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
-                    My Notes
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
-                    Browse and manage your study materials
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center pt-0">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => navigate('/notes')}
-                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    View Notes
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Work Rooms */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
-                <CardHeader className="text-center pb-4 flex-grow">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
-                    <Users className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
-                  </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
-                    Work Rooms
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
-                    Collaborate and study together
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center pt-0">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => navigate('/workrooms')}
-                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
-                  >
-                    <Users className="w-4 h-4 mr-2" />
-                    Join Rooms
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Quizzes */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
-                <CardHeader className="text-center pb-4 flex-grow">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
-                    <Trophy className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
-                  </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
-                    Quizzes
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
-                    Test your knowledge with AI
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center pt-0">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => navigate('/quizzes')}
-                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
-                  >
-                    <Trophy className="w-4 h-4 mr-2" />
-                    Start Quiz
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Learn Anything */}
-              <Card className="group hover:shadow-lg transition-all duration-300 border border-border bg-card rounded-xl hover:scale-105 animate-fade-in flex flex-col h-full">
-                <CardHeader className="text-center pb-4 flex-grow">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
-                    <Search className="w-8 h-8 text-primary group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
-                  </div>
-                  <CardTitle className="text-lg text-foreground transition-all duration-300 mb-2">
-                    Learn Anything
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground text-sm min-h-[40px]">
-                    Discover any topic instantly
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center pt-0">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => navigate('/learn')}
-                    className="group-hover:bg-primary/10 transition-all duration-300 w-full text-sm"
-                  >
-                    <Search className="w-4 h-4 mr-2" />
-                    Explore Topics
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Button>
-                </CardContent>
-              </Card>
+            {/* Feature Grid */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <FeatureCard icon={FileText} title="My Notes" description="Browse and manage your study materials" buttonLabel="VIEW NOTES" onClick={() => navigate('/notes')} />
+              <FeatureCard icon={Users} title="Work Rooms" description="Collaborate and study together" buttonLabel="JOIN ROOMS" onClick={() => navigate('/workrooms')} iconColor="text-crt-teal" />
+              <FeatureCard icon={Trophy} title="Quizzes" description="Test your knowledge with AI" buttonLabel="START QUIZ" onClick={() => navigate('/quizzes')} iconColor="text-crt-yellow" />
+              <FeatureCard icon={Search} title="Learn Anything" description="Discover any topic instantly" buttonLabel="EXPLORE" onClick={() => navigate('/learn')} />
             </div>
           </div>
         )}
 
         {/* Footer */}
-        <footer className="text-center pt-8 border-t border-primary">
+        <footer className="text-center pt-8 border-t border-border/30">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="font-retro text-sm text-muted-foreground">
+            <span className="font-mono text-xs text-muted-foreground uppercase tracking-[0.08em]">
               Powered by AI Magic & 80s Nostalgia
             </span>
-            <Sparkles className="w-4 h-4 text-accent" />
+            <Sparkles className="w-4 h-4 text-crt-yellow" />
           </div>
-          <div className="text-xs font-retro text-muted-foreground cursor-blink">
+          <div className="text-xs font-mono text-muted-foreground crt-loading">
             Ready to make learning retroactively awesome
           </div>
         </footer>
 
-        {/* Auth Modal */}
         <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </div>
-    </div>;
+    </div>
+  );
 }

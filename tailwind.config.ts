@@ -64,12 +64,19 @@ export default {
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
         },
+        crt: {
+          orange: "var(--crt-orange)",
+          yellow: "var(--crt-yellow)",
+          teal: "var(--crt-teal)",
+          red: "var(--crt-red)",
+          surface: "var(--crt-surface)",
+        },
       },
       fontFamily: {
-        sans: ["system-ui", "-apple-system", "sans-serif"],
-        mono: ["ui-monospace", "SFMono-Regular", "monospace"],
-        retro: ['Courier New', 'monospace'],
-        elegant: ['Crimson Pro', 'serif'],
+        sans: ["'Space Grotesk'", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["'Syne Mono'", "'Courier New'", "monospace"],
+        retro: ["'VT323'", "monospace"],
+        display: ["'VT323'", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -78,30 +85,16 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
         "bounce-slow": {
-          "0%, 100%": {
-            transform: "translateY(0)",
-            animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)",
-          },
-          "50%": {
-            transform: "translateY(-10%)",
-            animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
-          },
+          "0%, 100%": { transform: "translateY(0)", animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)" },
+          "50%": { transform: "translateY(-10%)", animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)" },
         },
         grid: {
           "0%": { transform: "translateY(-50%)" },
