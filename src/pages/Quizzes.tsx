@@ -808,11 +808,10 @@ export default function Quizzes() {
                 const isMine = quiz.creator_id === user?.id;
                 
                 return (
-                  <GlowCard
+                  <div
                     key={quiz.id}
-                    customSize={true}
-                    glowColor="blue"
-                    className="group hover:scale-105 transition-all duration-300 bg-card/90 w-full h-auto aspect-auto grid-rows-none p-0"
+                    className="group hover:scale-[1.02] transition-all duration-300 bg-card border border-border/50 hover:border-primary/30 w-full p-0 rounded-sm"
+                    style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}
                   >
                     <CardHeader className="space-y-2 pb-3">
                       <div className="flex items-center gap-2">
