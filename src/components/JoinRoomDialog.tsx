@@ -18,34 +18,32 @@ export function JoinRoomDialog({ onRoomJoined }: JoinRoomDialogProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
     if (!code.trim()) return
-
     setIsJoining(true)
     const room = await joinRoom(code.trim())
-    
     if (room) {
       setOpen(false)
       setCode('')
       onRoomJoined?.()
     }
-    
     setIsJoining(false)
   }
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!isJoining) {
       setOpen(newOpen)
-      if (!newOpen) {
-        setCode('')
-      }
+      if (!newOpen) setCode('')
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 font-medium border-primary/50 text-primary hover:bg-primary/10"
+          style={{ borderRadius: '6px', padding: '10px 20px' }}
+        >
           <UserPlus className="h-4 w-4" />
           Join Room
         </Button>
@@ -53,15 +51,15 @@ export function JoinRoomDialog({ onRoomJoined }: JoinRoomDialogProps) {
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Join Work Room</DialogTitle>
+            <DialogTitle className="font-display text-2xl text-glow-orange">Join Work Room</DialogTitle>
             <DialogDescription>
               Enter the room code to join an existing work room.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="room-code">Room Code</Label>
+            <div className="grid gap-1.5">
+              <Label htmlFor="room-code" className="text-sm font-medium">Room Code</Label>
               <Input
                 id="room-code"
                 placeholder="Enter 6-character code"
@@ -77,17 +75,17 @@ export function JoinRoomDialog({ onRoomJoined }: JoinRoomDialogProps) {
               </p>
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => handleOpenChange(false)}
-              disabled={isJoining}
-            >
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isJoining} style={{ borderRadius: '6px' }}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isJoining || !code.trim()}>
+            <Button
+              type="submit"
+              disabled={isJoining || !code.trim()}
+              className="bg-primary text-primary-foreground hover:bg-crt-yellow hover:text-background"
+              style={{ borderRadius: '6px' }}
+            >
               {isJoining ? "Joining..." : "Join Room"}
             </Button>
           </DialogFooter>

@@ -29,44 +29,27 @@ export default function DiscoverRooms() {
   const [loading, setLoading] = useState(true);
   const [onlineCounts, setOnlineCounts] = useState<Record<string, number>>({});
 
-  useEffect(() => {
-    fetchPublicRooms();
-  }, []);
+  useEffect(() => { fetchPublicRooms(); }, []);
 
   useEffect(() => {
-    // Subscribe to realtime presence for each room
     const channels = rooms.map(room => {
       const channel = supabase.channel(`room_presence_${room.id}`)
         .on('presence', { event: 'sync' }, () => {
           const state = channel.presenceState();
-          setOnlineCounts(prev => ({
-            ...prev,
-            [room.id]: Object.keys(state).length
-          }));
+          setOnlineCounts(prev => ({ ...prev, [room.id]: Object.keys(state).length }));
         })
         .subscribe();
       return channel;
     });
-
-    return () => {
-      channels.forEach(channel => supabase.removeChannel(channel));
-    };
+    return () => { channels.forEach(channel => supabase.removeChannel(channel)); };
   }, [rooms]);
 
   const fetchPublicRooms = async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('work_rooms')
-      .select('*')
-      .eq('is_public', true)
-      .order('member_count', { ascending: false });
-
+      .from('work_rooms').select('*').eq('is_public', true).order('member_count', { ascending: false });
     if (error) {
-      toast({
-        title: "Error loading rooms",
-        description: error.message,
-        variant: "destructive"
-      });
+      toast({ title: "Error loading rooms", description: error.message, variant: "destructive" });
     } else {
       setRooms(data || []);
     }
@@ -75,28 +58,13 @@ export default function DiscoverRooms() {
 
   const joinRoom = async (roomId: string) => {
     if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to join rooms",
-        variant: "destructive"
-      });
+      toast({ title: "Sign in required", description: "Please sign in to join rooms", variant: "destructive" });
       return;
     }
-
-    const { error } = await supabase
-      .from('room_members')
-      .insert({ room_id: roomId, user_id: user.id });
-
+    const { error } = await supabase.from('room_members').insert({ room_id: roomId, user_id: user.id });
     if (error) {
-      if (error.code === '23505') {
-        navigate(`/workroom/${roomId}`);
-      } else {
-        toast({
-          title: "Error joining room",
-          description: error.message,
-          variant: "destructive"
-        });
-      }
+      if (error.code === '23505') { navigate(`/workroom/${roomId}`); }
+      else { toast({ title: "Error joining room", description: error.message, variant: "destructive" }); }
     } else {
       toast({ title: "Joined room!" });
       navigate(`/workroom/${roomId}`);
@@ -104,7 +72,6 @@ export default function DiscoverRooms() {
   };
 
   const allTags = Array.from(new Set(rooms.flatMap(r => r.subject_tags)));
-
   const filteredRooms = rooms.filter(room => {
     const matchesSearch = room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       room.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -114,133 +81,81 @@ export default function DiscoverRooms() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center space-y-3">
-        <h1 className="text-4xl md:text-5xl font-retro font-bold glow-text">
-          DISCOVER ROOMS
-        </h1>
-        <p className="text-base font-retro text-muted-foreground">
-          Join public study rooms and learn together
-        </p>
+        <h1 className="text-4xl md:text-5xl font-display text-glow-orange">DISCOVER ROOMS</h1>
+        <p className="text-[15px] text-muted-foreground">Join public study rooms and learn together</p>
       </div>
 
-      {/* Search and Filters */}
       <div className="space-y-4">
         <div className="relative max-w-xl mx-auto">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Search rooms..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="pl-12 font-retro h-12 bg-card/50 border-2 border-primary/30"
-          />
+          <Input placeholder="Search rooms..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-12 h-12 bg-card/50 border border-border" />
         </div>
 
-        {/* Tag Filters */}
         {allTags.length > 0 && (
           <div className="flex flex-wrap gap-2 justify-center">
-            <Button
-              variant={selectedTag === null ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedTag(null)}
-              className="font-retro"
-            >
-              All
-            </Button>
+            <Button variant={selectedTag === null ? "default" : "outline"} size="sm" onClick={() => setSelectedTag(null)}>All</Button>
             {allTags.map(tag => (
-              <Button
-                key={tag}
-                variant={selectedTag === tag ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedTag(tag)}
-                className="font-retro"
-              >
-                <Hash className="w-3 h-3 mr-1" />
-                {tag}
+              <Button key={tag} variant={selectedTag === tag ? "default" : "outline"} size="sm" onClick={() => setSelectedTag(tag)}>
+                <Hash className="w-3 h-3 mr-1" />{tag}
               </Button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Rooms Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredRooms.map(room => (
-          <Card
-            key={room.id}
-            className="group hover:scale-105 transition-all duration-300 border-2 border-primary/30 hover:border-primary/60 bg-card/90 backdrop-blur-sm hover:shadow-neon"
-          >
+          <div key={room.id} className="group bg-card border border-border rounded-lg hover:border-[var(--border-accent)] transition-all duration-150 hover:-translate-y-0.5" style={{ borderTop: '3px solid var(--crt-teal)' }}>
             <CardHeader className="space-y-3">
               <div className="flex items-start justify-between gap-2">
-                <Badge variant="default" className="font-retro text-xs">
-                  <Globe className="w-3 h-3 mr-1" />
-                  PUBLIC
-                </Badge>
+                <span className="inline-flex items-center gap-1 px-2 py-[3px] border border-crt-orange bg-[rgba(232,98,42,0.12)] text-crt-orange font-mono text-[11px] uppercase tracking-[0.06em]" style={{ borderRadius: '2px' }}>
+                  <span>◉</span> PUBLIC
+                </span>
                 {onlineCounts[room.id] > 0 && (
-                  <Badge variant="secondary" className="font-retro text-xs animate-pulse">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-1" />
-                    {onlineCounts[room.id]} online
-                  </Badge>
+                  <span className="inline-flex items-center gap-1 px-2 py-[3px] border border-crt-green bg-[rgba(76,175,130,0.12)] text-crt-green font-mono text-[11px] uppercase tracking-[0.06em]" style={{ borderRadius: '2px' }}>
+                    <span>●</span> {onlineCounts[room.id]} online
+                  </span>
                 )}
               </div>
-
-              <CardTitle className="font-retro text-xl glow-text line-clamp-2">
-                {room.name}
-              </CardTitle>
-
-              <CardDescription className="font-retro text-sm line-clamp-2 min-h-[2.5rem]">
-                {room.description || 'No description'}
-              </CardDescription>
+              <CardTitle className="text-base font-semibold line-clamp-2">{room.name}</CardTitle>
+              <CardDescription className="text-sm line-clamp-2 min-h-[2.5rem] leading-relaxed">{room.description || 'No description'}</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-3">
-              {/* Tags */}
               {room.subject_tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {room.subject_tags.slice(0, 3).map(tag => (
-                    <Badge key={tag} variant="outline" className="font-retro text-xs">
-                      #{tag}
-                    </Badge>
+                    <Badge key={tag} variant="outline" className="text-[10px]">#{tag}</Badge>
                   ))}
-                  {room.subject_tags.length > 3 && (
-                    <Badge variant="outline" className="font-retro text-xs">
-                      +{room.subject_tags.length - 3}
-                    </Badge>
-                  )}
+                  {room.subject_tags.length > 3 && <Badge variant="outline" className="text-[10px]">+{room.subject_tags.length - 3}</Badge>}
                 </div>
               )}
 
-              {/* Stats */}
-              <div className="flex items-center justify-between text-xs font-retro text-muted-foreground pt-2 border-t border-border/50">
-                <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  <span>{room.member_count} members</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="w-4 h-4" />
-                  <span>Active</span>
-                </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
+                <div className="flex items-center gap-1"><Users className="w-4 h-4" /><span>{room.member_count} members</span></div>
+                <div className="flex items-center gap-1"><TrendingUp className="w-4 h-4" /><span>Active</span></div>
               </div>
 
               <Button
                 onClick={() => joinRoom(room.id)}
-                className="w-full font-retro"
+                variant="outline"
+                className="w-full font-mono text-xs uppercase tracking-[0.06em] border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground"
                 size="sm"
+                style={{ borderRadius: '4px' }}
               >
-                Join Room
+                ▶ JOIN ROOM
               </Button>
             </CardContent>
-          </Card>
+          </div>
         ))}
       </div>
 
       {filteredRooms.length === 0 && !loading && (
         <div className="text-center py-12">
           <Globe className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-          <h3 className="font-retro text-xl glow-text mb-2">No Rooms Found</h3>
-          <p className="font-retro text-muted-foreground text-sm">
-            Try adjusting your search or filters
-          </p>
+          <h3 className="text-xl font-semibold text-foreground mb-2">No Rooms Found</h3>
+          <p className="text-sm text-muted-foreground">Try adjusting your search or filters</p>
         </div>
       )}
     </div>
