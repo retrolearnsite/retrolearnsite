@@ -58,10 +58,9 @@ export function WorkRoomCard({ room, onEnterRoom, isCreator }: WorkRoomCardProps
   };
 
   return (
-    <GlowCard 
-      customSize={true} 
-      glowColor="blue"
-      className="group hover:scale-105 transition-all duration-300 bg-card/90 w-full h-full flex flex-col p-0"
+    <div 
+      className="group hover:scale-[1.02] transition-all duration-300 bg-card border border-border/50 hover:border-primary/30 w-full h-full flex flex-col p-0 rounded-sm"
+      style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)' }}
     >
       <CardHeader className="space-y-3 flex-shrink-0">
         <div className="flex items-start justify-between gap-2">
