@@ -59,7 +59,7 @@ function SidebarContent() {
             <span className="font-display text-xl font-bold whitespace-nowrap">
               Retro<span className="text-primary">Learn</span>
             </span>
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.08em] whitespace-nowrap">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.1em] whitespace-nowrap">
               Learn with Style
             </span>
           </motion.div>
@@ -70,7 +70,7 @@ function SidebarContent() {
           animate={{ opacity: open ? 1 : 0, display: open ? "flex" : "none" }}
           className="flex items-center gap-2 px-3 mt-4 mb-2"
         >
-          <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.08em]">Navigation</span>
+          <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.1em]">Navigation</span>
           <span className="flex-1 border-t border-border/50" />
         </motion.div>
 
@@ -81,7 +81,7 @@ function SidebarContent() {
             return (
               <div
                 key={idx}
-                className="relative"
+                className="relative transition-colors duration-150"
                 style={{
                   borderLeft: isActive ? '3px solid var(--crt-orange)' : '3px solid transparent',
                   background: isActive ? 'rgba(232,98,42,0.08)' : 'transparent',
@@ -119,8 +119,8 @@ function SidebarContent() {
                 onClick={handleSignOut}
                 variant="outline"
                 size="sm"
-                className="w-full justify-start gap-2 h-8 text-xs font-mono uppercase tracking-[0.08em] border-border/50 hover:border-primary/30 hover:text-primary"
-                style={{ borderRadius: '3px' }}
+                className="w-full justify-start gap-2 h-8 text-xs font-mono uppercase tracking-[0.06em] border-border/50 hover:border-primary/30 hover:text-primary"
+                style={{ borderRadius: '4px' }}
               >
                 <LogOut className="h-3 w-3" />
                 Sign Out
@@ -134,13 +134,13 @@ function SidebarContent() {
               variant="default"
               size="icon"
               className="h-8 w-8 flex-shrink-0 bg-primary text-primary-foreground hover:bg-crt-yellow hover:text-background"
-              style={{ borderRadius: '3px' }}
+              style={{ borderRadius: '4px' }}
             >
               <LogIn className="h-4 w-4" />
             </Button>
             <motion.span
               animate={{ opacity: open ? 1 : 0, display: open ? "inline" : "none" }}
-              className="text-xs font-mono uppercase tracking-[0.08em]"
+              className="text-xs font-mono uppercase tracking-[0.06em]"
             >
               Sign In
             </motion.span>

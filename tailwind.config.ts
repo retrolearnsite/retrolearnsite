@@ -46,6 +46,7 @@ export default {
         card: {
           DEFAULT: "var(--card)",
           foreground: "var(--card-foreground)",
+          hover: "var(--card-hover)",
         },
         sidebar: {
           DEFAULT: "var(--sidebar)",
@@ -69,13 +70,13 @@ export default {
           yellow: "var(--crt-yellow)",
           teal: "var(--crt-teal)",
           red: "var(--crt-red)",
+          green: "var(--crt-green)",
           surface: "var(--crt-surface)",
         },
       },
       fontFamily: {
-        sans: ["'Inter'", "system-ui", "-apple-system", "sans-serif"],
-        heading: ["'Space Grotesk'", "system-ui", "sans-serif"],
-        mono: ["'Syne Mono'", "'Courier New'", "monospace"],
+        sans: ["'DM Sans'", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["'DM Mono'", "'Courier New'", "monospace"],
         retro: ["'VT323'", "monospace"],
         display: ["'VT323'", "monospace"],
       },
