@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { GlowCard } from '@/components/ui/spotlight-card';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, MessageSquare, ExternalLink, Copy, LogOut, Trash2, Globe, Lock, Hash } from 'lucide-react';
