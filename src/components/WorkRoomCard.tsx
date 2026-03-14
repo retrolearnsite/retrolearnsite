@@ -179,6 +179,6 @@ export function WorkRoomCard({ room, onEnterRoom, isCreator }: WorkRoomCardProps
           )}
         </div>
       </CardContent>
-    </GlowCard>
+    </div>
   );
 }

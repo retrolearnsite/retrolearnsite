@@ -290,7 +290,7 @@ export function NoteCard({ note, onViewNote, onDelete, deletingId, notesType = '
             </Button>
           </div>
         </div>
-      </GlowCard>
+      </div>
     </motion.div>
   );
 }

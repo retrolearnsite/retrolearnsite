@@ -857,7 +857,7 @@ export default function Quizzes() {
                         START
                       </Button>
                     </CardContent>
-                  </GlowCard>
+                  </div>
                 );
               })}
             </div>
