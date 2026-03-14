@@ -73,7 +73,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["'Space Grotesk'", "system-ui", "-apple-system", "sans-serif"],
+        sans: ["'Inter'", "system-ui", "-apple-system", "sans-serif"],
+        heading: ["'Space Grotesk'", "system-ui", "sans-serif"],
         mono: ["'Syne Mono'", "'Courier New'", "monospace"],
         retro: ["'VT323'", "monospace"],
         display: ["'VT323'", "monospace"],
