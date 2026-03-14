@@ -8,7 +8,7 @@ import { Trash2, Eye, Calendar, Sparkles, Trophy, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
-import { GlowCard } from '@/components/ui/spotlight-card';
+
 
 interface NoteCardProps {
   note: any;
